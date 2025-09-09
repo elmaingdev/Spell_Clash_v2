@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://c6xw45ilhwral"]
+
+[ext_resource type="Script" uid="uid://dx603kltavatc" path="res://scripts/mage_1.gd" id="1_4gusl"]
+[ext_resource type="PackedScene" uid="uid://baj4vmtxbrupq" path="res://scenes/projectile_1.tscn" id="2_41d1m"]
+[ext_resource type="SpriteFrames" uid="uid://cmidlthwcixda" path="res://themes/mage_1.tres" id="2_dnwws"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sfmj8"]
+radius = 34.0
+height = 166.0
+
+[node name="Mage_1" type="Node2D"]
+script = ExtResource("1_4gusl")
+projectile_scene = ExtResource("2_41d1m")
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+collision_layer = 4
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]
+position = Vector2(0, -103)
+scale = Vector2(3.57692, 3.57692)
+sprite_frames = ExtResource("2_dnwws")
+animation = &"attack"
+autoplay = "idle"
+frame = 7
+frame_progress = 1.0
+flip_h = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+position = Vector2(-1, -84)
+shape = SubResource("CapsuleShape2D_sfmj8")
+
+[node name="SPoint" type="Marker2D" parent="CharacterBody2D"]
+position = Vector2(139, -101)

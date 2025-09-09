@@ -1,0 +1,39 @@
+[gd_resource type="SpriteFrames" load_steps=6 format=3 uid="uid://bxkcyvk5gy1mc"]
+
+[ext_resource type="Texture2D" uid="uid://b3hr0hialtdwf" path="res://assets/mage2/Fire_projectile.png" id="1_7jroh"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qvkrt"]
+atlas = ExtResource("1_7jroh")
+region = Rect2(1, 0, 47, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5necy"]
+atlas = ExtResource("1_7jroh")
+region = Rect2(48, 0, 47, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t3jyg"]
+atlas = ExtResource("1_7jroh")
+region = Rect2(95, 0, 47, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_48cuj"]
+atlas = ExtResource("1_7jroh")
+region = Rect2(142, 0, 47, 48)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qvkrt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5necy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t3jyg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_48cuj")
+}],
+"loop": true,
+"name": &"fly",
+"speed": 10.0
+}]

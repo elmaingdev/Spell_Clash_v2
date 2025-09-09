@@ -1,0 +1,40 @@
+[gd_scene load_steps=4 format=3 uid="uid://bmg5ivlx0bfvn"]
+
+[ext_resource type="Script" uid="uid://bal7uhwax1k2o" path="res://scripts/turn_timer.gd" id="1_0gp04"]
+[ext_resource type="FontFile" uid="uid://cb1upqnk6arqn" path="res://assets/fonts/PixelOperator8-Bold.ttf" id="1_3svr6"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qcnr2"]
+bg_color = Color(0.722038, 0.572263, 0.351259, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_size = 4
+
+[node name="TurnTimer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0gp04")
+
+[node name="Bar" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(290, 0)
+layout_mode = 0
+offset_right = 290.0
+offset_bottom = 36.0
+theme_override_constants/outline_size = 9
+theme_override_fonts/font = ExtResource("1_3svr6")
+theme_override_font_sizes/font_size = 32
+theme_override_styles/fill = SubResource("StyleBoxFlat_qcnr2")
+max_value = 5.0
+value = 5.0
+
+[node name="Limit" type="Timer" parent="."]
+unique_name_in_owner = true
+one_shot = true
+
+[connection signal="timeout" from="Limit" to="." method="_on_limit_timeout"]

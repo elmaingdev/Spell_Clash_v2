@@ -1,0 +1,46 @@
+[gd_resource type="SpriteFrames" load_steps=7 format=3 uid="uid://glv0wxal0ht6"]
+
+[ext_resource type="Texture2D" uid="uid://cqyhgmhfq46lk" path="res://assets/mage1/Projectile.png" id="1_qxgau"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ntt10"]
+atlas = ExtResource("1_qxgau")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_no8n3"]
+atlas = ExtResource("1_qxgau")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lxml7"]
+atlas = ExtResource("1_qxgau")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ym32h"]
+atlas = ExtResource("1_qxgau")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ynnkk"]
+atlas = ExtResource("1_qxgau")
+region = Rect2(128, 0, 32, 32)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ntt10")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_no8n3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lxml7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ym32h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ynnkk")
+}],
+"loop": true,
+"name": &"fly",
+"speed": 10.0
+}]

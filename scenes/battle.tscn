@@ -1,0 +1,56 @@
+[gd_scene load_steps=7 format=3 uid="uid://chi50airk2jx1"]
+
+[ext_resource type="PackedScene" uid="uid://cqtct4bo5es3n" path="res://scenes/TypingPanel.tscn" id="1_th188"]
+[ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/turn_timer.tscn" id="2_p1qf1"]
+[ext_resource type="PackedScene" uid="uid://bo7a7aolqu58" path="res://scenes/forest_stage.tscn" id="3_p1qf1"]
+[ext_resource type="PackedScene" uid="uid://c6xw45ilhwral" path="res://scenes/mage_1.tscn" id="4_a12nh"]
+[ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/mage_2.tscn" id="5_lpir7"]
+[ext_resource type="AudioStream" uid="uid://dtderyonblk36" path="res://assets/bgm/march_of_iron.wav" id="6_6vh42"]
+
+[node name="Battle" type="Node2D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="UI" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TypingPanel" parent="CanvasLayer/UI" node_paths=PackedStringArray("timer_ref") instance=ExtResource("1_th188")]
+unique_name_in_owner = true
+layout_mode = 1
+timer_ref = NodePath("../TurnTimer")
+
+[node name="TurnTimer" parent="CanvasLayer/UI" instance=ExtResource("2_p1qf1")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -144.0
+offset_top = -246.0
+offset_right = -144.0
+offset_bottom = -246.0
+
+[node name="ForestStage" parent="." instance=ExtResource("3_p1qf1")]
+
+[node name="Mage_1" parent="." instance=ExtResource("4_a12nh")]
+unique_name_in_owner = true
+position = Vector2(549, 821)
+typing_panel_path = NodePath("../CanvasLayer/UI/TypingPanel")
+
+[node name="Mage_2" parent="." instance=ExtResource("5_lpir7")]
+unique_name_in_owner = true
+position = Vector2(1396, 810)
+
+[node name="BGM" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_6vh42")
+volume_db = -6.0
+autoplay = true
+bus = &"BGM"
+
+[connection signal="timeout" from="CanvasLayer/UI/TurnTimer" to="CanvasLayer/UI/TypingPanel" method="_on_timer_timeout"]
