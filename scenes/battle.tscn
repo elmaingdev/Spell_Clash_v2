@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://chi50airk2jx1"]
+[gd_scene load_steps=8 format=3 uid="uid://chi50airk2jx1"]
 
 [ext_resource type="PackedScene" uid="uid://cqtct4bo5es3n" path="res://scenes/TypingPanel.tscn" id="1_th188"]
 [ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/turn_timer.tscn" id="2_p1qf1"]
+[ext_resource type="PackedScene" uid="uid://c566mi0ppmg2g" path="res://scenes/InfoPanel.tscn" id="3_4k1nj"]
 [ext_resource type="PackedScene" uid="uid://bo7a7aolqu58" path="res://scenes/forest_stage.tscn" id="3_p1qf1"]
 [ext_resource type="PackedScene" uid="uid://c6xw45ilhwral" path="res://scenes/mage_1.tscn" id="4_a12nh"]
 [ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/mage_2.tscn" id="5_lpir7"]
@@ -35,6 +36,9 @@ offset_left = -144.0
 offset_top = -246.0
 offset_right = -144.0
 offset_bottom = -246.0
+
+[node name="InfoPanel" parent="CanvasLayer/UI" instance=ExtResource("3_4k1nj")]
+layout_mode = 1
 
 [node name="ForestStage" parent="." instance=ExtResource("3_p1qf1")]
 
