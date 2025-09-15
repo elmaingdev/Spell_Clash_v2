@@ -1,0 +1,121 @@
+[gd_scene load_steps=7 format=3 uid="uid://ts0saqd7n1w"]
+
+[ext_resource type="Script" uid="uid://b2tj2avo08scr" path="res://scripts/ScorePanel.gd" id="1_538d3"]
+[ext_resource type="FontFile" uid="uid://cb1upqnk6arqn" path="res://assets/fonts/PixelOperator8-Bold.ttf" id="1_ld6kf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_538d3"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="LabelSettings" id="LabelSettings_538d3"]
+font = ExtResource("1_ld6kf")
+font_size = 74
+outline_size = 21
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_color = Color(0, 0, 0, 0.756863)
+
+[sub_resource type="LabelSettings" id="LabelSettings_2y052"]
+font = ExtResource("1_ld6kf")
+font_size = 74
+outline_size = 21
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_color = Color(0, 0, 0, 0.756863)
+
+[sub_resource type="LabelSettings" id="LabelSettings_apvfn"]
+font = ExtResource("1_ld6kf")
+font_size = 74
+outline_size = 21
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_color = Color(0, 0, 0, 0.756863)
+
+[node name="ScorePanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_538d3")
+
+[node name="Score1" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 400.0
+offset_top = 20.0
+offset_right = 730.0
+offset_bottom = 100.0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_538d3")
+
+[node name="Score_lbl1" type="Label" parent="Score1"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "SCORE"
+label_settings = SubResource("LabelSettings_538d3")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Score2" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -110.0
+offset_right = 160.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_538d3")
+
+[node name="Score_lbl2" type="Label" parent="Score2"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "SCORE"
+label_settings = SubResource("LabelSettings_2y052")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Score3" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -688.0
+offset_top = 20.0
+offset_right = -368.0
+offset_bottom = 100.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_538d3")
+
+[node name="Score_lbl3" type="Label" parent="Score3"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "SCORE"
+label_settings = SubResource("LabelSettings_apvfn")
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -3,6 +3,7 @@ class_name Projectile1
 
 @export var speed: float = 300.0
 @export var max_distance: float = 4000.0
+@export var damage: int = 10             # ← recibido desde Mage1
 
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
 
@@ -12,8 +13,8 @@ var _initialized: bool = false
 
 func _ready() -> void:
 	z_index = 20
-	collision_layer = 1     # proyectiles del jugador
-	collision_mask  = 2     # golpean al enemigo (Mage_2 en layer 2)
+	collision_layer = 1      # proyectil del jugador
+	collision_mask  = 2      # golpea enemigo (Mage_2 layer 2)
 	monitoring = true
 
 	if anim and anim.sprite_frames and anim.sprite_frames.has_animation("fly"):
@@ -22,22 +23,18 @@ func _ready() -> void:
 		body_entered.connect(_on_body_entered)
 
 func _physics_process(delta: float) -> void:
-	if not _alive:
-		return
+	if not _alive: return
 	if not _initialized:
 		_start = global_position
 		_initialized = true
-
 	global_position.x += speed * delta
-
 	if global_position.distance_to(_start) > max_distance:
 		queue_free()
 
 func _on_body_entered(body: Node) -> void:
-	if not _alive:
-		return
-	var root := body.get_parent() if body and body.get_parent() else body
-	if root and root.has_method("take_dmg"):
-		root.take_dmg()
+	if not _alive: return
+	var actor := body.get_parent() if body and body.get_parent() else body
+	if actor and actor.has_method("take_dmg"):
+		actor.take_dmg(damage)  # ← aplicar daño
 	_alive = false
 	queue_free()

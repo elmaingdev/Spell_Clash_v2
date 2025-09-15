@@ -39,6 +39,8 @@ layout_mode = 2
 theme_override_styles/normal = ExtResource("2_ylh55")
 text = "Spell"
 label_settings = ExtResource("3_d7kjs")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="InputLine" type="LineEdit" parent="Panel/VBox"]
 unique_name_in_owner = true
@@ -49,6 +51,7 @@ theme_override_styles/focus = ExtResource("2_ylh55")
 theme_override_styles/read_only = ExtResource("2_ylh55")
 theme_override_styles/normal = ExtResource("2_ylh55")
 placeholder_text = "Escribe aquí"
+alignment = 1
 caret_blink = true
 
 [connection signal="text_changed" from="Panel/VBox/InputLine" to="." method="_on_InputLine_text_changed"]

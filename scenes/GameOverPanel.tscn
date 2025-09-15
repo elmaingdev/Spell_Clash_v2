@@ -1,0 +1,104 @@
+[gd_scene load_steps=7 format=3 uid="uid://cpnrkcgy61lno"]
+
+[ext_resource type="FontFile" uid="uid://cb1upqnk6arqn" path="res://assets/fonts/PixelOperator8-Bold.ttf" id="1_lk26y"]
+[ext_resource type="Script" uid="uid://n35fbw23ykeh" path="res://scripts/GameOverPanel.gd" id="1_swu1w"]
+[ext_resource type="FontFile" uid="uid://gedy68241spt" path="res://assets/fonts/PixelOperator8.ttf" id="2_swu1w"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7ai4i"]
+content_margin_left = 9.0
+content_margin_top = 9.0
+content_margin_right = 9.0
+content_margin_bottom = 9.0
+bg_color = Color(0.244157, 0.29929, 0.320257, 1)
+border_width_left = 7
+border_width_top = 7
+border_width_right = 7
+border_width_bottom = 7
+border_color = Color(0.146124, 0.152979, 0.153116, 1)
+border_blend = true
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_g8x13"]
+font = ExtResource("1_lk26y")
+font_size = 56
+outline_size = 10
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_color = Color(0, 0, 0, 0.756863)
+
+[sub_resource type="LabelSettings" id="LabelSettings_b80k1"]
+font = ExtResource("2_swu1w")
+font_size = 42
+outline_size = 5
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_color = Color(0, 0, 0, 0.756863)
+
+[node name="GameOverPanel" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_swu1w")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -255.0
+offset_top = -195.0
+offset_right = 255.0
+offset_bottom = 195.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7ai4i")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 91
+
+[node name="GameOverLbl" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "GAME OVER"
+label_settings = SubResource("LabelSettings_g8x13")
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Restart?"
+label_settings = SubResource("LabelSettings_b80k1")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 121
+alignment = 1
+
+[node name="Yesbtn" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(150, 90)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_swu1w")
+theme_override_font_sizes/font_size = 42
+text = "YES"
+
+[node name="Nobtn" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(150, 90)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_swu1w")
+theme_override_font_sizes/font_size = 42
+text = "NO"

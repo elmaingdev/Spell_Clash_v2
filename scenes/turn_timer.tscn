@@ -32,6 +32,7 @@ theme_override_font_sizes/font_size = 32
 theme_override_styles/fill = SubResource("StyleBoxFlat_qcnr2")
 max_value = 5.0
 value = 5.0
+show_percentage = false
 
 [node name="Limit" type="Timer" parent="."]
 unique_name_in_owner = true

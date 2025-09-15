@@ -3,6 +3,7 @@ class_name Projectile2
 
 @export var speed: float = 300.0
 @export var max_distance: float = 4000.0
+@export var damage: int = 15
 
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
 
@@ -40,9 +41,8 @@ func _physics_process(delta: float) -> void:
 func _on_body_entered(body: Node) -> void:
 	if not _alive:
 		return
-	# body suele ser CharacterBody2D del jugador; su root es Mage_1
 	var actor := body.get_parent() if body and body.get_parent() else body
 	if actor and actor.has_method("take_dmg"):
-		actor.take_dmg()
+		actor.take_dmg(damage)  # ← aplica 100
 	_alive = false
 	queue_free()
