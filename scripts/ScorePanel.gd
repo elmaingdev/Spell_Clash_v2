@@ -42,6 +42,8 @@ func _connect_sources() -> void:
 		dp.score_ready.connect(_on_score_ready)
 
 func _on_score_ready(rating: String) -> void:
+	# SFX: resultado (fail/good/nice/perfect)
+	Sfx.score_sfx(rating)
 	show_score(rating)
 
 func _hide_all_labels() -> void:

@@ -7,6 +7,15 @@ class_name Projectile2
 
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
 
+# --- SFX de disparo (local, posicional) ---
+@export var sfx_index: int = -1  # ← lo setea Mage_2 (0,1,2). Si queda -1, usa 0.
+@onready var sfx_fire: AudioStreamPlayer2D = $Sfx/Fire
+const FIRE_STREAMS: Array[AudioStream] = [
+	preload("res://assets/sfx/fire_1.wav"),
+	preload("res://assets/sfx/fire_2.wav"),
+	preload("res://assets/sfx/fire_3.wav"),
+]
+
 var _start: Vector2 = Vector2.ZERO
 var _alive: bool = true
 var _initialized: bool = false
@@ -25,6 +34,9 @@ func _ready() -> void:
 		body_entered.connect(_on_body_entered)
 
 	add_to_group("enemy_projectile")
+
+	# 🔊 Sonido de disparo al crear el proyectil
+	_play_fire_sfx()
 
 func _physics_process(delta: float) -> void:
 	if not _alive:
@@ -73,3 +85,14 @@ func disable() -> void:
 		anim.play("disabled")
 		await anim.animation_finished
 	queue_free()
+
+# ====== SFX ======
+func _play_fire_sfx() -> void:
+	if not sfx_fire or FIRE_STREAMS.is_empty():
+		return
+	var idx := sfx_index
+	if idx < 0 or idx >= FIRE_STREAMS.size():
+		idx = 0
+	sfx_fire.stream = FIRE_STREAMS[idx]
+	sfx_fire.pitch_scale = 1.0 + randf_range(-0.015, 0.015)
+	sfx_fire.play()

@@ -9,6 +9,16 @@ signal died                                   # ← NUEVA
 @onready var apoint: Marker2D         = $CharacterBody2D/APoint
 @onready var shoot_timer: Timer       = $ShootTimer
 
+# --- SFX locales (asegúrate de que ambos estén en el bus FX) ---
+@onready var sfx_damage: AudioStreamPlayer2D = $Sfx/Damage
+@onready var sfx_death:  AudioStreamPlayer2D = $Sfx/Death
+
+# Reutilizamos los mismos damage SFX que en el jugador
+const DMG_STREAMS: Array[AudioStream] = [
+	preload("res://assets/sfx/dmg1_sfx.wav"),
+	preload("res://assets/sfx/dmg2_sfx.wav"),
+]
+
 @export var projectile_scene: PackedScene
 @export var shoot_interval: float = 7.0
 @export var cast_delay: float = 0.3
@@ -17,6 +27,7 @@ signal died                                   # ← NUEVA
 @export var HP: int = 100
 
 var is_dead := false
+var _enemy_fire_sfx_idx: int = 0
 
 func _ready() -> void:
 	add_to_group("enemy")
@@ -48,6 +59,11 @@ func attack_and_cast() -> void:
 	var p := projectile_scene.instantiate() as Area2D
 	if p:
 		p.global_position = apoint.global_position if is_instance_valid(apoint) else global_position
+			# Si el script del proyectil es Projectile2, pasa el índice de SFX
+		if p is Projectile2:
+			p.sfx_index = _enemy_fire_sfx_idx
+			_enemy_fire_sfx_idx = (_enemy_fire_sfx_idx + 1) % 3
+			
 		get_parent().add_child(p)
 
 func take_dmg(amount: int = 1) -> void:
@@ -55,8 +71,10 @@ func take_dmg(amount: int = 1) -> void:
 	HP = max(HP - amount, 0)
 	hp_changed.emit(HP, max_hp)
 	if HP <= 0:
+		_play_death_sfx()
 		_die()
 	else:
+		_play_damage_sfx()
 		if sprite:
 			sprite.play("hurt")
 
@@ -73,3 +91,14 @@ func _on_anim_finished() -> void:
 	if is_dead: return
 	if sprite and (sprite.animation == "attack" or sprite.animation == "hurt"):
 		sprite.play("idle")
+
+# ====== SFX locales ======
+func _play_damage_sfx() -> void:
+	if sfx_damage and DMG_STREAMS.size() > 0:
+		sfx_damage.stream = DMG_STREAMS[randi() % DMG_STREAMS.size()]
+		sfx_damage.pitch_scale = 1.0 + randf_range(-0.02, 0.02)
+		sfx_damage.play()
+
+func _play_death_sfx() -> void:
+	if sfx_death:
+		sfx_death.play()

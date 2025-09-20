@@ -1,8 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://c6xw45ilhwral"]
+[gd_scene load_steps=8 format=3 uid="uid://c6xw45ilhwral"]
 
 [ext_resource type="Script" uid="uid://dx603kltavatc" path="res://scripts/mage_1.gd" id="1_4gusl"]
 [ext_resource type="PackedScene" uid="uid://baj4vmtxbrupq" path="res://scenes/projectile_1.tscn" id="2_41d1m"]
 [ext_resource type="SpriteFrames" uid="uid://cmidlthwcixda" path="res://themes/mage_1.tres" id="2_dnwws"]
+[ext_resource type="AudioStream" uid="uid://bjtw0exmxmg23" path="res://assets/sfx/dmg1_sfx.wav" id="3_4gusl"]
+[ext_resource type="AudioStream" uid="uid://cdxg4dyc8koov" path="res://assets/sfx/block_sfx.wav" id="4_sfmj8"]
+[ext_resource type="AudioStream" uid="uid://d1vx5mgfixg3x" path="res://assets/sfx/kill_sfx.wav" id="5_tpcjs"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sfmj8"]
 radius = 34.0
@@ -32,3 +35,20 @@ shape = SubResource("CapsuleShape2D_sfmj8")
 
 [node name="SPoint" type="Marker2D" parent="CharacterBody2D"]
 position = Vector2(139, -101)
+
+[node name="Sfx" type="Node" parent="."]
+
+[node name="Damage" type="AudioStreamPlayer2D" parent="Sfx"]
+scale = Vector2(0.33, 0.33)
+stream = ExtResource("3_4gusl")
+bus = &"FX"
+
+[node name="Block" type="AudioStreamPlayer2D" parent="Sfx"]
+scale = Vector2(0.33, 0.33)
+stream = ExtResource("4_sfmj8")
+bus = &"FX"
+
+[node name="Death" type="AudioStreamPlayer2D" parent="Sfx"]
+scale = Vector2(0.33, 0.33)
+stream = ExtResource("5_tpcjs")
+bus = &"FX"

@@ -26,3 +26,8 @@ flip_h = true
 position = Vector2(-3, 1)
 shape = SubResource("CircleShape2D_vpobl")
 debug_color = Color(0.780318, 0.43698, 0, 0.42)
+
+[node name="Sfx" type="Node" parent="."]
+
+[node name="Fire" type="AudioStreamPlayer2D" parent="Sfx"]
+bus = &"FX"

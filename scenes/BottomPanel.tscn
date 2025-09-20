@@ -1,27 +1,38 @@
-[gd_scene load_steps=9 format=3 uid="uid://bwyo15q3n6htl"]
+[gd_scene load_steps=8 format=3 uid="uid://bwyo15q3n6htl"]
 
 [ext_resource type="Script" uid="uid://bpyjbnoqvgt2r" path="res://scripts/BottomPanel.gd" id="1_mu7tu"]
 [ext_resource type="Texture2D" uid="uid://b02cc1qbnwccl" path="res://assets/icons/attack_icon.png" id="2_mu7tu"]
-[ext_resource type="Texture2D" uid="uid://fpacinvp6c3g" path="res://assets/icons/hpotion_icon.png" id="3_8dqwe"]
-[ext_resource type="Texture2D" uid="uid://b8defftmuhigf" path="res://assets/icons/combop_icon.png" id="4_o0n6l"]
-[ext_resource type="Texture2D" uid="uid://bs0hg6rt8gcbu" path="res://assets/icons/dispell_icon.png" id="5_jab3s"]
+[ext_resource type="FontFile" uid="uid://gedy68241spt" path="res://assets/fonts/PixelOperator8.ttf" id="3_crxic"]
 [ext_resource type="Texture2D" uid="uid://crcty48hw42mr" path="res://assets/icons/defend_icon.png" id="6_e4i6x"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e4i6x"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_axe6o"]
-content_margin_left = 9.0
-content_margin_top = 9.0
-content_margin_right = 9.0
-content_margin_bottom = 9.0
-bg_color = Color(0.258991, 0.361048, 0.413252, 1)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(0.146124, 0.152979, 0.153116, 1)
-corner_detail = 5
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y305u"]
+bg_color = Color(0.6765464, 0.87651306, 0.9872251, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+shadow_size = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mu7tu"]
+bg_color = Color(0.15077028, 0.6522751, 0.8529416, 1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(0.6765464, 0.87651306, 0.9872251, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+shadow_size = 3
 
 [node name="BottomPanel" type="Control"]
 layout_mode = 3
@@ -57,7 +68,7 @@ theme_override_constants/margin_bottom = 8
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 163
+theme_override_constants/separation = 62
 alignment = 1
 
 [node name="Attackbtn" type="TextureButton" parent="Panel/MarginContainer/HBoxContainer"]
@@ -65,40 +76,18 @@ layout_mode = 2
 texture_normal = ExtResource("2_mu7tu")
 stretch_mode = 5
 
-[node name="ItemPanel" type="Panel" parent="Panel/MarginContainer/HBoxContainer"]
+[node name="Chargebar" type="ProgressBar" parent="Panel/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(310, 0)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_axe6o")
-
-[node name="MarginContainer" type="MarginContainer" parent="Panel/MarginContainer/HBoxContainer/ItemPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-
-[node name="ItemContainer" type="HBoxContainer" parent="Panel/MarginContainer/HBoxContainer/ItemPanel/MarginContainer"]
-layout_mode = 2
-alignment = 1
-
-[node name="Itembtn1" type="TextureButton" parent="Panel/MarginContainer/HBoxContainer/ItemPanel/MarginContainer/ItemContainer"]
-layout_mode = 2
-texture_normal = ExtResource("3_8dqwe")
-stretch_mode = 5
-
-[node name="Itembtn2" type="TextureButton" parent="Panel/MarginContainer/HBoxContainer/ItemPanel/MarginContainer/ItemContainer"]
-layout_mode = 2
-texture_normal = ExtResource("4_o0n6l")
-stretch_mode = 0
-
-[node name="Itembtn3" type="TextureButton" parent="Panel/MarginContainer/HBoxContainer/ItemPanel/MarginContainer/ItemContainer"]
-layout_mode = 2
-texture_normal = ExtResource("5_jab3s")
-stretch_mode = 0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("3_crxic")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/background = SubResource("StyleBoxFlat_y305u")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mu7tu")
 
 [node name="Defbtn" type="TextureButton" parent="Panel/MarginContainer/HBoxContainer"]
 layout_mode = 2

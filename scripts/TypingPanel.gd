@@ -53,6 +53,8 @@ func on_timeout() -> void:
 
 func _on_text(new_text: String) -> void:
 	if not mode_enabled or not _round_active: return
+	# SFX: click por pulsación válida
+	Sfx.key_click_sfx()
 	if _normalize(new_text) == _normalize(_current):
 		var elapsed := _elapsed()
 		var rating := _rate(elapsed)

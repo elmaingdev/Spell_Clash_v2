@@ -69,7 +69,6 @@ layout_mode = 1
 
 [node name="GameOverPanel" parent="CanvasLayer/UI" instance=ExtResource("5_yahae")]
 unique_name_in_owner = true
-visible = false
 z_index = 1000
 z_as_relative = false
 layout_mode = 1
@@ -79,7 +78,6 @@ layout_mode = 1
 [node name="Mage_1" parent="." instance=ExtResource("4_a12nh")]
 unique_name_in_owner = true
 position = Vector2(51.000015, 280.00003)
-typing_panel_path = NodePath("../CanvasLayer/UI/TypingPanel")
 
 [node name="Mage_2" parent="." instance=ExtResource("5_lpir7")]
 unique_name_in_owner = true
