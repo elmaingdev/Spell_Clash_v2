@@ -19,13 +19,15 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_0gp04")
+metadata/_edit_use_anchors_ = true
 
 [node name="Bar" type="ProgressBar" parent="."]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(290, 0)
 layout_mode = 0
-offset_right = 290.0
-offset_bottom = 36.0
+offset_left = 259.0
+offset_top = 131.0
+offset_right = 369.0
+offset_bottom = 143.0
 theme_override_constants/outline_size = 9
 theme_override_fonts/font = ExtResource("1_3svr6")
 theme_override_font_sizes/font_size = 32

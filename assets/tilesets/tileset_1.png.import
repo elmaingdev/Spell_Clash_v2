@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bw3j5nqudbdpj"
-path="res://.godot/imported/mage2_portrait.png-1c373ad0e8bd72c362b223a736e5795f.ctex"
+uid="uid://qpg8jfx23o6f"
+path="res://.godot/imported/tileset_1.png-d55b4705d9fb6dfe615f0b0275af44e7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/mage2/mage2_portrait.png"
-dest_files=["res://.godot/imported/mage2_portrait.png-1c373ad0e8bd72c362b223a736e5795f.ctex"]
+source_file="res://assets/tilesets/tileset_1.png"
+dest_files=["res://.godot/imported/tileset_1.png-d55b4705d9fb6dfe615f0b0275af44e7.ctex"]
 
 [params]
 

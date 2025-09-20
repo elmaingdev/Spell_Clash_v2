@@ -8,26 +8,26 @@ bg_color = Color(0.6, 0.6, 0.6, 0)
 
 [sub_resource type="LabelSettings" id="LabelSettings_538d3"]
 font = ExtResource("1_ld6kf")
-font_size = 74
-outline_size = 21
+font_size = 18
+outline_size = 7
 outline_color = Color(0, 0, 0, 1)
-shadow_size = 5
+shadow_size = 3
 shadow_color = Color(0, 0, 0, 0.756863)
 
 [sub_resource type="LabelSettings" id="LabelSettings_2y052"]
 font = ExtResource("1_ld6kf")
-font_size = 74
-outline_size = 21
+font_size = 18
+outline_size = 7
 outline_color = Color(0, 0, 0, 1)
-shadow_size = 5
+shadow_size = 3
 shadow_color = Color(0, 0, 0, 0.756863)
 
 [sub_resource type="LabelSettings" id="LabelSettings_apvfn"]
 font = ExtResource("1_ld6kf")
-font_size = 74
-outline_size = 21
+font_size = 18
+outline_size = 7
 outline_color = Color(0, 0, 0, 1)
-shadow_size = 5
+shadow_size = 3
 shadow_color = Color(0, 0, 0, 0.756863)
 
 [node name="ScorePanel" type="Control"]
@@ -38,16 +38,17 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_538d3")
+metadata/_edit_use_anchors_ = true
 
 [node name="Score1" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = 400.0
-offset_top = 20.0
-offset_right = 730.0
-offset_bottom = 100.0
+offset_left = 509.0
+offset_top = 9.0
+offset_right = 629.0
+offset_bottom = 69.0
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_538d3")
 
@@ -57,6 +58,8 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -36.0
+offset_right = -36.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "SCORE"
@@ -71,10 +74,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -160.0
-offset_top = -110.0
-offset_right = 160.0
-offset_bottom = -30.0
+offset_left = -70.0
+offset_top = -36.0
+offset_right = 50.0
+offset_bottom = 24.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_538d3")
@@ -85,6 +88,8 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 15.0
+offset_right = 15.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "SCORE"
@@ -101,8 +106,8 @@ anchor_right = 1.0
 anchor_bottom = 0.5
 offset_left = -688.0
 offset_top = 20.0
-offset_right = -368.0
-offset_bottom = 100.0
+offset_right = -568.0
+offset_bottom = 80.0
 grow_horizontal = 0
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_538d3")
@@ -113,6 +118,8 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 118.0
+offset_right = 118.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "SCORE"

@@ -28,15 +28,15 @@ expand_margin_bottom = 10.0
 
 [sub_resource type="LabelSettings" id="LabelSettings_g8x13"]
 font = ExtResource("1_lk26y")
-font_size = 56
+font_size = 26
 outline_size = 10
 outline_color = Color(0, 0, 0, 1)
 shadow_size = 5
 shadow_color = Color(0, 0, 0, 0.756863)
 
-[sub_resource type="LabelSettings" id="LabelSettings_b80k1"]
+[sub_resource type="LabelSettings" id="LabelSettings_swu1w"]
 font = ExtResource("2_swu1w")
-font_size = 42
+font_size = 18
 outline_size = 5
 outline_color = Color(0, 0, 0, 1)
 shadow_size = 5
@@ -59,17 +59,17 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -255.0
-offset_top = -195.0
-offset_right = 255.0
-offset_bottom = 195.0
+offset_left = -129.5
+offset_top = -76.0
+offset_right = 129.5
+offset_bottom = 76.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_7ai4i")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
 layout_mode = 2
-theme_override_constants/separation = 91
+theme_override_constants/separation = 28
 
 [node name="GameOverLbl" type="Label" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
@@ -80,7 +80,7 @@ horizontal_alignment = 1
 [node name="Label" type="Label" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
 text = "Restart?"
-label_settings = SubResource("LabelSettings_b80k1")
+label_settings = SubResource("LabelSettings_swu1w")
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -90,15 +90,15 @@ theme_override_constants/separation = 121
 alignment = 1
 
 [node name="Yesbtn" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(150, 90)
+custom_minimum_size = Vector2(60, 40)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("2_swu1w")
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 12
 text = "YES"
 
 [node name="Nobtn" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(150, 90)
+custom_minimum_size = Vector2(60, 40)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("2_swu1w")
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 12
 text = "NO"

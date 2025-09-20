@@ -9,6 +9,7 @@ radius = 27.0
 height = 184.0
 
 [node name="Mage_2" type="Node2D" groups=["enemy"]]
+scale = Vector2(0.33, 0.33)
 script = ExtResource("1_ot1n3")
 projectile_scene = ExtResource("2_ik8oj")
 
