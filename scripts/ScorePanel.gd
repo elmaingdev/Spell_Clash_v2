@@ -22,9 +22,10 @@ var _toggle_side := false  # alterna Good/Nice entre lbl1 y lbl3
 
 func _ready() -> void:
 	_hide_all_labels()
-	_connect_typing()
+	_connect_sources()
 
-func _connect_typing() -> void:
+func _connect_sources() -> void:
+	# TypingPanel
 	var tp: Node = null
 	if String(typing_panel_path) != "":
 		tp = get_node_or_null(typing_panel_path)
@@ -32,8 +33,13 @@ func _connect_typing() -> void:
 		tp = get_tree().root.find_child("TypingPanel", true, false)
 	if tp is TypingPanel and not tp.score_ready.is_connected(_on_score_ready):
 		tp.score_ready.connect(_on_score_ready)
-	elif tp == null:
-		push_warning("ScorePanel: no se encontró TypingPanel.")
+
+	# DirectionsPanel (por Unique Name o búsqueda)
+	var dp := get_node_or_null("%DirectionsPanel")
+	if dp == null:
+		dp = get_tree().root.find_child("DirectionsPanel", true, false)
+	if dp and dp.has_signal("score_ready") and not dp.score_ready.is_connected(_on_score_ready):
+		dp.score_ready.connect(_on_score_ready)
 
 func _on_score_ready(rating: String) -> void:
 	show_score(rating)

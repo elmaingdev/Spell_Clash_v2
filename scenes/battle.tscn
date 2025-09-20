@@ -1,8 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://chi50airk2jx1"]
+[gd_scene load_steps=13 format=3 uid="uid://chi50airk2jx1"]
 
 [ext_resource type="PackedScene" uid="uid://cqtct4bo5es3n" path="res://scenes/TypingPanel.tscn" id="1_th188"]
 [ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/turn_timer.tscn" id="2_p1qf1"]
 [ext_resource type="PackedScene" uid="uid://c566mi0ppmg2g" path="res://scenes/InfoPanel.tscn" id="3_4k1nj"]
+[ext_resource type="PackedScene" uid="uid://0ij85ox8j5li" path="res://scenes/DirectionsPanel.tscn" id="3_66ngm"]
 [ext_resource type="PackedScene" uid="uid://bo7a7aolqu58" path="res://scenes/forest_stage.tscn" id="3_p1qf1"]
 [ext_resource type="PackedScene" uid="uid://c6xw45ilhwral" path="res://scenes/mage_1.tscn" id="4_a12nh"]
 [ext_resource type="PackedScene" uid="uid://ts0saqd7n1w" path="res://scenes/ScorePanel.tscn" id="4_f4pi3"]
@@ -10,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://cpnrkcgy61lno" path="res://scenes/GameOverPanel.tscn" id="5_yahae"]
 [ext_resource type="AudioStream" uid="uid://dtderyonblk36" path="res://assets/bgm/march_of_iron.wav" id="6_6vh42"]
 [ext_resource type="PackedScene" uid="uid://bwyo15q3n6htl" path="res://scenes/BottomPanel.tscn" id="6_v7i3o"]
+[ext_resource type="Script" uid="uid://bcghxxakdsd3q" path="res://scripts/ModeSwitcher.gd" id="8_03edq"]
 
 [node name="Battle" type="Node2D"]
 
@@ -23,12 +25,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="TypingPanel" parent="CanvasLayer/UI" node_paths=PackedStringArray("timer_ref") instance=ExtResource("1_th188")]
+[node name="ModeSwitcher" type="Node" parent="CanvasLayer/UI"]
 unique_name_in_owner = true
-layout_mode = 1
-timer_ref = NodePath("../TurnTimer")
+script = ExtResource("8_03edq")
+typing_path = NodePath("../TypingPanel")
+defend_path = NodePath("../DirectionsPanel")
+bottom_path = NodePath("../BottomPanel")
+timer_path = NodePath("../TurnTimer")
 
 [node name="TurnTimer" parent="CanvasLayer/UI" instance=ExtResource("2_p1qf1")]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -39,21 +45,42 @@ offset_left = -144.0
 offset_top = -246.0
 offset_right = -144.0
 offset_bottom = -246.0
+mouse_filter = 2
+
+[node name="TypingPanel" parent="CanvasLayer/UI" node_paths=PackedStringArray("timer_ref") instance=ExtResource("1_th188")]
+unique_name_in_owner = true
+layout_mode = 1
+mouse_filter = 2
+timer_ref = NodePath("../TurnTimer")
+
+[node name="DirectionsPanel" parent="CanvasLayer/UI" node_paths=PackedStringArray("timer_ref") instance=ExtResource("3_66ngm")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+mouse_filter = 2
+timer_ref = NodePath("../TurnTimer")
+player_path = NodePath("../../../Mage_1")
 
 [node name="InfoPanel" parent="CanvasLayer/UI" instance=ExtResource("3_4k1nj")]
 unique_name_in_owner = true
 layout_mode = 1
+mouse_filter = 2
 
 [node name="ScorePanel" parent="CanvasLayer/UI" instance=ExtResource("4_f4pi3")]
 layout_mode = 1
+mouse_filter = 2
 typing_panel_path = NodePath("../TypingPanel")
-
-[node name="GameOverPanel" parent="CanvasLayer/UI" instance=ExtResource("5_yahae")]
-unique_name_in_owner = true
-layout_mode = 1
 
 [node name="BottomPanel" parent="CanvasLayer/UI" instance=ExtResource("6_v7i3o")]
 unique_name_in_owner = true
+z_index = 500
+z_as_relative = false
+layout_mode = 1
+
+[node name="GameOverPanel" parent="CanvasLayer/UI" instance=ExtResource("5_yahae")]
+unique_name_in_owner = true
+z_index = 1000
+z_as_relative = false
 layout_mode = 1
 
 [node name="ForestStage" parent="." instance=ExtResource("3_p1qf1")]
