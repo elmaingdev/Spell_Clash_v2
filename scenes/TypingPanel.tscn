@@ -54,5 +54,3 @@ theme_override_styles/focus = ExtResource("2_ylh55")
 placeholder_text = "Escribe aquí"
 alignment = 1
 caret_blink = true
-
-[connection signal="text_changed" from="Panel/VBox/InputLine" to="." method="_on_InputLine_text_changed"]

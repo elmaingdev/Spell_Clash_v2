@@ -1,9 +1,9 @@
 extends Area2D
 class_name Projectile2
 
-@export var speed: float = 300.0
+@export var speed: float = 100.0
 @export var max_distance: float = 4000.0
-@export var damage: int = 15
+@export var damage: int = 5
 
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
 

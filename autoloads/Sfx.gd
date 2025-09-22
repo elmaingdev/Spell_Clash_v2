@@ -35,7 +35,6 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_WHEN_PAUSED
 	randomize()
 
-	# Si existen KEY/SCORE los usamos; si no, caemos a SFX; si tampoco, Master.
 	_bus_clicks = _best_bus([BUS_KEY, BUS_SFX, "Master"])
 	_bus_scores = _best_bus([BUS_SCORE, BUS_SFX, "Master"])
 

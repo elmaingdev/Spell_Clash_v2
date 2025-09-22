@@ -1,15 +1,16 @@
-[gd_scene load_steps=8 format=3 uid="uid://bwyo15q3n6htl"]
+[gd_scene load_steps=9 format=3 uid="uid://bwyo15q3n6htl"]
 
 [ext_resource type="Script" uid="uid://bpyjbnoqvgt2r" path="res://scripts/BottomPanel.gd" id="1_mu7tu"]
 [ext_resource type="Texture2D" uid="uid://b02cc1qbnwccl" path="res://assets/icons/attack_icon.png" id="2_mu7tu"]
 [ext_resource type="FontFile" uid="uid://gedy68241spt" path="res://assets/fonts/PixelOperator8.ttf" id="3_crxic"]
+[ext_resource type="Script" uid="uid://bj5qs4xjpmi21" path="res://scripts/ChargeBar.gd" id="4_y305u"]
 [ext_resource type="Texture2D" uid="uid://crcty48hw42mr" path="res://assets/icons/defend_icon.png" id="6_e4i6x"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e4i6x"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y305u"]
-bg_color = Color(0.6765464, 0.87651306, 0.9872251, 1)
+bg_color = Color(0.07311072, 0.36260393, 0.486431, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
@@ -22,17 +23,15 @@ corner_radius_bottom_left = 3
 shadow_size = 3
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mu7tu"]
-bg_color = Color(0.15077028, 0.6522751, 0.8529416, 1)
-border_width_left = 6
-border_width_top = 6
-border_width_right = 6
-border_width_bottom = 6
+bg_color = Color(0.27197692, 0.74677604, 0.95734745, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_bottom = 2
 border_color = Color(0.6765464, 0.87651306, 0.9872251, 1)
 corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
-shadow_size = 3
 
 [node name="BottomPanel" type="Control"]
 layout_mode = 3
@@ -49,7 +48,8 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -80.0
+offset_top = -75.0
+offset_bottom = -5.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_e4i6x")
@@ -77,17 +77,19 @@ texture_normal = ExtResource("2_mu7tu")
 stretch_mode = 5
 
 [node name="Chargebar" type="ProgressBar" parent="Panel/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(310, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 2
+theme_override_constants/outline_size = 5
 theme_override_fonts/font = ExtResource("3_crxic")
 theme_override_font_sizes/font_size = 18
 theme_override_styles/background = SubResource("StyleBoxFlat_y305u")
 theme_override_styles/fill = SubResource("StyleBoxFlat_mu7tu")
+script = ExtResource("4_y305u")
 
 [node name="Defbtn" type="TextureButton" parent="Panel/MarginContainer/HBoxContainer"]
 layout_mode = 2

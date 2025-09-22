@@ -11,6 +11,10 @@ var _running := false
 @export var total_time := 5.0
 @export var autostart_on_ready := false
 
+# NUEVO: modo bucle independiente
+@export var loop := true
+@export var loop_delay := 0.0  # si quieres una micro-pausa visual, pon 0.25
+
 func _ready() -> void:
 	# Resolver nodos por rutas RELATIVAS
 	if has_node("Bar"):
@@ -24,7 +28,7 @@ func _ready() -> void:
 		limit = find_child("Limit", true, false) as Timer
 
 	if bar == null or limit == null:
-		push_error("TurnTimer: no encontré 'Bar'(ProgressBar) o 'Limit'(Timer). Revisa nombres o la escena.")
+		push_error("TurnTimer: no encontré 'Bar'(ProgressBar) o 'Limit'(Timer).")
 		return
 
 	bar.show_percentage = false
@@ -81,3 +85,8 @@ func stop_and_restart_after(delay_sec: float) -> void:
 func _on_limit_timeout() -> void:
 	_running = false
 	timeout.emit()
+	# BUCLE AUTÓNOMO (no depende del modo)
+	if loop:
+		if loop_delay > 0.0:
+			await get_tree().create_timer(loop_delay).timeout
+		start(total_time)

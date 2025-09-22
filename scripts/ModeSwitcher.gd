@@ -1,7 +1,6 @@
 extends Node
 class_name ModeSwitcher
 
-# Arrastra estos NodePaths en el Inspector para evitar sorpresas
 @export_node_path("Control") var typing_path
 @export_node_path("Control") var defend_path
 @export_node_path("Control") var bottom_path
@@ -18,62 +17,48 @@ var timer: TurnTimer = null
 var _is_attack := true  # Attack por defecto
 
 func _ready() -> void:
-	# Defer para que todo el UI esté en el árbol
+	set_process_input(true)
 	call_deferred("_wire_up")
 
 func _wire_up() -> void:
-	# -------- Resolver referencias --------
 	typing = _resolve_node(typing_path, "TypingPanel") as TypingPanel
 	defend = _resolve_node(defend_path, "DirectionsPanel") as DirectionsPanel
 	bottom = _resolve_node(bottom_path, "BottomPanel") as BottomPanel
 	timer  = _resolve_node(timer_path,  "TurnTimer") as TurnTimer
 
-	print("[ModeSwitcher] typing=", typing, " defend=", defend, " bottom=", bottom, " timer=", timer)
-
-	# -------- Conexiones --------
+	# Botones
 	if bottom:
-		if not bottom.attack_clicked.is_connected(_on_attack):
-			bottom.attack_clicked.connect(_on_attack)
-		if not bottom.defend_clicked.is_connected(_on_defend):
-			bottom.defend_clicked.connect(_on_defend)
-	else:
-		push_warning("[ModeSwitcher] BottomPanel no encontrado (atajos de modo deshabilitados).")
+		if not bottom.attack_clicked.is_connected(_on_attack): bottom.attack_clicked.connect(_on_attack)
+		if not bottom.defend_clicked.is_connected(_on_defend): bottom.defend_clicked.connect(_on_defend)
 
+	# Solo ATTACK avanza rondas con el timer
 	if typing and not typing.score_ready.is_connected(_on_score_ready):
 		typing.score_ready.connect(_on_score_ready)
-	if defend and not defend.score_ready.is_connected(_on_score_ready):
-		defend.score_ready.connect(_on_score_ready)
 
 	if timer and not timer.timeout.is_connected(_on_turn_timeout):
 		timer.timeout.connect(_on_turn_timeout)
 
-	# -------- Estado inicial --------
-	_set_attack_mode(true)   # Typing visible por defecto
+	_set_attack_mode(true)
 
-	# Si algún panel está visible pero vacío, fuerza contenido
-	if typing and typing.visible:
-		if typing.has_method("start_round"):
-			typing.start_round()
-	if defend and defend.visible:
-		if defend.has_method("start_round"):
-			defend.start_round()
-
-	# Arranca timer si existe
-	if timer:
+	# Arranque: si el timer no corre, arráncalo una vez
+	if timer and not timer.is_running():
 		timer.start(round_time)
-	else:
-		push_warning("[ModeSwitcher] TurnTimer no encontrado: el juego funcionará sin cuenta regresiva.")
+
+	_start_round()
 
 func _resolve_node(path: NodePath, name_fallback: String) -> Node:
-	# 1) Si hay NodePath en el Inspector
 	if path != NodePath():
 		var n := get_node_or_null(path)
 		if n: return n
-	# 2) Busca por nombre en todo el árbol (incluye instancias dentro de sub-escenas)
-	var found := get_tree().root.find_child(name_fallback, true, false)
-	return found
+	return get_tree().root.find_child(name_fallback, true, false)
 
-# ---- UI: cambiar de modo ----
+# Tab para alternar modos (Action: “mode_toggle”)
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.is_action_pressed("mode_toggle"):
+		_set_attack_mode(not _is_attack)
+		_restart_cycle()
+		get_viewport().set_input_as_handled()
+
 func _on_attack() -> void:
 	_set_attack_mode(true)
 	_restart_cycle()
@@ -84,50 +69,42 @@ func _on_defend() -> void:
 	_restart_cycle()
 
 func _set_attack_mode(is_attack: bool) -> void:
+	if _is_attack == is_attack:
+		if bottom: bottom.highlight_mode(is_attack)
+		return
 	_is_attack = is_attack
 	if typing:
 		typing.visible = is_attack
-		if typing.has_method("set_mode_enabled"):
-			typing.set_mode_enabled(is_attack)
+		if typing.has_method("set_mode_enabled"): typing.set_mode_enabled(is_attack)
 	if defend:
 		defend.visible = not is_attack
-		if defend.has_method("set_mode_enabled"):
-			defend.set_mode_enabled(not is_attack)
+		if defend.has_method("set_mode_enabled"): defend.set_mode_enabled(not is_attack)
+	if bottom:
+		bottom.highlight_mode(is_attack)
 
-# ---- Ciclo de rondas ----
 func _restart_cycle() -> void:
-	# Prepara contenido del panel activo
+	# NO tocamos el timer (ahora es autónomo)
 	if _is_attack and typing:
 		typing.start_round()
 	elif not _is_attack and defend:
 		defend.start_round()
-	# Reinicia timer si existe
-	if timer:
-		timer.restart()
-	else:
-		print("[ModeSwitcher] Sin TurnTimer; solo mostrando contenido.")
 
-# ---- Callbacks ----
+func _start_round() -> void:
+	if _is_attack and typing: typing.start_round()
+	elif not _is_attack and defend: defend.start_round()
+
+# ----- Ciclo ATTACK (spell) -----
 func _on_score_ready(_rating: String) -> void:
-	if timer:
-		await timer.stop_and_restart_after(inter_round_delay)
-	# Pide nuevo contenido
+	# Pequeña pausa visual del spell; el timer sigue su propio loop
+	await get_tree().create_timer(inter_round_delay).timeout
 	if _is_attack and typing:
 		typing.start_round()
-	elif not _is_attack and defend:
-		defend.start_round()
 
 func _on_turn_timeout() -> void:
-	# Notifica FAIL visual al panel activo (si define on_timeout)
+	# En ATTACK, al acabarse el tiempo: Fail y nuevo spell tras pausa.
+	# El Timer sigue su loop autónomo, NO lo tocamos aquí.
 	if _is_attack and typing and typing.has_method("on_timeout"):
 		typing.on_timeout()
-	elif not _is_attack and defend and defend.has_method("on_timeout"):
-		defend.on_timeout()
-	# Pausa breve y vuelve a empezar
-	if timer:
-		await timer.stop_and_restart_after(inter_round_delay)
-	# Nuevo contenido
-	if _is_attack and typing:
+		await get_tree().create_timer(inter_round_delay).timeout
 		typing.start_round()
-	elif not _is_attack and defend:
-		defend.start_round()
+	# En DEFEND, el timeout no afecta DirectionsPanel.

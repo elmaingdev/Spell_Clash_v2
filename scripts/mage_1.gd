@@ -3,16 +3,16 @@ class_name Mage1
 
 signal hp_changed(current: int, max_value: int)
 signal died
+signal got_hit
 
 @onready var body: CharacterBody2D    = $CharacterBody2D
 @onready var sprite: AnimatedSprite2D = $CharacterBody2D/AnimatedSprite2D
 @onready var spoint: Marker2D         = $CharacterBody2D/SPoint
 
-# --- SFX locales ---
+# SFX locales
 @onready var sfx_damage: AudioStreamPlayer2D = $Sfx/Damage
 @onready var sfx_block:  AudioStreamPlayer2D = $Sfx/Block
 @onready var sfx_death:  AudioStreamPlayer2D = $Sfx/Death
-
 
 const DMG_STREAMS: Array[AudioStream] = [
 	preload("res://assets/sfx/dmg1_sfx.wav"),
@@ -23,17 +23,27 @@ const DMG_STREAMS: Array[AudioStream] = [
 @export var shoot_delay: float = 0.2
 @export_node_path("Control") var typing_panel_path: NodePath = NodePath("")
 
-# Daño según rating (ataque del jugador)
+# Triple cast config
+@export var burst_count: int = 3
+@export var burst_spacing: float = 0.12
+
+# Daño según rating
 @export var dmg: int = 10
 var _last_rating: String = "Good"
 
-# Vida del jugador
+# Vida jugador
 @export var max_hp: int = 100
 @export var HP: int = 100
 
 var typing_panel: TypingPanel
+var charge: ChargeBar = null
+
 var is_dead := false
 var _player_spell_sfx_idx: int = 0
+
+# Estados de carga
+var _burst_pending := false   # la barra llegó a 100% y queda “armado para el próximo spell”
+var _burst_ready := false     # ejecutar triple en ESTE spell
 
 func _ready() -> void:
 	if body:
@@ -42,13 +52,18 @@ func _ready() -> void:
 		sprite.play("idle")
 		sprite.animation_finished.connect(_on_anim_finished)
 
-	# Señales del TypingPanel
+	_wire_typing_panel()
+	_wire_chargebar()
+
+	HP = clamp(HP, 0, max_hp)
+	call_deferred("_emit_initial_hp")
+
+func _wire_typing_panel() -> void:
 	if not typing_panel_path.is_empty():
 		var n := get_node_or_null(typing_panel_path)
 		if n is TypingPanel:
 			typing_panel = n
-	else:
-		# Fallback opcional: busca por nombre único en el árbol
+	if typing_panel == null:
 		var tp := get_tree().root.find_child("TypingPanel", true, false)
 		if tp is TypingPanel:
 			typing_panel = tp
@@ -58,10 +73,24 @@ func _ready() -> void:
 			typing_panel.score_ready.connect(_on_TypingPanel_score_ready)
 		if not typing_panel.spell_success.is_connected(_on_TypingPanel_spell_success):
 			typing_panel.spell_success.connect(_on_TypingPanel_spell_success)
+		if not typing_panel.round_started.is_connected(_on_round_started):
+			typing_panel.round_started.connect(_on_round_started)
 
-	# Estado inicial de HP hacia la UI (deferido por orden de carga)
-	HP = clamp(HP, 0, max_hp)
-	call_deferred("_emit_initial_hp")
+func _wire_chargebar() -> void:
+	# 1) Unique Name %Chargebar (asegúrate de marcarlo así en la instancia de Battle)
+	var n := get_node_or_null("%Chargebar")
+	if n is ChargeBar:
+		charge = n as ChargeBar
+	# 2) Búsqueda global como fallback
+	if charge == null:
+		var found := get_tree().root.find_child("Chargebar", true, false)
+		if found is ChargeBar:
+			charge = found as ChargeBar
+
+	if charge and not charge.charged.is_connected(_on_charge_full):
+		charge.charged.connect(_on_charge_full)
+	elif charge == null:
+		push_warning("Mage1: no encontré #Chargebar (Unique Name). Marca la ProgressBar en BottomPanel como Unique Name 'Chargebar'.")
 
 func _emit_initial_hp() -> void:
 	hp_changed.emit(HP, max_hp)
@@ -74,50 +103,65 @@ func _physics_process(_delta: float) -> void:
 # ---- rating -> daño propio ----
 func projectile_dmg(rating: String) -> int:
 	match rating:
-		"Perfect": return 20
-		"Nice":    return 15
-		"Good":    return 10
-		_:         return 0  # Fail
+		"Perfect": return 15
+		"Nice":    return 10
+		"Good":    return 5
+		_:         return 0
 
 func _on_TypingPanel_score_ready(rating: String) -> void:
 	_last_rating = rating
 	dmg = projectile_dmg(rating)
 
+# Al iniciar un spell, si había “pending” y la barra sigue llena, dejamos listo el triple
+func _on_round_started() -> void:
+	if _burst_pending and charge and charge.is_full():
+		_burst_ready = true
+		_burst_pending = false
+
+func _on_charge_full() -> void:
+	_burst_pending = true
+
 func _on_TypingPanel_spell_success(_phrase: String) -> void:
-	shoot()
+	if _burst_ready and charge and charge.is_full():
+		await _shoot_burst(burst_count, burst_spacing)
+		charge.consume_full()
+		_burst_ready = false
+	else:
+		shoot()
 
 func shoot() -> void:
 	if is_dead: return
-	if sprite:
-		sprite.play("attack")
+	if sprite: sprite.play("attack")
 	await get_tree().create_timer(shoot_delay).timeout
 	_spawn_projectile()
 
 func _spawn_projectile() -> void:
-	if dmg <= 0:
-		return
-	if projectile_scene == null:
-		push_warning("Mage1: projectile_scene no asignado.")
+	if dmg <= 0 or projectile_scene == null:
 		return
 	var p := projectile_scene.instantiate() as Projectile1
-	if p == null:
-		push_warning("Mage1: projectile no es Projectile1.")
-		return
+	if p == null: return
 	var start_pos: Vector2 = spoint.global_position if is_instance_valid(spoint) else global_position
 	p.global_position = start_pos
 	p.damage = dmg
-	# --- pasa el índice de SFX y avanza 0→1→2→0 ---
 	p.sfx_index = _player_spell_sfx_idx
 	_player_spell_sfx_idx = (_player_spell_sfx_idx + 1) % 3
-	
 	get_parent().add_child(p)
 
-# ---- daño recibido del enemigo ----
+func _shoot_burst(count: int = 3, spacing: float = 0.12) -> void:
+	if is_dead: return
+	if sprite: sprite.play("attack")
+	await get_tree().create_timer(shoot_delay).timeout
+	for i in count:
+		_spawn_projectile()
+		if i < count - 1:
+			await get_tree().create_timer(spacing).timeout
+
+# ---- daño recibido ----
 func take_dmg(amount: int = 1) -> void:
 	if is_dead: return
 	HP = max(HP - amount, 0)
 	hp_changed.emit(HP, max_hp)
-
+	got_hit.emit()
 	if HP <= 0:
 		_play_death_sfx()
 		_die()
@@ -133,8 +177,7 @@ func _die() -> void:
 		sprite.play("death")
 		await sprite.animation_finished
 	else:
-		if sprite:
-			sprite.stop()
+		if sprite: sprite.stop()
 	died.emit()
 
 func _on_anim_finished() -> void:
@@ -144,8 +187,7 @@ func _on_anim_finished() -> void:
 
 # ====== SFX locales ======
 func _play_damage_sfx() -> void:
-	if not sfx_damage:
-		return
+	if not sfx_damage: return
 	if DMG_STREAMS.size() > 0:
 		sfx_damage.stream = DMG_STREAMS[randi() % DMG_STREAMS.size()]
 	sfx_damage.pitch_scale = 1.0 + randf_range(-0.02, 0.02)
@@ -159,6 +201,5 @@ func _play_death_sfx() -> void:
 	if sfx_death:
 		sfx_death.play()
 
-# Expuesto para que otro nodo (p. ej., DirectionsPanel) lo pueda llamar al bloquear
 func play_block_sfx() -> void:
 	_play_block_sfx()
