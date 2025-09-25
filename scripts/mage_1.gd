@@ -27,7 +27,7 @@ const DMG_STREAMS: Array[AudioStream] = [
 @export var burst_count: int = 3
 @export var burst_spacing: float = 0.12
 
-# Daño según rating
+# Daño base por rating (antes de combo)
 @export var dmg: int = 10
 var _last_rating: String = "Good"
 
@@ -41,9 +41,12 @@ var charge: ChargeBar = null
 var is_dead := false
 var _player_spell_sfx_idx: int = 0
 
-# Estados de carga
+# Estados de carga (ChargeBar)
 var _burst_pending := false   # la barra llegó a 100% y queda “armado para el próximo spell”
 var _burst_ready := false     # ejecutar triple en ESTE spell
+
+# Daño calculado con combo para el próximo disparo (se setea en score_ready)
+var _pending_shot_damage: int = -1
 
 func _ready() -> void:
 	if body:
@@ -77,11 +80,9 @@ func _wire_typing_panel() -> void:
 			typing_panel.round_started.connect(_on_round_started)
 
 func _wire_chargebar() -> void:
-	# 1) Unique Name %Chargebar (asegúrate de marcarlo así en la instancia de Battle)
 	var n := get_node_or_null("%Chargebar")
 	if n is ChargeBar:
 		charge = n as ChargeBar
-	# 2) Búsqueda global como fallback
 	if charge == null:
 		var found := get_tree().root.find_child("Chargebar", true, false)
 		if found is ChargeBar:
@@ -100,7 +101,7 @@ func _physics_process(_delta: float) -> void:
 		body.velocity = Vector2.ZERO
 		body.move_and_slide()
 
-# ---- rating -> daño propio ----
+# ---- rating -> daño base (sin combo) ----
 func projectile_dmg(rating: String) -> int:
 	match rating:
 		"Perfect": return 15
@@ -108,11 +109,58 @@ func projectile_dmg(rating: String) -> int:
 		"Good":    return 5
 		_:         return 0
 
+# ---- multiplicador por combo (x1..x5+) ----
+func _combo_multiplier(level: int) -> float:
+	if level <= 1:
+		return 1.0   # x1 → +0%
+	elif level == 2:
+		return 1.10  # +10%
+	elif level == 3:
+		return 1.25  # +25%
+	elif level == 4:
+		return 1.40  # +40%
+	else:
+		return 1.65  # x5+ → +65%
+
+func _get_combo_current() -> int:
+	var cc := get_node_or_null("/root/ComboCounter")
+	if cc:
+		if cc.has_method("get_current"):
+			return int(cc.call("get_current"))
+		elif "current" in cc:
+			return int(cc.current)
+	return 0
+
+# Se emite apenas terminas de teclear la palabra (antes del spell_success)
 func _on_TypingPanel_score_ready(rating: String) -> void:
 	_last_rating = rating
-	dmg = projectile_dmg(rating)
+	var base := projectile_dmg(rating)
+	dmg = base  # por compat, aunque disparemos con _pending_shot_damage
+	_pending_shot_damage = -1
 
-# Al iniciar un spell, si había “pending” y la barra sigue llena, dejamos listo el triple
+	# Sólo calculamos daño si hubo acierto (no “Fail”)
+	if base > 0:
+		# Usamos el combo que quedará DESPUÉS de este acierto: current + 1
+		var next_combo := _get_combo_current() + 1
+		var mult := _combo_multiplier(next_combo)
+		var boosted := int(round(float(base) * mult))
+		_pending_shot_damage = max(0, boosted)
+
+# Al finalizar el spell (palabra correcta) se dispara
+func _on_TypingPanel_spell_success(_phrase: String) -> void:
+	# Si había triple listo, dispara ráfaga con el daño ya calculado
+	var shot_dmg: int = (_pending_shot_damage if _pending_shot_damage >= 0 else projectile_dmg(_last_rating))
+	if _burst_ready and charge and charge.is_full():
+		await _shoot_burst(burst_count, burst_spacing, shot_dmg)
+		charge.consume_full()
+		_burst_ready = false
+	else:
+		await shoot(shot_dmg)
+
+	# Limpia el buffer de daño
+	_pending_shot_damage = -1
+
+# TypingPanel avisa que empezó un nuevo spell → si la barra sigue 100% y venía “pending”, arma el triple
 func _on_round_started() -> void:
 	if _burst_pending and charge and charge.is_full():
 		_burst_ready = true
@@ -121,38 +169,32 @@ func _on_round_started() -> void:
 func _on_charge_full() -> void:
 	_burst_pending = true
 
-func _on_TypingPanel_spell_success(_phrase: String) -> void:
-	if _burst_ready and charge and charge.is_full():
-		await _shoot_burst(burst_count, burst_spacing)
-		charge.consume_full()
-		_burst_ready = false
-	else:
-		shoot()
-
-func shoot() -> void:
+# ---------- Disparo ----------
+func shoot(damage_override: int = -1) -> void:
 	if is_dead: return
 	if sprite: sprite.play("attack")
 	await get_tree().create_timer(shoot_delay).timeout
-	_spawn_projectile()
+	_spawn_projectile(damage_override)
 
-func _spawn_projectile() -> void:
-	if dmg <= 0 or projectile_scene == null:
+func _spawn_projectile(damage_override: int = -1) -> void:
+	var use_dmg := (damage_override if damage_override >= 0 else dmg)
+	if use_dmg <= 0 or projectile_scene == null:
 		return
 	var p := projectile_scene.instantiate() as Projectile1
 	if p == null: return
-	var start_pos: Vector2 = spoint.global_position if is_instance_valid(spoint) else global_position
+	var start_pos: Vector2 = (spoint.global_position if is_instance_valid(spoint) else global_position)
 	p.global_position = start_pos
-	p.damage = dmg
+	p.damage = use_dmg
 	p.sfx_index = _player_spell_sfx_idx
 	_player_spell_sfx_idx = (_player_spell_sfx_idx + 1) % 3
 	get_parent().add_child(p)
 
-func _shoot_burst(count: int = 3, spacing: float = 0.12) -> void:
+func _shoot_burst(count: int = 3, spacing: float = 0.12, damage_override: int = -1) -> void:
 	if is_dead: return
 	if sprite: sprite.play("attack")
 	await get_tree().create_timer(shoot_delay).timeout
 	for i in count:
-		_spawn_projectile()
+		_spawn_projectile(damage_override)
 		if i < count - 1:
 			await get_tree().create_timer(spacing).timeout
 

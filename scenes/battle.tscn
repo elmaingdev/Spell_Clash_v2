@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://chi50airk2jx1"]
+[gd_scene load_steps=14 format=3 uid="uid://chi50airk2jx1"]
 
 [ext_resource type="PackedScene" uid="uid://cqtct4bo5es3n" path="res://scenes/TypingPanel.tscn" id="1_th188"]
 [ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/turn_timer.tscn" id="2_p1qf1"]
@@ -12,6 +12,7 @@
 [ext_resource type="AudioStream" uid="uid://dtderyonblk36" path="res://assets/bgm/march_of_iron.wav" id="6_6vh42"]
 [ext_resource type="PackedScene" uid="uid://bwyo15q3n6htl" path="res://scenes/BottomPanel.tscn" id="6_v7i3o"]
 [ext_resource type="Script" uid="uid://bcghxxakdsd3q" path="res://scripts/ModeSwitcher.gd" id="8_03edq"]
+[ext_resource type="PackedScene" uid="uid://bwjuv6o6yi6rb" path="res://scenes/ComboPanel.tscn" id="9_22uqi"]
 
 [node name="Battle" type="Node2D"]
 
@@ -72,6 +73,9 @@ layout_mode = 1
 unique_name_in_owner = true
 z_index = 1000
 z_as_relative = false
+layout_mode = 1
+
+[node name="ComboPanel" parent="CanvasLayer/UI" instance=ExtResource("9_22uqi")]
 layout_mode = 1
 
 [node name="ForestStage" parent="." instance=ExtResource("3_p1qf1")]

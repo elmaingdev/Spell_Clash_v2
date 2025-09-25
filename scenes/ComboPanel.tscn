@@ -1,0 +1,110 @@
+[gd_scene load_steps=6 format=3 uid="uid://bwjuv6o6yi6rb"]
+
+[ext_resource type="SpriteFrames" uid="uid://xtckp5rsrabp" path="res://ComboPanel.tres" id="1_nlrkg"]
+[ext_resource type="Script" uid="uid://bo3vc4uqa2heo" path="res://scripts/ComboPanel.gd" id="1_ro2w1"]
+[ext_resource type="FontFile" uid="uid://cb1upqnk6arqn" path="res://assets/fonts/PixelOperator8-Bold.ttf" id="2_ro2w1"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_3xihd"]
+font = ExtResource("2_ro2w1")
+font_size = 28
+outline_size = 5
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_color = Color(0, 0, 0, 0.756863)
+
+[sub_resource type="LabelSettings" id="LabelSettings_ce4c0"]
+font = ExtResource("2_ro2w1")
+font_size = 13
+outline_size = 5
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_color = Color(0, 0, 0, 0.756863)
+
+[node name="ComboPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ro2w1")
+metadata/_edit_use_anchors_ = true
+
+[node name="ComboIcons" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_top = 44.0
+offset_right = -445.0
+offset_bottom = -262.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 2
+
+[node name="Icon1" type="AnimatedSprite2D" parent="ComboIcons"]
+position = Vector2(5, 10)
+scale = Vector2(0.50000006, 0.50000006)
+sprite_frames = ExtResource("1_nlrkg")
+animation = &"on"
+frame = 2
+frame_progress = 0.5940264
+centered = false
+
+[node name="Icon2" type="AnimatedSprite2D" parent="ComboIcons"]
+position = Vector2(41, 10)
+scale = Vector2(0.50000006, 0.50000006)
+sprite_frames = ExtResource("1_nlrkg")
+animation = &"on"
+frame = 2
+frame_progress = 0.5940264
+centered = false
+
+[node name="Icon3" type="AnimatedSprite2D" parent="ComboIcons"]
+position = Vector2(78, 10)
+scale = Vector2(0.50000006, 0.50000006)
+sprite_frames = ExtResource("1_nlrkg")
+animation = &"on"
+frame = 2
+frame_progress = 0.5940264
+centered = false
+
+[node name="Icon4" type="AnimatedSprite2D" parent="ComboIcons"]
+position = Vector2(115, 11)
+scale = Vector2(0.50000006, 0.50000006)
+sprite_frames = ExtResource("1_nlrkg")
+animation = &"on"
+frame = 2
+frame_progress = 0.5940264
+centered = false
+
+[node name="Icon5" type="AnimatedSprite2D" parent="ComboIcons"]
+position = Vector2(151, 11)
+scale = Vector2(0.50000006, 0.50000006)
+sprite_frames = ExtResource("1_nlrkg")
+animation = &"on"
+frame = 2
+frame_progress = 0.5940264
+centered = false
+
+[node name="ComboStrike" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 61.0
+offset_top = 117.0
+offset_right = 188.0
+offset_bottom = 157.0
+
+[node name="Combo_count" type="Label" parent="ComboStrike"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+text = "18"
+label_settings = SubResource("LabelSettings_3xihd")
+
+[node name="Combo_label" type="Label" parent="ComboStrike"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "Combo"
+label_settings = SubResource("LabelSettings_ce4c0")
+vertical_alignment = 2

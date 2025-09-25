@@ -1,0 +1,45 @@
+[gd_resource type="SpriteFrames" load_steps=6 format=3 uid="uid://xtckp5rsrabp"]
+
+[ext_resource type="Texture2D" uid="uid://1prktq0iyaea" path="res://assets/icons/combo_aura.png" id="1_yty36"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5msuj"]
+atlas = ExtResource("1_yty36")
+region = Rect2(251, 0, 81, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gqryd"]
+atlas = ExtResource("1_yty36")
+region = Rect2(170, 0, 81, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xnntn"]
+atlas = ExtResource("1_yty36")
+region = Rect2(89, 0, 81, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4il8o"]
+atlas = ExtResource("1_yty36")
+region = Rect2(8, 0, 81, 64)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5msuj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gqryd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xnntn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4il8o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xnntn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gqryd")
+}],
+"loop": true,
+"name": &"on",
+"speed": 8.0
+}]

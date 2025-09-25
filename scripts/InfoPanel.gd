@@ -2,7 +2,7 @@ extends Control
 class_name InfoPanel
 
 @export var auto_init: bool = true
-@export var default_enemy_max_hp: int = 100
+@export var default_enemy_max_hp: int = 250
 @export var default_player_max_hp: int = 100
 
 @onready var enemy_hp: ProgressBar  = %EnemyHP

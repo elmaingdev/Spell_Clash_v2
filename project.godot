@@ -18,6 +18,7 @@ config/features=PackedStringArray("4.5", "Mobile")
 
 WordBank="*res://autoloads/WordBank.gd"
 Sfx="*res://autoloads/Sfx.gd"
+ComboCounter="*res://autoloads/ComboCounter.gd"
 
 [display]
 

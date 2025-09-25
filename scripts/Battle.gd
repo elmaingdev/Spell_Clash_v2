@@ -6,6 +6,13 @@ class_name Battle
 @onready var info: InfoPanel = get_node_or_null("%InfoPanel")
 
 func _ready() -> void:
+	# Asegura “partida nueva” y rewire cuando esta escena entra
+	var cc: Node = get_node_or_null("/root/ComboCounter")
+	if cc:
+		cc.call_deferred("start_new_match")
+		cc.call_deferred("rewire")
+		cc.call_deferred("emit_now")
+
 	call_deferred("_wire_up")
 
 func _wire_up() -> void:

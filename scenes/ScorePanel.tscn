@@ -51,90 +51,102 @@ metadata/_edit_use_anchors_ = true
 
 [node name="Score1" type="Panel" parent="."]
 layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = 509.0
-offset_top = 9.0
-offset_right = 629.0
-offset_bottom = 69.0
+anchors_preset = -1
+anchor_left = 0.2390625
+anchor_top = 0.5226667
+anchor_right = 0.4260625
+anchor_bottom = 0.6886667
+offset_top = -10.160004
+offset_right = 0.32000732
+offset_bottom = -9.920013
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_538d3")
+metadata/_edit_use_anchors_ = true
 
 [node name="Score_lbl1" type="Label" parent="Score1"]
 visible = false
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -36.0
-offset_right = -36.0
+anchors_preset = -1
+anchor_left = 0.007999929
+anchor_top = 0.017000008
+anchor_right = 1.008
+anchor_bottom = 1.0170001
+offset_left = 0.040008545
+offset_top = -0.020000458
+offset_right = 0.03999996
+offset_bottom = -0.020004272
 grow_horizontal = 2
 grow_vertical = 2
 text = "SCORE"
 label_settings = SubResource("LabelSettings_538d3")
 horizontal_alignment = 1
 vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
 
 [node name="Score2" type="Panel" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -70.0
-offset_top = -36.0
-offset_right = 50.0
-offset_bottom = 24.0
+anchors_preset = -1
+anchor_left = 0.40500003
+anchor_top = 0.4
+anchor_right = 0.592
+anchor_bottom = 0.56700003
+offset_left = -0.2000122
+offset_right = 0.11999512
+offset_bottom = -0.120010376
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_538d3")
+metadata/_edit_use_anchors_ = true
 
 [node name="Score_lbl2" type="Label" parent="Score2"]
 visible = false
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
+anchors_preset = -1
+anchor_left = 0.058000002
+anchor_right = 1.0580001
 anchor_bottom = 1.0
-offset_left = 15.0
-offset_right = 15.0
+offset_left = 0.03999996
+offset_right = 0.039993286
 grow_horizontal = 2
 grow_vertical = 2
 text = "SCORE"
 label_settings = SubResource("LabelSettings_2y052")
 horizontal_alignment = 1
 vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
 
 [node name="Score3" type="Panel" parent="."]
 layout_mode = 1
-anchors_preset = 6
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -688.0
-offset_top = 20.0
-offset_right = -568.0
-offset_bottom = 80.0
+anchors_preset = -1
+anchor_left = 0.5796875
+anchor_top = 0.5143334
+anchor_right = 0.767125
+anchor_bottom = 0.65833336
+offset_top = -7.160034
+offset_right = 0.039978027
+offset_bottom = -7.0
 grow_horizontal = 0
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_538d3")
+metadata/_edit_use_anchors_ = true
 
 [node name="Score_lbl3" type="Label" parent="Score3"]
 visible = false
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 118.0
-offset_right = 118.0
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.0769228
+anchor_right = 1.033
+anchor_bottom = 1.0769228
+offset_left = -2.0
+offset_right = 0.039993286
 grow_horizontal = 2
 grow_vertical = 2
 text = "SCORE"
 label_settings = SubResource("LabelSettings_apvfn")
 horizontal_alignment = 1
 vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
 
 [node name="Protect" type="Panel" parent="."]
 layout_mode = 1
@@ -150,6 +162,7 @@ offset_bottom = 24.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_538d3")
+metadata/_edit_use_anchors_ = true
 
 [node name="Protect_lbl" type="Label" parent="Protect"]
 visible = false
