@@ -33,42 +33,48 @@ signal block_fail
 var _player: Node2D
 
 # Estado interno
-var _rng := RandomNumberGenerator.new()
+var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _seq: PackedStringArray = []
 var _typed: PackedStringArray = []
-var _active := false                         # acepta input para la secuencia actual
-var _round_start_msec: int = 0               # por si luego mides velocidad
-var _poll_accum := 0.0
-var _danger := false                         # hay proyectiles enemigos
+var _active: bool = false                     # acepta input para la secuencia actual
+var _round_start_msec: int = 0
+var _poll_accum: float = 0.0
 
-# Ventana anti-race: evita PROTECTION si te golpearon “en el mismo instante”
-const HIT_LOCK_MS := 120
+# Peligro actual y objetivo (con histéresis)
+var _danger: bool = false                     # estado aplicado al UI
+var _danger_target: bool = false              # último valor leído del mundo
+var _danger_change_stamp_ms: int = 0
+
+# Ventana anti-race (PROTECTION golpe simultáneo)
+const HIT_LOCK_MS: int = 120
 var _hit_lock_until_msec: int = 0
 
-# NUEVO: pequeña ventana en la que se ignoran teclas tras el impacto
-# (evita que la tecla tardía cuente como la 1ª de la siguiente secuencia)
-const INPUT_IGNORE_MS := 90
+# Ignorar teclas tras impacto
+const INPUT_IGNORE_MS: int = 90
 var _ignore_input_until_msec: int = 0
+
+# Histeresis para flips de peligro (debounce)
+@export var danger_stable_ms: int = 40
 
 func _ready() -> void:
 	_rng.randomize()
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	# Resolver TurnTimer
+	# Resolver TurnTimer si no vino por export
 	if timer_ref == null and timer_path != NodePath():
-		var n := get_node_or_null(timer_path)
+		var n: Node = get_node_or_null(timer_path)
 		if n is TurnTimer:
 			timer_ref = n
 
 	# Resolver jugador
 	if player_path != NodePath():
-		var p := get_node_or_null(player_path)
+		var p: Node = get_node_or_null(player_path)
 		if p is Node2D:
 			_player = p
 	if _player == null:
 		_player = get_node_or_null("%Mage_1") as Node2D
 
-	# Escucha cuando el jugador recibe golpe
+	# Escucha golpes al jugador
 	if is_instance_valid(_player) and _player != null and _player.has_signal("got_hit"):
 		if not _player.got_hit.is_connected(_on_player_got_hit):
 			_player.got_hit.connect(_on_player_got_hit)
@@ -76,9 +82,18 @@ func _ready() -> void:
 	set_process_input(mode_enabled)
 	set_process(true)
 
-	# Auto-start suave si está visible al entrar en escena
+	# Estado inicial estable (después de que los deferred de _ready() ajenos hayan corrido)
+	call_deferred("_initial_resync")
+
+func _initial_resync() -> void:
+	_update_danger_target(_has_enemy_projectiles_active())
+	_apply_danger_if_stable(true)  # aplicar inmediatamente al inicio
+	# Si el panel está visible, inicia la ronda acorde al estado
 	if visible:
-		call_deferred("start_round")
+		if _danger:
+			start_round()
+		else:
+			_show_danger_free()
 
 # ---------- API desde fuera (ModeSwitcher) ----------
 func set_mode_enabled(active: bool) -> void:
@@ -88,16 +103,17 @@ func set_mode_enabled(active: bool) -> void:
 	if not active:
 		return
 
-	# Sincroniza inmediatamente con el estado de peligro actual
-	_danger = _has_enemy_projectiles()
+	# Resincroniza inmediatamente con el estado actual
+	_update_danger_target(_has_enemy_projectiles_active())
+	_apply_danger_if_stable(true)
 	if _danger:
 		start_round()
 	else:
 		_show_danger_free()
 
 func start_round() -> void:
-	# Si no hay proyectiles, entra a "Danger Free"
-	if not _has_enemy_projectiles():
+	# Si no hay proyectiles activos, entra a "Danger Free"
+	if not _has_enemy_projectiles_active():
 		_show_danger_free()
 		_active = false
 		_round_start_msec = Time.get_ticks_msec()
@@ -124,14 +140,24 @@ func _process(delta: float) -> void:
 		return
 	_poll_accum = 0.0
 
-	var now_danger := _has_enemy_projectiles()
+	# Lee el mundo (con filtro por 'monitoring' y visibilidad)
+	var now_target: bool = _has_enemy_projectiles_active()
+	_update_danger_target(now_target)
+	_apply_danger_if_stable(false)
 
-	if now_danger and not _danger:
-		_danger = true
-		start_round()             # aparece proyectil → genera secuencia
-	elif not now_danger and _danger:
-		_danger = false
-		_show_danger_free()       # ya no hay proyectiles → Danger Free
+func _update_danger_target(now_target: bool) -> void:
+	if now_target != _danger_target:
+		_danger_target = now_target
+		_danger_change_stamp_ms = Time.get_ticks_msec()
+
+func _apply_danger_if_stable(force: bool) -> void:
+	if force or (Time.get_ticks_msec() - _danger_change_stamp_ms) >= danger_stable_ms:
+		if _danger != _danger_target:
+			_danger = _danger_target
+			if _danger:
+				start_round()
+			else:
+				_show_danger_free()
 
 # ---------- Input ----------
 func _input(event: InputEvent) -> void:
@@ -144,7 +170,7 @@ func _input(event: InputEvent) -> void:
 			accept_event()
 			return
 
-		var sym := _map_event(event)
+		var sym: String = _map_event(event)
 		if sym == "":
 			return
 
@@ -163,10 +189,7 @@ func _input(event: InputEvent) -> void:
 				if Time.get_ticks_msec() < _hit_lock_until_msec:
 					score_ready.emit("Fail")
 					block_fail.emit()
-					if _has_enemy_projectiles():
-						start_round()
-					else:
-						_show_danger_free()
+					_resync_soon()
 					return
 
 				# ÉXITO → PROTECTION
@@ -178,40 +201,38 @@ func _input(event: InputEvent) -> void:
 				if is_instance_valid(_player) and _player != null and _player.has_method("play_block_sfx"):
 					_player.play_block_sfx()
 
-				# SOLO en éxito reiniciamos el TurnTimer
+				# SOLO en éxito reiniciamos el TurnTimer de forma **segura**
 				if timer_ref:
-					timer_ref.restart()
+					if timer_ref.has_method("restart_safe"):
+						timer_ref.restart_safe()
+					else:
+						timer_ref.restart()
 
-				_show_danger_free()    # no generes nueva secuencia
+				# Tras PROTECTION, los proyectiles se reciclan con set_deferred:
+				# re-sincroniza en el siguiente frame para reflejar el estado real.
+				_resync_soon()
 			else:
 				# FAIL → NO reiniciar timer
 				score_ready.emit("Fail")
 				block_fail.emit()
-				if _has_enemy_projectiles():
-					start_round()
-				else:
-					_show_danger_free()
+				_resync_soon()
 
 # ---------- Handler: el jugador fue golpeado ----------
 func _on_player_got_hit() -> void:
-	var now := Time.get_ticks_msec()
+	var now: int = Time.get_ticks_msec()
 	_hit_lock_until_msec = now + HIT_LOCK_MS
-	_ignore_input_until_msec = now + INPUT_IGNORE_MS  # ← ignorar teclas “tardías”
+	_ignore_input_until_msec = now + INPUT_IGNORE_MS
 
 	# Limpia lo escrito y freezea entrada actual
 	_typed.clear()
 	_clear_icons()
 	_active = false
 
-	# Si todavía hay proyectiles, prepara NUEVA secuencia; si no, Danger Free
-	if _has_enemy_projectiles():
-		start_round()
-	else:
-		_show_danger_free()
+	_resync_soon()
 
 # ---------- Helpers ----------
 func _make_seq() -> PackedStringArray:
-	var dirs := ["↑","→","↓","←"]
+	var dirs: Array[String] = ["↑","→","↓","←"]
 	var out: PackedStringArray = []
 	for i in 4:
 		out.append(dirs[_rng.randi_range(0, dirs.size() - 1)])
@@ -224,6 +245,8 @@ func _render_line() -> void:
 func _show_danger_free() -> void:
 	if seq_line:
 		seq_line.text = "Danger Free"
+	_seq.clear()
+	_typed.clear()
 	_clear_icons()
 
 func _clear_icons() -> void:
@@ -233,7 +256,7 @@ func _clear_icons() -> void:
 	if seq4: seq4.texture = null
 
 func _set_icon(idx: int, sym: String) -> void:
-	var tex := _tex(sym)
+	var tex: Texture2D = _tex(sym)
 	match idx:
 		0: if seq1: seq1.texture = tex
 		1: if seq2: seq2.texture = tex
@@ -255,21 +278,26 @@ func _map_event(e: InputEventKey) -> String:
 	if e.is_action_pressed("ui_left"):  return "←"
 	return ""
 
-func _has_enemy_projectiles() -> bool:
-	var list := get_tree().get_nodes_in_group("enemy_projectile")
-	return not list.is_empty()
+func _has_enemy_projectiles_active() -> bool:
+	# Revisa el grupo, pero filtra por 'monitoring' y visibilidad.
+	var list: Array = get_tree().get_nodes_in_group("enemy_projectile")
+	for n in list:
+		var a := n as Area2D
+		if a and a.is_inside_tree() and a.monitoring and a.visible:
+			return true
+	return false
 
 func _destroy_nearest_enemy_projectile() -> void:
-	var list := get_tree().get_nodes_in_group("enemy_projectile")
+	var list: Array = get_tree().get_nodes_in_group("enemy_projectile")
 	if list.is_empty():
 		return
-	var origin: Vector2 = _player.global_position if (is_instance_valid(_player) and _player != null) else global_position
+	var origin: Vector2 = (_player.global_position if (is_instance_valid(_player) and _player != null) else global_position)
 	var nearest: Node2D = null
 	var best: float = INF
 	for n in list:
 		var n2 := n as Node2D
 		if n2:
-			var d := (n2.global_position - origin).length()
+			var d := n2.global_position.distance_to(origin)
 			if d < best:
 				best = d
 				nearest = n2
@@ -278,3 +306,11 @@ func _destroy_nearest_enemy_projectile() -> void:
 			(nearest as Object).call("disable")
 		else:
 			nearest.queue_free()
+
+func _resync_soon() -> void:
+	# Relee el estado en el siguiente frame para capturar cambios diferidos
+	call_deferred("_resync_now")
+
+func _resync_now() -> void:
+	_update_danger_target(_has_enemy_projectiles_active())
+	_apply_danger_if_stable(false)

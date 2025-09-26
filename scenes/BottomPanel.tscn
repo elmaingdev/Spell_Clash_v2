@@ -72,6 +72,7 @@ theme_override_constants/separation = 62
 alignment = 1
 
 [node name="Attackbtn" type="TextureButton" parent="Panel/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("2_mu7tu")
 stretch_mode = 5
@@ -92,6 +93,7 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_mu7tu")
 script = ExtResource("4_y305u")
 
 [node name="Defbtn" type="TextureButton" parent="Panel/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 texture_normal = ExtResource("6_e4i6x")
 stretch_mode = 5

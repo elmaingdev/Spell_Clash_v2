@@ -3,7 +3,7 @@ class_name TypingPanel
 
 signal spell_success(phrase: String)
 signal score_ready(rating: String)
-signal round_started            # se emite al iniciar un nuevo spell
+signal round_started
 
 @onready var _label: Label    = %PhraseLabel
 @onready var _input: LineEdit = %InputLine
@@ -12,11 +12,11 @@ signal round_started            # se emite al iniciar un nuevo spell
 @export var timer_ref: TurnTimer
 @export_node_path("Control") var timer_path
 
-@export var mode_enabled := true
+@export var mode_enabled: bool = true
 
 var _current: String = ""
-var _rng := RandomNumberGenerator.new()
-var _round_active := false
+var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var _round_active: bool = false
 var _round_start_msec: int = 0
 
 func _ready() -> void:
@@ -24,7 +24,7 @@ func _ready() -> void:
 
 	# Resolver TurnTimer si no fue inyectado por export
 	if timer_ref == null and timer_path != NodePath():
-		var n := get_node_or_null(timer_path)
+		var n: Node = get_node_or_null(timer_path)
 		if n is TurnTimer:
 			timer_ref = n
 
@@ -63,32 +63,35 @@ func on_timeout() -> void:
 		return
 	_round_active = false
 	score_ready.emit("Fail")
-	# Nota: el TurnTimer se maneja en su propio loop; no lo tocamos aquí.
+	# El TurnTimer se maneja en su propio loop.
 
 func _on_text(new_text: String) -> void:
 	if not mode_enabled or not _round_active:
 		return
 
-	# Click de tecla sólo si es entrada del usuario (no cambios programáticos)
+	# Click de tecla solo si es entrada del usuario (no cambios programáticos)
 	if _input and _input.has_focus():
 		Sfx.key_click_sfx()
 
 	# Acierto del spell
 	if _normalize(new_text) == _normalize(_current):
-		var elapsed := _elapsed()
-		var rating := _rate(elapsed)
+		var elapsed: float = _elapsed()
+		var rating: String = _rate(elapsed)
 		score_ready.emit(rating)
 		spell_success.emit(_current)
 		_round_active = false
 
-		# Reinicia el TurnTimer al acertar el spell (comportamiento solicitado)
+		# Reinicia el TurnTimer al acertar el spell
 		if timer_ref:
 			timer_ref.restart()
 
 func _elapsed() -> float:
 	if timer_ref and timer_ref.is_running():
-		return clamp(total_time - timer_ref.time_left(), 0.0, total_time)
-	return clamp(float(Time.get_ticks_msec() - _round_start_msec) / 1000.0, 0.0, total_time)
+		# ← usa la FUNCIÓN time_left() de TurnTimer (no propiedad)
+		var tl: float = timer_ref.time_left()
+		return clampf(total_time - tl, 0.0, total_time)
+	var secs: float = float(Time.get_ticks_msec() - _round_start_msec) / 1000.0
+	return clampf(secs, 0.0, total_time)
 
 func _normalize(s: String) -> String:
 	var parts: PackedStringArray = s.strip_edges().to_lower().split(" ", false)
@@ -107,7 +110,7 @@ func _rate(e: float) -> String:
 func _pick_spell() -> String:
 	if typeof(WordBank) != TYPE_NIL and WordBank.has_method("random_spell"):
 		return WordBank.random_spell()
-	var fb := [
+	var fb: Array[String] = [
 		"ignis orbis","aegis lucis","umbra nexus","glacies hasta","fulgor arcano",
 		"terra spina","ventus celer","runas vivas","draco minor","nova runica"
 	]

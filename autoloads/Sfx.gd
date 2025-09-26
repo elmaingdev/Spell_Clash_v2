@@ -1,10 +1,10 @@
 extends Node
 
-const BUS_SFX   := "SFX"    # bus “grupo” (KEY/SCORE/FX le envían a éste)
-const BUS_KEY   := "KEY"    # clics de teclado
-const BUS_SCORE := "SCORE"  # perfect/good/nice/fail
+const BUS_SFX: String   = "SFX"    # bus “grupo” (KEY/SCORE/FX le envían a éste)
+const BUS_KEY: String   = "KEY"    # clics de teclado
+const BUS_SCORE: String = "SCORE"  # perfect/good/nice/fail
 
-const POOL_SIZE_PER_BUS := 8
+const POOL_SIZE_PER_BUS: int = 8
 
 var volume_db: float = 0.0
 var score_pitch_jitter: float = 0.02
@@ -25,11 +25,14 @@ var clicks: Array[AudioStream] = [
 ]
 
 # --- Internos ---
-var _bus_clicks := "Master"
-var _bus_scores := "Master"
-var _pools := {}  # String (bus) -> Array[AudioStreamPlayer]
-var _click_pattern: Array[int] = [0,1,2,3,2,1,0,1]
+var _bus_clicks: String = "Master"
+var _bus_scores: String = "Master"
+var _pools: Dictionary = {}                    # String (bus) -> Array[AudioStreamPlayer]
+var _click_pattern: Array[int] = [0, 1, 2, 3, 2, 1, 0, 1]
 var _click_idx: int = 0
+
+# Debounce (tag -> last_ms)
+var _last_play_ms: Dictionary = {}
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_WHEN_PAUSED
@@ -52,7 +55,7 @@ func _init_pool_for_bus(bus_name: String) -> void:
 		return
 	var arr: Array[AudioStreamPlayer] = []
 	for i in range(POOL_SIZE_PER_BUS):
-		var p := AudioStreamPlayer.new()
+		var p: AudioStreamPlayer = AudioStreamPlayer.new()
 		p.bus = bus_name
 		p.volume_db = volume_db
 		add_child(p)
@@ -60,40 +63,67 @@ func _init_pool_for_bus(bus_name: String) -> void:
 	_pools[bus_name] = arr
 
 # ================= API =================
-func key_click_sfx() -> void:
-	if clicks.is_empty(): return
+
+## Clic de teclado con patrón y DEBOUNCE (por defecto 18 ms)
+func key_click_sfx(cooldown_ms: int = 18) -> void:
+	if clicks.is_empty():
+		return
 	var idx: int = _click_pattern[_click_idx]
 	_click_idx = (_click_idx + 1) % _click_pattern.size()
-	_play(clicks[idx], _rnd_pitch(click_pitch_jitter), _bus_clicks)
+	var pitch: float = _rnd_pitch(click_pitch_jitter)
+	_play(clicks[idx], pitch, _bus_clicks, "KEY", cooldown_ms)
 
-func score_sfx(kind: String) -> void:
-	var k := kind.to_lower()
-	if not score.has(k): return
-	var jitter := 0.0 if k == "fail" else score_pitch_jitter
-	_play(score[k], _rnd_pitch(jitter), _bus_scores)
+## Sonidos de score (Perfect/Nice/Good/Fail) con DEBOUNCE (por defecto 120 ms)
+func score_sfx(kind: String, cooldown_ms: int = 120) -> void:
+	var k: String = kind.to_lower()
+	if not score.has(k):
+		return
+	var jitter: float = (0.0 if k == "fail" else score_pitch_jitter)
+	var pitch: float = _rnd_pitch(jitter)
+	_play(score[k], pitch, _bus_scores, "SCORE_" + k, cooldown_ms)
 
-# =============== Utilidades ===============
-func _play(stream: AudioStream, pitch: float, bus_name: String) -> void:
-	if stream == null: return
+## (Opcional) Reproductor genérico con tag y cooldown
+func play_stream_on_bus(stream: AudioStream, bus_name: String, tag: String, pitch: float = 1.0, cooldown_ms: int = 60) -> void:
+	if stream == null:
+		return
+	var bus: String = _best_bus([bus_name, BUS_SFX, "Master"])
+	_play(stream, pitch, bus, tag, cooldown_ms)
+
+# =============== Utilidades internas ===============
+
+func _play(stream: AudioStream, pitch: float, bus_name: String, tag: String, cooldown_ms: int) -> void:
+	if stream == null:
+		return
+	if not _can_play(tag, cooldown_ms):
+		return
 	_init_pool_for_bus(bus_name)
-	var p := _get_free_player(bus_name)
+	var pool: Array = _pools[bus_name]  # Diccionario -> Array (usamos Array genérico)
+	var p: AudioStreamPlayer = _get_free_player_from_pool(pool, bus_name)
 	p.stop()
 	p.stream = stream
 	p.pitch_scale = pitch
 	p.volume_db = volume_db
 	p.play()
 
-func _get_free_player(bus_name: String) -> AudioStreamPlayer:
-	var pool: Array = _pools[bus_name]
-	for p in pool:
+func _get_free_player_from_pool(pool: Array, bus_name: String) -> AudioStreamPlayer:
+	for i in pool.size():
+		var p: AudioStreamPlayer = pool[i]
 		if not p.playing:
 			return p
-	var np := AudioStreamPlayer.new()
+	var np: AudioStreamPlayer = AudioStreamPlayer.new()
 	np.bus = bus_name
 	np.volume_db = volume_db
 	add_child(np)
 	pool.append(np)
 	return np
+
+func _can_play(tag: String, cooldown_ms: int) -> bool:
+	var now: int = Time.get_ticks_msec()
+	var last: int = int(_last_play_ms.get(tag, -cooldown_ms))
+	if now - last >= cooldown_ms:
+		_last_play_ms[tag] = now
+		return true
+	return false
 
 func _rnd_pitch(amount: float) -> float:
 	return 1.0 + randf_range(-amount, amount)

@@ -19,15 +19,18 @@ const DMG_STREAMS: Array[AudioStream] = [
 	preload("res://assets/sfx/dmg2_sfx.wav"),
 ]
 
-@export var projectile_scene: PackedScene
+@export var projectile_scene: PackedScene               # fallback si no hay pool
 @export var shoot_delay: float = 0.2
 @export_node_path("Control") var typing_panel_path: NodePath = NodePath("")
+
+# Pool de proyectiles del jugador
+@export var projectile_pool: ProjectilePool
 
 # Triple cast config
 @export var burst_count: int = 3
 @export var burst_spacing: float = 0.12
 
-# Daño base por rating (antes de combo)
+# Compat: valor informativo (puede leerlo algún panel)
 @export var dmg: int = 10
 var _last_rating: String = "Good"
 
@@ -38,14 +41,14 @@ var _last_rating: String = "Good"
 var typing_panel: TypingPanel
 var charge: ChargeBar = null
 
-var is_dead := false
+var is_dead: bool = false
 var _player_spell_sfx_idx: int = 0
 
 # Estados de carga (ChargeBar)
-var _burst_pending := false   # la barra llegó a 100% y queda “armado para el próximo spell”
-var _burst_ready := false     # ejecutar triple en ESTE spell
+var _burst_pending: bool = false
+var _burst_ready: bool = false
 
-# Daño calculado con combo para el próximo disparo (se setea en score_ready)
+# Daño calculado (con combo) para el próximo disparo (se establece en score_ready)
 var _pending_shot_damage: int = -1
 
 func _ready() -> void:
@@ -58,16 +61,16 @@ func _ready() -> void:
 	_wire_typing_panel()
 	_wire_chargebar()
 
-	HP = clamp(HP, 0, max_hp)
+	HP = clampi(HP, 0, max_hp)
 	call_deferred("_emit_initial_hp")
 
 func _wire_typing_panel() -> void:
 	if not typing_panel_path.is_empty():
-		var n := get_node_or_null(typing_panel_path)
+		var n: Node = get_node_or_null(typing_panel_path)
 		if n is TypingPanel:
 			typing_panel = n
 	if typing_panel == null:
-		var tp := get_tree().root.find_child("TypingPanel", true, false)
+		var tp: Node = get_tree().root.find_child("TypingPanel", true, false)
 		if tp is TypingPanel:
 			typing_panel = tp
 
@@ -80,11 +83,11 @@ func _wire_typing_panel() -> void:
 			typing_panel.round_started.connect(_on_round_started)
 
 func _wire_chargebar() -> void:
-	var n := get_node_or_null("%Chargebar")
+	var n: Node = get_node_or_null("%Chargebar")
 	if n is ChargeBar:
 		charge = n as ChargeBar
 	if charge == null:
-		var found := get_tree().root.find_child("Chargebar", true, false)
+		var found: Node = get_tree().root.find_child("Chargebar", true, false)
 		if found is ChargeBar:
 			charge = found as ChargeBar
 
@@ -101,55 +104,37 @@ func _physics_process(_delta: float) -> void:
 		body.velocity = Vector2.ZERO
 		body.move_and_slide()
 
-# ---- rating -> daño base (sin combo) ----
-func projectile_dmg(rating: String) -> int:
-	match rating:
-		"Perfect": return 15
-		"Nice":    return 10
-		"Good":    return 5
-		_:         return 0
-
-# ---- multiplicador por combo (x1..x5+) ----
-func _combo_multiplier(level: int) -> float:
-	if level <= 1:
-		return 1.0   # x1 → +0%
-	elif level == 2:
-		return 1.10  # +10%
-	elif level == 3:
-		return 1.25  # +25%
-	elif level == 4:
-		return 1.40  # +40%
-	else:
-		return 1.65  # x5+ → +65%
-
+# ---------- LECTURA DE COMBO ----------
 func _get_combo_current() -> int:
-	var cc := get_node_or_null("/root/ComboCounter")
+	var cc: Node = get_node_or_null("/root/ComboCounter")
 	if cc:
 		if cc.has_method("get_current"):
 			return int(cc.call("get_current"))
 		elif "current" in cc:
 			return int(cc.current)
+	var list: Array = get_tree().get_nodes_in_group("combo_counter")
+	if not list.is_empty():
+		var node: Node = list[0]
+		if node and node.has_method("get_current"):
+			return int(node.call("get_current"))
+		elif node and "current" in node:
+			return int(node.current)
 	return 0
 
 # Se emite apenas terminas de teclear la palabra (antes del spell_success)
 func _on_TypingPanel_score_ready(rating: String) -> void:
 	_last_rating = rating
-	var base := projectile_dmg(rating)
-	dmg = base  # por compat, aunque disparemos con _pending_shot_damage
+	dmg = DamageCalculator.base_damage_from_rating(rating)
 	_pending_shot_damage = -1
-
-	# Sólo calculamos daño si hubo acierto (no “Fail”)
-	if base > 0:
-		# Usamos el combo que quedará DESPUÉS de este acierto: current + 1
-		var next_combo := _get_combo_current() + 1
-		var mult := _combo_multiplier(next_combo)
-		var boosted := int(round(float(base) * mult))
-		_pending_shot_damage = max(0, boosted)
+	if dmg > 0:
+		var next_combo: int = _get_combo_current() + 1
+		_pending_shot_damage = DamageCalculator.final_damage(rating, next_combo)
 
 # Al finalizar el spell (palabra correcta) se dispara
 func _on_TypingPanel_spell_success(_phrase: String) -> void:
-	# Si había triple listo, dispara ráfaga con el daño ya calculado
-	var shot_dmg: int = (_pending_shot_damage if _pending_shot_damage >= 0 else projectile_dmg(_last_rating))
+	var combo_now: int = maxi(1, _get_combo_current())
+	var shot_dmg: int = (_pending_shot_damage if _pending_shot_damage >= 0 else DamageCalculator.final_damage(_last_rating, combo_now))
+
 	if _burst_ready and charge and charge.is_full():
 		await _shoot_burst(burst_count, burst_spacing, shot_dmg)
 		charge.consume_full()
@@ -157,7 +142,6 @@ func _on_TypingPanel_spell_success(_phrase: String) -> void:
 	else:
 		await shoot(shot_dmg)
 
-	# Limpia el buffer de daño
 	_pending_shot_damage = -1
 
 # TypingPanel avisa que empezó un nuevo spell → si la barra sigue 100% y venía “pending”, arma el triple
@@ -171,37 +155,60 @@ func _on_charge_full() -> void:
 
 # ---------- Disparo ----------
 func shoot(damage_override: int = -1) -> void:
-	if is_dead: return
-	if sprite: sprite.play("attack")
+	if is_dead:
+		return
+	if sprite:
+		sprite.play("attack")
 	await get_tree().create_timer(shoot_delay).timeout
 	_spawn_projectile(damage_override)
 
 func _spawn_projectile(damage_override: int = -1) -> void:
-	var use_dmg := (damage_override if damage_override >= 0 else dmg)
-	if use_dmg <= 0 or projectile_scene == null:
+	var use_dmg: int = (damage_override if damage_override >= 0 else dmg)
+	if use_dmg <= 0:
 		return
-	var p := projectile_scene.instantiate() as Projectile1
-	if p == null: return
+
+	var p: Projectile1 = null
+	if projectile_pool:
+		p = projectile_pool.acquire() as Projectile1
+	else:
+		if projectile_scene == null:
+			return
+		p = projectile_scene.instantiate() as Projectile1
+		if p == null:
+			return
+		get_parent().add_child(p)
+
 	var start_pos: Vector2 = (spoint.global_position if is_instance_valid(spoint) else global_position)
 	p.global_position = start_pos
-	p.damage = use_dmg
+
+	if p.has_method("set_damage"):
+		p.set_damage(use_dmg)
+	else:
+		p.damage = use_dmg
+
 	p.sfx_index = _player_spell_sfx_idx
 	_player_spell_sfx_idx = (_player_spell_sfx_idx + 1) % 3
-	get_parent().add_child(p)
+
+	# 🔁 IMPORTANTE: aunque no venga del pool, reactivamos (reproduce SFX y resetea estado)
+	if p.has_method("reactivate"):
+		p.reactivate()
 
 func _shoot_burst(count: int = 3, spacing: float = 0.12, damage_override: int = -1) -> void:
-	if is_dead: return
-	if sprite: sprite.play("attack")
+	if is_dead:
+		return
+	if sprite:
+		sprite.play("attack")
 	await get_tree().create_timer(shoot_delay).timeout
 	for i in count:
 		_spawn_projectile(damage_override)
 		if i < count - 1:
 			await get_tree().create_timer(spacing).timeout
 
-# ---- daño recibido ----
+# ---------- Daño recibido ----------
 func take_dmg(amount: int = 1) -> void:
-	if is_dead: return
-	HP = max(HP - amount, 0)
+	if is_dead:
+		return
+	HP = maxi(0, HP - amount)
 	hp_changed.emit(HP, max_hp)
 	got_hit.emit()
 	if HP <= 0:
@@ -213,23 +220,27 @@ func take_dmg(amount: int = 1) -> void:
 			sprite.play("hurt")
 
 func _die() -> void:
-	if is_dead: return
+	if is_dead:
+		return
 	is_dead = true
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("death"):
 		sprite.play("death")
 		await sprite.animation_finished
 	else:
-		if sprite: sprite.stop()
+		if sprite:
+			sprite.stop()
 	died.emit()
 
 func _on_anim_finished() -> void:
-	if is_dead: return
+	if is_dead:
+		return
 	if sprite and (sprite.animation == "attack" or sprite.animation == "hurt"):
 		sprite.play("idle")
 
 # ====== SFX locales ======
 func _play_damage_sfx() -> void:
-	if not sfx_damage: return
+	if not sfx_damage:
+		return
 	if DMG_STREAMS.size() > 0:
 		sfx_damage.stream = DMG_STREAMS[randi() % DMG_STREAMS.size()]
 	sfx_damage.pitch_scale = 1.0 + randf_range(-0.02, 0.02)
