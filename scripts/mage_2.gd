@@ -24,8 +24,8 @@ const DMG_STREAMS: Array[AudioStream] = [
 @export var shoot_interval: float = 7.0
 @export var cast_delay: float = 0.3
 
-@export var max_hp: int = 250
-@export var HP: int = 250
+@export var max_hp: int = 40
+@export var HP: int = 40
 
 var is_dead: bool = false
 var _enemy_fire_sfx_idx: int = 0

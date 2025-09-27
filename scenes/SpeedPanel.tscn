@@ -1,0 +1,141 @@
+[gd_scene load_steps=10 format=3 uid="uid://cgv2y31m0qgut"]
+
+[ext_resource type="FontFile" uid="uid://gedy68241spt" path="res://assets/fonts/PixelOperator8.ttf" id="1_ixsyo"]
+[ext_resource type="Script" uid="uid://cmnjp4ef6cyni" path="res://scripts/SpeedPanel.gd" id="1_w84ci"]
+[ext_resource type="LabelSettings" uid="uid://n5tqhjxd2h0i" path="res://themes/speedpanel_label.tres" id="2_n8kdl"]
+[ext_resource type="Script" uid="uid://sciv6a3iqmg7" path="res://scripts/RunTimer.gd" id="3_n8kdl"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ixsyo"]
+content_margin_left = 9.0
+content_margin_top = 9.0
+content_margin_right = 9.0
+content_margin_bottom = 9.0
+bg_color = Color(0.6627451, 0.5176471, 0.29803923, 0.31764707)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.3298666, 0.1990245, 0.09153529, 1)
+corner_detail = 5
+
+[sub_resource type="LabelSettings" id="LabelSettings_w84ci"]
+font = ExtResource("1_ixsyo")
+font_size = 12
+outline_size = 3
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 0
+shadow_color = Color(0, 0, 0, 0.756863)
+
+[sub_resource type="LabelSettings" id="LabelSettings_7il52"]
+font = ExtResource("1_ixsyo")
+font_size = 12
+outline_size = 2
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 0
+shadow_color = Color(0, 0, 0, 0.756863)
+
+[sub_resource type="LabelSettings" id="LabelSettings_iecqj"]
+font = ExtResource("1_ixsyo")
+font_size = 8
+outline_size = 1
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 0
+shadow_color = Color(0, 0, 0, 0.756863)
+
+[sub_resource type="LabelSettings" id="LabelSettings_setwy"]
+font = ExtResource("1_ixsyo")
+font_size = 8
+outline_size = 1
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 0
+shadow_color = Color(0, 0, 0, 0.756863)
+
+[node name="SpeedPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_w84ci")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -144.0
+offset_top = -125.0
+offset_right = -10.0
+offset_bottom = -1.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ixsyo")
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "RUN TIME"
+label_settings = SubResource("LabelSettings_w84ci")
+horizontal_alignment = 1
+
+[node name="CurrentTimeLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "00:04.20"
+label_settings = SubResource("LabelSettings_7il52")
+horizontal_alignment = 1
+
+[node name="PBLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "TOP: "
+label_settings = ExtResource("2_n8kdl")
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SplitsBox" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="SkMageTime" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/SplitsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Skt. Mage: "
+label_settings = SubResource("LabelSettings_iecqj")
+
+[node name="WitchTime" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/SplitsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "The Witch:"
+label_settings = SubResource("LabelSettings_iecqj")
+
+[node name="RedAdeptTime" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/SplitsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "The Adept: "
+label_settings = SubResource("LabelSettings_iecqj")
+
+[node name="DemonTime" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/SplitsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Demon Eye:"
+label_settings = SubResource("LabelSettings_setwy")
+
+[node name="RunTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+script = ExtResource("3_n8kdl")
+current_label_path = NodePath("../PanelContainer/MarginContainer/VBoxContainer/CurrentTimeLabel")

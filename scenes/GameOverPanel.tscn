@@ -33,17 +33,17 @@ outline_color = Color(0, 0, 0, 1)
 shadow_size = 5
 shadow_color = Color(0, 0, 0, 0.756863)
 
-[sub_resource type="LabelSettings" id="LabelSettings_b80k1"]
-font = ExtResource("1_lk26y")
+[sub_resource type="LabelSettings" id="LabelSettings_7ai4i"]
+font = ExtResource("2_swu1w")
 font_size = 20
 outline_size = 10
 outline_color = Color(0, 0, 0, 1)
 shadow_size = 5
 shadow_color = Color(0, 0, 0, 0.756863)
 
-[sub_resource type="LabelSettings" id="LabelSettings_7ai4i"]
-font = ExtResource("1_lk26y")
-font_size = 18
+[sub_resource type="LabelSettings" id="LabelSettings_b80k1"]
+font = ExtResource("2_swu1w")
+font_size = 20
 outline_size = 10
 outline_color = Color(0, 0, 0, 1)
 shadow_size = 5
@@ -52,9 +52,8 @@ shadow_color = Color(0, 0, 0, 0.756863)
 [sub_resource type="LabelSettings" id="LabelSettings_swu1w"]
 font = ExtResource("2_swu1w")
 font_size = 18
-outline_size = 5
+outline_size = 2
 outline_color = Color(0, 0, 0, 1)
-shadow_size = 5
 shadow_color = Color(0, 0, 0, 0.756863)
 
 [node name="GameOverPanel" type="Control"]
@@ -92,17 +91,15 @@ text = "GAME OVER"
 label_settings = SubResource("LabelSettings_g8x13")
 horizontal_alignment = 1
 
-[node name="GameOverLbl2" type="Label" parent="PanelContainer/VBoxContainer"]
-layout_mode = 2
-text = "BEST COMBO"
-label_settings = SubResource("LabelSettings_b80k1")
-horizontal_alignment = 1
-
 [node name="This_lbl" type="Label" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
-text = "18 combo"
+text = "Run Time: "
 label_settings = SubResource("LabelSettings_7ai4i")
-horizontal_alignment = 1
+
+[node name="personal_best_lbl" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Top Time:"
+label_settings = SubResource("LabelSettings_b80k1")
 
 [node name="Label" type="Label" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2

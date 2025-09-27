@@ -1,9 +1,14 @@
 extends Control
 class_name GameOverPanel
 
+# Usa el tipo del script (no la instancia autoload)
+const SM := preload("res://autoloads/SpeedManager.gd")
+
 @onready var _yes: Button = $PanelContainer/VBoxContainer/HBoxContainer/Yesbtn
 @onready var _no: Button  = $PanelContainer/VBoxContainer/HBoxContainer/Nobtn
-@onready var _this_lbl: Label = $PanelContainer/VBoxContainer/This_lbl
+
+@onready var _this_lbl: Label = $PanelContainer/VBoxContainer/This_lbl           # opcional
+@onready var _pb_lbl: Label   = $PanelContainer/VBoxContainer/personal_best_lbl  # TOP SCORE
 
 @onready var _enemy:  Mage2 = %Mage_2
 @onready var _player: Mage1 = %Mage_1
@@ -27,28 +32,34 @@ func _ready() -> void:
 
 func _on_any_died() -> void:
 	if visible: return
+
+	# Tiempo de la run antes de pausar
+	var elapsed_ms := _get_run_time_ms()
+
+	# Actualiza SpeedManager (run_time y PB)
+	var sm := get_node_or_null("/root/SpeedManager")
+	if sm:
+		sm.call("set_run_time", elapsed_ms)
+		sm.call("update_personal_best_if_better", elapsed_ms)
+		var pb := int(sm.get("personal_best"))
+		if _pb_lbl:
+			# Llamada correcta a estática desde el tipo (script preloaded)
+			_pb_lbl.text = "Top Time: %s" % SM.fmt_ms(pb)
+
+	if _this_lbl:
+		_this_lbl.text = "Run Time: %s" % _fmt_ms(elapsed_ms)
+
+	# Congela y muestra panel
 	if _bottom:
 		_bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	move_to_front()
 	get_tree().paused = true
 	if _bgm: _bgm.stop()
 
-	# Mostrar mejor combo de la PARTIDA actual
-	var cc := get_node_or_null("/root/ComboCounter")
-	var best_in_match := 0
-	if cc:
-		if cc.has_method("get_best_combo"):
-			best_in_match = int(cc.call("get_best_combo"))
-		elif "best_combo" in cc:
-			best_in_match = int(cc.best_combo)
-	if _this_lbl:
-		_this_lbl.text = str(best_in_match, " combo")
-
 	visible = true
 	_yes.grab_focus()
 
 func _on_yes() -> void:
-	# Resetea estado de partida ANTES de recargar
 	var cc := get_node_or_null("/root/ComboCounter")
 	if cc: cc.call_deferred("start_new_match")
 	get_tree().paused = false
@@ -57,3 +68,18 @@ func _on_yes() -> void:
 func _on_no() -> void:
 	get_tree().paused = false
 	get_tree().quit()
+
+# -------- helpers --------
+func _get_run_time_ms() -> int:
+	var rt := get_tree().root.find_child("RunTimer", true, false) as RunTimer
+	if rt:
+		return int(rt.get_elapsed_ms())
+	return 0
+
+static func _fmt_ms(ms: int) -> String:
+	if ms < 0: ms = 0
+	var msf: float = float(ms)
+	var minutes: int    = int(floor(msf / 60000.0))
+	var seconds: int    = int(floor(fmod(msf, 60000.0) / 1000.0))
+	var hundredths: int = int(floor(fmod(msf, 1000.0) / 10.0))
+	return "%02d:%02d.%02d" % [minutes, seconds, hundredths]

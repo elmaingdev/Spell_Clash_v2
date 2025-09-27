@@ -8,6 +8,8 @@ outline_color = Color(0, 0, 0, 1)
 
 [node name="DebugOverlay" type="CanvasLayer"]
 script = ExtResource("1_ljkkb")
+enemy_projectiles_group = null
+label_path = null
 
 [node name="Label" type="Label" parent="."]
 offset_right = 40.0
