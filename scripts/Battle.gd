@@ -22,10 +22,10 @@ func _ready() -> void:
 		cc.call_deferred("rewire")
 		cc.call_deferred("emit_now")
 
-	# Cargar PB desde disco (centralizado en SpeedManager)
-	var sm := get_node_or_null("/root/SpeedManager")
-	if sm and sm.has_method("load_from_disk"):
-		sm.call_deferred("load_from_disk")
+	# Cargar PB desde disco a SpeedManager, usando SaveManager
+	var saver: Node = get_node_or_null("/root/SaveManager")
+	if saver and saver.has_method("load_into_speed_manager"):
+		saver.call_deferred("load_into_speed_manager")
 
 	call_deferred("_wire_up")
 

@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://dynnd144058gc"]
+
+[ext_resource type="PackedScene" uid="uid://cxwta47m0lft8" path="res://scenes/chars/projectile_2.tscn" id="1_2yqfi"]
+[ext_resource type="SpriteFrames" uid="uid://exiy3ytsjcup" path="res://themes/projectile_3.tres" id="2_m4mdq"]
+
+[node name="projectile_2" instance=ExtResource("1_2yqfi")]
+
+[node name="AnimatedSprite2D" parent="." index="0"]
+position = Vector2(-3.0303001, -3.030303)
+scale = Vector2(4, 4)
+sprite_frames = ExtResource("2_m4mdq")
+animation = &"fly"
+autoplay = ""
+
+[node name="CollisionShape2D" parent="." index="1"]
+position = Vector2(-3.030303, -3.030303)

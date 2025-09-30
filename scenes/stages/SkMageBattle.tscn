@@ -1,27 +1,27 @@
-[gd_scene load_steps=22 format=4 uid="uid://chi50airk2jx1"]
+[gd_scene load_steps=22 format=4 uid="uid://cpxi3nobrpmou"]
 
-[ext_resource type="Script" uid="uid://dimk00kx0fxk5" path="res://scripts/Battle.gd" id="1_p0caf"]
-[ext_resource type="PackedScene" uid="uid://cqtct4bo5es3n" path="res://scenes/UI/TypingPanel.tscn" id="1_th188"]
-[ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/UI/turn_timer.tscn" id="2_p1qf1"]
-[ext_resource type="PackedScene" uid="uid://c566mi0ppmg2g" path="res://scenes/UI/InfoPanel.tscn" id="3_4k1nj"]
-[ext_resource type="PackedScene" uid="uid://0ij85ox8j5li" path="res://scenes/UI/DirectionsPanel.tscn" id="3_66ngm"]
-[ext_resource type="PackedScene" uid="uid://c6xw45ilhwral" path="res://scenes/chars/mage_1.tscn" id="4_a12nh"]
-[ext_resource type="PackedScene" uid="uid://ts0saqd7n1w" path="res://scenes/UI/ScorePanel.tscn" id="4_f4pi3"]
-[ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/mage_2.tscn" id="5_lpir7"]
-[ext_resource type="PackedScene" uid="uid://cpnrkcgy61lno" path="res://scenes/UI/GameOverPanel.tscn" id="5_yahae"]
-[ext_resource type="AudioStream" uid="uid://dtderyonblk36" path="res://assets/bgm/march_of_iron.wav" id="6_6vh42"]
-[ext_resource type="PackedScene" uid="uid://bwyo15q3n6htl" path="res://scenes/UI/BottomPanel.tscn" id="6_v7i3o"]
-[ext_resource type="Script" uid="uid://bcghxxakdsd3q" path="res://scripts/system/ModeSwitcher.gd" id="8_03edq"]
-[ext_resource type="PackedScene" uid="uid://bwjuv6o6yi6rb" path="res://scenes/UI/ComboPanel.tscn" id="9_22uqi"]
-[ext_resource type="PackedScene" uid="uid://cgv2y31m0qgut" path="res://scenes/UI/SpeedPanel.tscn" id="10_h4dll"]
-[ext_resource type="Texture2D" uid="uid://2xdj6jeu6uhg" path="res://assets/backgrounds/background1.png" id="12_61i1y"]
-[ext_resource type="Texture2D" uid="uid://qpg8jfx23o6f" path="res://assets/tilesets/tileset_1.png" id="13_saiin"]
-[ext_resource type="Script" uid="uid://cy4qmcgfo0a4c" path="res://scripts/system/ProjectilePool.gd" id="14_6ni85"]
-[ext_resource type="PackedScene" uid="uid://baj4vmtxbrupq" path="res://scenes/chars/projectile_1.tscn" id="15_ekamt"]
-[ext_resource type="PackedScene" uid="uid://cxwta47m0lft8" path="res://scenes/chars/projectile_2.tscn" id="16_djc8l"]
+[ext_resource type="Script" uid="uid://dimk00kx0fxk5" path="res://scripts/Battle.gd" id="1_byw5n"]
+[ext_resource type="Script" uid="uid://bcghxxakdsd3q" path="res://scripts/system/ModeSwitcher.gd" id="2_rtx34"]
+[ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/UI/turn_timer.tscn" id="3_mfjwe"]
+[ext_resource type="PackedScene" uid="uid://cqtct4bo5es3n" path="res://scenes/UI/TypingPanel.tscn" id="4_fkek3"]
+[ext_resource type="PackedScene" uid="uid://0ij85ox8j5li" path="res://scenes/UI/DirectionsPanel.tscn" id="5_wl6ti"]
+[ext_resource type="PackedScene" uid="uid://c566mi0ppmg2g" path="res://scenes/UI/InfoPanel.tscn" id="6_3ulmb"]
+[ext_resource type="PackedScene" uid="uid://ts0saqd7n1w" path="res://scenes/UI/ScorePanel.tscn" id="7_syahh"]
+[ext_resource type="PackedScene" uid="uid://bwyo15q3n6htl" path="res://scenes/UI/BottomPanel.tscn" id="8_cjsi7"]
+[ext_resource type="PackedScene" uid="uid://cpnrkcgy61lno" path="res://scenes/UI/GameOverPanel.tscn" id="9_wq5lf"]
+[ext_resource type="PackedScene" uid="uid://bwjuv6o6yi6rb" path="res://scenes/UI/ComboPanel.tscn" id="10_wp7qe"]
+[ext_resource type="PackedScene" uid="uid://cgv2y31m0qgut" path="res://scenes/UI/SpeedPanel.tscn" id="11_2ipvv"]
+[ext_resource type="PackedScene" uid="uid://c6xw45ilhwral" path="res://scenes/chars/mage_1.tscn" id="13_fmbpv"]
+[ext_resource type="PackedScene" uid="uid://d4hhs15bw4xdb" path="res://scenes/chars/SkeletonMage.tscn" id="14_hdrmo"]
+[ext_resource type="Texture2D" uid="uid://2xdj6jeu6uhg" path="res://assets/backgrounds/background1.png" id="14_js2sj"]
+[ext_resource type="AudioStream" uid="uid://dtderyonblk36" path="res://assets/bgm/march_of_iron.wav" id="15_0j3f7"]
+[ext_resource type="Texture2D" uid="uid://qpg8jfx23o6f" path="res://assets/tilesets/tileset_1.png" id="15_ejc67"]
+[ext_resource type="Script" uid="uid://cy4qmcgfo0a4c" path="res://scripts/system/ProjectilePool.gd" id="16_erm7v"]
+[ext_resource type="PackedScene" uid="uid://baj4vmtxbrupq" path="res://scenes/chars/projectile_1.tscn" id="17_h6yxy"]
+[ext_resource type="PackedScene" uid="uid://cxwta47m0lft8" path="res://scenes/chars/projectile_2.tscn" id="18_rhlvj"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fpf3k"]
-texture = ExtResource("13_saiin")
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_yoxnk"]
+texture = ExtResource("15_ejc67")
 4:1/size_in_atlas = Vector2i(2, 2)
 4:1/0 = 0
 4:3/size_in_atlas = Vector2i(2, 1)
@@ -36,12 +36,12 @@ texture = ExtResource("13_saiin")
 1:3/size_in_atlas = Vector2i(2, 2)
 1:3/0 = 0
 
-[sub_resource type="TileSet" id="TileSet_bi5l8"]
+[sub_resource type="TileSet" id="TileSet_wehb8"]
 physics_layer_0/collision_layer = 1
-sources/0 = SubResource("TileSetAtlasSource_fpf3k")
+sources/0 = SubResource("TileSetAtlasSource_yoxnk")
 
 [node name="Battle" type="Node2D"]
-script = ExtResource("1_p0caf")
+script = ExtResource("1_byw5n")
 typing_panel_path = NodePath("CanvasLayer/UI/TypingPanel")
 directions_panel_path = NodePath("CanvasLayer/UI/DirectionsPanel")
 timer_path = NodePath("CanvasLayer/UI/TurnTimer")
@@ -58,62 +58,62 @@ grow_vertical = 2
 
 [node name="ModeSwitcher" type="Node" parent="CanvasLayer/UI"]
 unique_name_in_owner = true
-script = ExtResource("8_03edq")
+script = ExtResource("2_rtx34")
 typing_path = NodePath("../TypingPanel")
 defend_path = NodePath("../DirectionsPanel")
 bottom_path = NodePath("../BottomPanel")
 timer_path = NodePath("../TurnTimer")
 
-[node name="TurnTimer" parent="CanvasLayer/UI" instance=ExtResource("2_p1qf1")]
+[node name="TurnTimer" parent="CanvasLayer/UI" instance=ExtResource("3_mfjwe")]
 unique_name_in_owner = true
 layout_mode = 1
 
-[node name="TypingPanel" parent="CanvasLayer/UI" node_paths=PackedStringArray("timer_ref") instance=ExtResource("1_th188")]
+[node name="TypingPanel" parent="CanvasLayer/UI" node_paths=PackedStringArray("timer_ref") instance=ExtResource("4_fkek3")]
 unique_name_in_owner = true
 layout_mode = 1
 timer_ref = NodePath("../TurnTimer")
 
-[node name="DirectionsPanel" parent="CanvasLayer/UI" node_paths=PackedStringArray("timer_ref") instance=ExtResource("3_66ngm")]
+[node name="DirectionsPanel" parent="CanvasLayer/UI" node_paths=PackedStringArray("timer_ref") instance=ExtResource("5_wl6ti")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
 timer_ref = NodePath("../TurnTimer")
 player_path = NodePath("../../../Mage_1")
 
-[node name="InfoPanel" parent="CanvasLayer/UI" instance=ExtResource("3_4k1nj")]
+[node name="InfoPanel" parent="CanvasLayer/UI" instance=ExtResource("6_3ulmb")]
 unique_name_in_owner = true
 layout_mode = 1
 
-[node name="ScorePanel" parent="CanvasLayer/UI" instance=ExtResource("4_f4pi3")]
+[node name="ScorePanel" parent="CanvasLayer/UI" instance=ExtResource("7_syahh")]
 layout_mode = 1
 typing_panel_path = NodePath("../TypingPanel")
 
-[node name="BottomPanel" parent="CanvasLayer/UI" instance=ExtResource("6_v7i3o")]
+[node name="BottomPanel" parent="CanvasLayer/UI" instance=ExtResource("8_cjsi7")]
 unique_name_in_owner = true
 z_index = 500
 z_as_relative = false
 layout_mode = 1
 
-[node name="GameOverPanel" parent="CanvasLayer/UI" instance=ExtResource("5_yahae")]
+[node name="GameOverPanel" parent="CanvasLayer/UI" instance=ExtResource("9_wq5lf")]
 unique_name_in_owner = true
 z_index = 1000
 z_as_relative = false
 layout_mode = 1
 
-[node name="ComboPanel" parent="CanvasLayer/UI" instance=ExtResource("9_22uqi")]
+[node name="ComboPanel" parent="CanvasLayer/UI" instance=ExtResource("10_wp7qe")]
 layout_mode = 1
 
-[node name="SpeedPanel" parent="CanvasLayer/UI" instance=ExtResource("10_h4dll")]
+[node name="SpeedPanel" parent="CanvasLayer/UI" instance=ExtResource("11_2ipvv")]
 layout_mode = 1
 
-[node name="Mage_1" parent="." instance=ExtResource("4_a12nh")]
+[node name="Mage_1" parent="." instance=ExtResource("13_fmbpv")]
 unique_name_in_owner = true
 position = Vector2(169, 280.00003)
 typing_panel_path = NodePath("../CanvasLayer/UI/TypingPanel")
 
-[node name="Mage_2" parent="." instance=ExtResource("5_lpir7")]
+[node name="Mage_2" parent="." instance=ExtResource("14_hdrmo")]
 unique_name_in_owner = true
-position = Vector2(478, 279.00003)
+position = Vector2(498.00003, 282)
 
 [node name="Stage" type="Node2D" parent="."]
 
@@ -122,27 +122,27 @@ position = Vector2(478, 279.00003)
 [node name="BG" type="Sprite2D" parent="Stage/ParallaxBackground"]
 position = Vector2(321, 99.00001)
 scale = Vector2(0.41659537, 0.41659537)
-texture = ExtResource("12_61i1y")
+texture = ExtResource("14_js2sj")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="Stage"]
 tile_map_data = PackedByteArray("AAAAABUAAAABAAMAAAABABUAAAABAAMAAAACABUAAAABAAMAAAADABUAAAABAAMAAAAEABUAAAABAAMAAAAFABUAAAABAAMAAAAGABUAAAABAAMAAAAHABUAAAABAAMAAAAIABUAAAABAAMAAAAJABUAAAABAAMAAAAKABUAAAABAAMAAAALABUAAAABAAMAAAAMABUAAAABAAMAAAANABUAAAABAAMAAAAOABUAAAABAAMAAAAPABUAAAABAAMAAAAQABUAAAABAAMAAAARABUAAAABAAMAAAASABUAAAABAAMAAAATABUAAAABAAMAAAAUABUAAAABAAMAAAAVABUAAAABAAMAAAAWABUAAAABAAMAAAAXABUAAAABAAMAAAAYABUAAAABAAMAAAAZABUAAAABAAMAAAAaABUAAAABAAMAAAAbABUAAAABAAMAAAAcABUAAAABAAMAAAAdABUAAAABAAMAAAAeABUAAAABAAMAAAAfABUAAAABAAMAAAAgABUAAAABAAMAAAAhABUAAAABAAMAAAAiABUAAAABAAMAAAAjABUAAAABAAMAAAAkABUAAAABAAMAAAAlABUAAAABAAMAAAAmABUAAAABAAMAAAAnABUAAAABAAMAAAAAABQAAAABAAMAAAABABQAAAABAAMAAAACABQAAAABAAMAAAADABQAAAABAAMAAAAEABQAAAABAAMAAAAFABQAAAABAAMAAAAGABQAAAABAAMAAAAHABQAAAABAAMAAAAIABQAAAABAAMAAAAJABQAAAABAAMAAAAKABQAAAABAAMAAAALABQAAAABAAMAAAAMABQAAAABAAMAAAANABQAAAABAAMAAAAOABQAAAABAAMAAAAPABQAAAABAAMAAAAQABQAAAABAAMAAAARABQAAAABAAMAAAASABQAAAABAAMAAAATABQAAAABAAMAAAAUABQAAAABAAMAAAAVABQAAAABAAMAAAAWABQAAAABAAMAAAAXABQAAAABAAMAAAAYABQAAAABAAMAAAAZABQAAAABAAMAAAAaABQAAAABAAMAAAAbABQAAAABAAMAAAAcABQAAAABAAMAAAAdABQAAAABAAMAAAAeABQAAAABAAMAAAAfABQAAAABAAMAAAAgABQAAAABAAMAAAAhABQAAAABAAMAAAAiABQAAAABAAMAAAAjABQAAAABAAMAAAAkABQAAAABAAMAAAAlABQAAAABAAMAAAAmABQAAAABAAMAAAAnABQAAAABAAMAAAAAABIAAAABAAEAAAABABIAAAABAAEAAAACABIAAAABAAEAAAADABIAAAABAAEAAAAEABIAAAABAAEAAAAFABIAAAABAAEAAAAGABIAAAABAAEAAAAHABIAAAABAAEAAAAIABIAAAABAAEAAAAJABIAAAABAAEAAAAKABIAAAABAAEAAAALABIAAAABAAEAAAAMABIAAAABAAEAAAANABIAAAABAAEAAAAOABIAAAABAAEAAAAPABIAAAABAAEAAAAQABIAAAABAAEAAAARABIAAAABAAEAAAASABIAAAABAAEAAAATABIAAAABAAEAAAAUABIAAAABAAEAAAAVABIAAAABAAEAAAAWABIAAAABAAEAAAAXABIAAAABAAEAAAAYABIAAAABAAEAAAAZABIAAAABAAEAAAAaABIAAAABAAEAAAAbABIAAAABAAEAAAAcABIAAAABAAEAAAAdABIAAAABAAEAAAAeABIAAAABAAEAAAAfABIAAAABAAEAAAAgABIAAAABAAEAAAAhABIAAAABAAEAAAAiABIAAAABAAEAAAAjABIAAAABAAEAAAAkABIAAAABAAEAAAAlABIAAAABAAEAAAAmABIAAAABAAEAAAAnABIAAAABAAEAAAA=")
-tile_set = SubResource("TileSet_bi5l8")
+tile_set = SubResource("TileSet_wehb8")
 
 [node name="BGM" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
-stream = ExtResource("6_6vh42")
+stream = ExtResource("15_0j3f7")
 volume_db = -6.0
 autoplay = true
 bus = &"BGM"
 
 [node name="PlayerProjectilePool" type="Node" parent="."]
-script = ExtResource("14_6ni85")
-projectile_scene = ExtResource("15_ekamt")
+script = ExtResource("16_erm7v")
+projectile_scene = ExtResource("17_h6yxy")
 metadata/_custom_type_script = "uid://cy4qmcgfo0a4c"
 
 [node name="EnemyProjectilePool" type="Node" parent="."]
-script = ExtResource("14_6ni85")
-projectile_scene = ExtResource("16_djc8l")
+script = ExtResource("16_erm7v")
+projectile_scene = ExtResource("18_rhlvj")
 metadata/_custom_type_script = "uid://cy4qmcgfo0a4c"
 
 [connection signal="timeout" from="CanvasLayer/UI/TurnTimer" to="CanvasLayer/UI/TypingPanel" method="_on_timer_timeout"]

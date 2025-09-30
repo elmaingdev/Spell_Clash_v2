@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://d4hhs15bw4xdb"]
+
+[ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/mage_2.tscn" id="1_3dwmw"]
+[ext_resource type="SpriteFrames" uid="uid://ls6ettd3fv7p" path="res://themes/SkeletonMage.tres" id="2_fckbc"]
+[ext_resource type="PackedScene" uid="uid://dynnd144058gc" path="res://scenes/chars/projectile_3.tscn" id="2_y1w7j"]
+
+[node name="Mage_2" instance=ExtResource("1_3dwmw")]
+projectile_scene = ExtResource("2_y1w7j")
+shoot_interval = 8.0
+max_hp = 60
+HP = 60
+
+[node name="AnimatedSprite2D" parent="CharacterBody2D" index="0"]
+position = Vector2(-6.0606055, -139.39392)
+scale = Vector2(2.9, 2.9)
+sprite_frames = ExtResource("2_fckbc")
+frame = 0
+frame_progress = 0.0
+
+[node name="CollisionShape2D" parent="CharacterBody2D" index="1"]
+position = Vector2(3.030303, -84.84848)
+
+[node name="ShootTimer" parent="." index="1"]
+wait_time = 6.0
