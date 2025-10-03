@@ -120,7 +120,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"attack",
-"speed": 10.0
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -156,6 +156,29 @@ animations = [{
 "loop": false,
 "name": &"death",
 "speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g3i4c")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gq5q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3kmo2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dq0t4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cwqpi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3dmqc")
+}],
+"loop": false,
+"name": &"defend",
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 1.0,

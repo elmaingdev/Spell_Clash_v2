@@ -6,9 +6,9 @@
 [ext_resource type="AudioStream" uid="uid://bjtw0exmxmg23" path="res://assets/sfx/dmg1_sfx.wav" id="4_dxuui"]
 [ext_resource type="AudioStream" uid="uid://d1vx5mgfixg3x" path="res://assets/sfx/kill_sfx.wav" id="5_67qfc"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_00dj2"]
-radius = 44.42424
-height = 171.99998
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_30yr1"]
+radius = 30.303028
+height = 163.63637
 
 [node name="Mage_2" type="Node2D" groups=["enemy"]]
 scale = Vector2(0.33, 0.33)
@@ -26,13 +26,11 @@ scale = Vector2(3.8175, 3.8175)
 sprite_frames = ExtResource("1_00dj2")
 animation = &"attack"
 autoplay = "idle"
-frame = 5
-frame_progress = 1.0
 flip_h = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
-position = Vector2(-2, -86)
-shape = SubResource("CapsuleShape2D_00dj2")
+position = Vector2(-21.21212, -78.78788)
+shape = SubResource("CapsuleShape2D_30yr1")
 
 [node name="APoint" type="Marker2D" parent="CharacterBody2D"]
 position = Vector2(-137, -92)

@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://c6xw45ilhwral"]
 
-[ext_resource type="Script" uid="uid://dx603kltavatc" path="res://scripts/mage_1.gd" id="1_4gusl"]
-[ext_resource type="PackedScene" uid="uid://baj4vmtxbrupq" path="res://scenes/projectile_1.tscn" id="2_41d1m"]
+[ext_resource type="Script" uid="uid://dx603kltavatc" path="res://scripts/chars/mage_1.gd" id="1_4gusl"]
+[ext_resource type="PackedScene" uid="uid://baj4vmtxbrupq" path="res://scenes/chars/projectile_1.tscn" id="2_41d1m"]
 [ext_resource type="SpriteFrames" uid="uid://cmidlthwcixda" path="res://themes/mage_1.tres" id="2_dnwws"]
 [ext_resource type="AudioStream" uid="uid://bjtw0exmxmg23" path="res://assets/sfx/dmg1_sfx.wav" id="3_4gusl"]
 [ext_resource type="AudioStream" uid="uid://cdxg4dyc8koov" path="res://assets/sfx/block_sfx.wav" id="4_sfmj8"]
@@ -23,10 +23,9 @@ collision_layer = 4
 position = Vector2(0, -103)
 scale = Vector2(3.57692, 3.57692)
 sprite_frames = ExtResource("2_dnwws")
-animation = &"attack"
+animation = &"idle"
 autoplay = "idle"
-frame = 7
-frame_progress = 1.0
+frame_progress = 0.92763317
 flip_h = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]

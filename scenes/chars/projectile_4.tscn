@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://dtmaoc2p4qkgk"]
+
+[ext_resource type="PackedScene" uid="uid://cxwta47m0lft8" path="res://scenes/chars/projectile_2.tscn" id="1_iup3n"]
+[ext_resource type="SpriteFrames" uid="uid://c1jqk425xp8p0" path="res://themes/projectile_4.tres" id="2_w534a"]
+
+[node name="projectile_2" instance=ExtResource("1_iup3n")]
+
+[node name="AnimatedSprite2D" parent="." index="0"]
+sprite_frames = ExtResource("2_w534a")
+animation = &"fly"
+flip_h = false

@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3 uid="uid://bam71iqwn6ufo"]
+
+[ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/mage_2.tscn" id="1_y324x"]
+[ext_resource type="SpriteFrames" uid="uid://t03ndktycb70" path="res://themes/TheWitch.tres" id="2_0qjgg"]
+[ext_resource type="PackedScene" uid="uid://dtmaoc2p4qkgk" path="res://scenes/chars/projectile_4.tscn" id="2_jrk4o"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0qjgg"]
+radius = 24.242422
+height = 163.63635
+
+[node name="Mage_2" instance=ExtResource("1_y324x")]
+projectile_scene = ExtResource("2_jrk4o")
+
+[node name="AnimatedSprite2D" parent="CharacterBody2D" index="0"]
+position = Vector2(-27.272728, -196.96967)
+scale = Vector2(3.5, 3.5)
+sprite_frames = ExtResource("2_0qjgg")
+frame = 0
+frame_progress = 0.0
+flip_h = false
+
+[node name="CollisionShape2D" parent="CharacterBody2D" index="1"]
+position = Vector2(-3.030303, -118.181816)
+shape = SubResource("CapsuleShape2D_0qjgg")

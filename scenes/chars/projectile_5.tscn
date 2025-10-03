@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dokx62fnb30ns"]
+
+[ext_resource type="PackedScene" uid="uid://cxwta47m0lft8" path="res://scenes/chars/projectile_2.tscn" id="1_hm1ob"]
+
+[node name="projectile_2" instance=ExtResource("1_hm1ob")]
+
+[node name="AnimatedSprite2D" parent="." index="0"]
+frame = 3
+frame_progress = 1.0

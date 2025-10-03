@@ -1,8 +1,12 @@
-[gd_scene load_steps=4 format=3 uid="uid://d4hhs15bw4xdb"]
+[gd_scene load_steps=5 format=3 uid="uid://d4hhs15bw4xdb"]
 
 [ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/mage_2.tscn" id="1_3dwmw"]
 [ext_resource type="SpriteFrames" uid="uid://ls6ettd3fv7p" path="res://themes/SkeletonMage.tres" id="2_fckbc"]
 [ext_resource type="PackedScene" uid="uid://dynnd144058gc" path="res://scenes/chars/projectile_3.tscn" id="2_y1w7j"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_y1w7j"]
+radius = 33.33333
+height = 169.69695
 
 [node name="Mage_2" instance=ExtResource("1_3dwmw")]
 projectile_scene = ExtResource("2_y1w7j")
@@ -19,6 +23,7 @@ frame_progress = 0.0
 
 [node name="CollisionShape2D" parent="CharacterBody2D" index="1"]
 position = Vector2(3.030303, -84.84848)
+shape = SubResource("CapsuleShape2D_y1w7j")
 
 [node name="ShootTimer" parent="." index="1"]
 wait_time = 6.0
