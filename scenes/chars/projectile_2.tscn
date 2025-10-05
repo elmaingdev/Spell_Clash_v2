@@ -1,7 +1,77 @@
-[gd_scene load_steps=4 format=3 uid="uid://cxwta47m0lft8"]
+[gd_scene load_steps=14 format=3 uid="uid://cxwta47m0lft8"]
 
 [ext_resource type="Script" uid="uid://cbgxm7yydqpf1" path="res://scripts/chars/projectile_2.gd" id="1_rggar"]
-[ext_resource type="SpriteFrames" uid="uid://bxkcyvk5gy1mc" path="res://themes/projectile_2.tres" id="1_vpobl"]
+[ext_resource type="Texture2D" uid="uid://cdrbkbtp4nxgo" path="res://assets/mage2/fire_projectile_disapear.png" id="2_lgm5g"]
+[ext_resource type="Texture2D" uid="uid://b3hr0hialtdwf" path="res://assets/mage2/Fire_projectile.png" id="3_mchrf"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t3jyg"]
+atlas = ExtResource("2_lgm5g")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_48cuj"]
+atlas = ExtResource("2_lgm5g")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gbpq4"]
+atlas = ExtResource("2_lgm5g")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_imlbs"]
+atlas = ExtResource("2_lgm5g")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ndwda"]
+atlas = ExtResource("3_mchrf")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_83per"]
+atlas = ExtResource("3_mchrf")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lco5d"]
+atlas = ExtResource("3_mchrf")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2qrw1"]
+atlas = ExtResource("3_mchrf")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_aufov"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t3jyg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_48cuj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gbpq4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_imlbs")
+}],
+"loop": false,
+"name": &"disabled",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ndwda")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_83per")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lco5d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2qrw1")
+}],
+"loop": true,
+"name": &"fly",
+"speed": 10.0
+}]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vpobl"]
 radius = 12.121212
@@ -15,7 +85,7 @@ script = ExtResource("1_rggar")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." groups=["enemy_projectile"]]
 position = Vector2(36.363636, -3.030303)
 scale = Vector2(3.2, 3.2)
-sprite_frames = ExtResource("1_vpobl")
+sprite_frames = SubResource("SpriteFrames_aufov")
 animation = &"disabled"
 autoplay = "fly"
 flip_h = true

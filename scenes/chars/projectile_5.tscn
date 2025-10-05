@@ -1,9 +1,73 @@
-[gd_scene load_steps=2 format=3 uid="uid://dokx62fnb30ns"]
+[gd_scene load_steps=11 format=3 uid="uid://dokx62fnb30ns"]
 
 [ext_resource type="PackedScene" uid="uid://cxwta47m0lft8" path="res://scenes/chars/projectile_2.tscn" id="1_hm1ob"]
+[ext_resource type="Texture2D" uid="uid://bko75q71k1ko4" path="res://assets/demon_eye/hit_effect.png" id="2_nh07b"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0ywfd"]
+atlas = ExtResource("2_nh07b")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u6ytw"]
+atlas = ExtResource("2_nh07b")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dagjj"]
+atlas = ExtResource("2_nh07b")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_44n6p"]
+atlas = ExtResource("2_nh07b")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v8yhd"]
+atlas = ExtResource("2_nh07b")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a3wg1"]
+atlas = ExtResource("2_nh07b")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_dagjj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0ywfd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u6ytw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dagjj")
+}],
+"loop": false,
+"name": &"disabled",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_44n6p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v8yhd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a3wg1")
+}],
+"loop": true,
+"name": &"fly",
+"speed": 10.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_t8d4t"]
+radius = 45.55544
 
 [node name="projectile_2" instance=ExtResource("1_hm1ob")]
 
 [node name="AnimatedSprite2D" parent="." index="0"]
-frame = 3
-frame_progress = 1.0
+position = Vector2(1.9073486e-06, -1.9073486e-06)
+scale = Vector2(7.7128778, 7.7128778)
+sprite_frames = SubResource("SpriteFrames_dagjj")
+
+[node name="CollisionShape2D" parent="." index="1"]
+position = Vector2(-3.8146973e-06, 0)
+shape = SubResource("CircleShape2D_t8d4t")

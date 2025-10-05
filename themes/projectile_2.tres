@@ -1,51 +1,46 @@
-[gd_resource type="SpriteFrames" load_steps=8 format=3 uid="uid://bxkcyvk5gy1mc"]
+[gd_resource type="SpriteFrames" load_steps=11 format=3 uid="uid://bxkcyvk5gy1mc"]
 
-[ext_resource type="Texture2D" uid="uid://bko75q71k1ko4" path="res://assets/demon_eye/hit_effect.png" id="1_7jroh"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_qvkrt"]
-atlas = ExtResource("1_7jroh")
-region = Rect2(0, 0, 16, 16)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_5necy"]
-atlas = ExtResource("1_7jroh")
-region = Rect2(16, 0, 16, 16)
+[ext_resource type="Texture2D" uid="uid://cdrbkbtp4nxgo" path="res://assets/mage2/fire_projectile_disapear.png" id="1_qvkrt"]
+[ext_resource type="Texture2D" uid="uid://b3hr0hialtdwf" path="res://assets/mage2/Fire_projectile.png" id="2_5necy"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_t3jyg"]
-atlas = ExtResource("1_7jroh")
-region = Rect2(32, 0, 16, 16)
+atlas = ExtResource("1_qvkrt")
+region = Rect2(144, 0, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_48cuj"]
-atlas = ExtResource("1_7jroh")
-region = Rect2(16, 0, 16, 16)
+atlas = ExtResource("1_qvkrt")
+region = Rect2(96, 0, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gbpq4"]
-atlas = ExtResource("1_7jroh")
-region = Rect2(32, 0, 16, 16)
+atlas = ExtResource("1_qvkrt")
+region = Rect2(48, 0, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_imlbs"]
-atlas = ExtResource("1_7jroh")
-region = Rect2(0, 0, 16, 16)
+atlas = ExtResource("1_qvkrt")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ndwda"]
+atlas = ExtResource("2_5necy")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_83per"]
+atlas = ExtResource("2_5necy")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lco5d"]
+atlas = ExtResource("2_5necy")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2qrw1"]
+atlas = ExtResource("2_5necy")
+region = Rect2(144, 0, 48, 48)
 
 [resource]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_qvkrt")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_5necy")
-}, {
-"duration": 1.0,
 "texture": SubResource("AtlasTexture_t3jyg")
 }, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_t3jyg")
-}],
-"loop": false,
-"name": &"disabled",
-"speed": 9.0
-}, {
-"frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_48cuj")
 }, {
@@ -54,6 +49,23 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_imlbs")
+}],
+"loop": false,
+"name": &"disabled",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ndwda")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_83per")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lco5d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2qrw1")
 }],
 "loop": true,
 "name": &"fly",
