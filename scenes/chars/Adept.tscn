@@ -1,19 +1,19 @@
-[gd_scene load_steps=7 format=3 uid="uid://bxmxtmbhcrvo"]
+[gd_scene load_steps=7 format=3 uid="uid://ckcaxuam5dg5k"]
 
-[ext_resource type="SpriteFrames" uid="uid://dejor2o2ftyc8" path="res://themes/mage_2.tres" id="1_00dj2"]
-[ext_resource type="Script" uid="uid://bd7edbmv4oxdr" path="res://scripts/chars/mage_2.gd" id="1_ot1n3"]
-[ext_resource type="PackedScene" uid="uid://cxwta47m0lft8" path="res://scenes/chars/projectile_2.tscn" id="2_ik8oj"]
-[ext_resource type="AudioStream" uid="uid://bjtw0exmxmg23" path="res://assets/sfx/dmg1_sfx.wav" id="4_dxuui"]
-[ext_resource type="AudioStream" uid="uid://d1vx5mgfixg3x" path="res://assets/sfx/kill_sfx.wav" id="5_67qfc"]
+[ext_resource type="Script" uid="uid://dug4ygpwh0whn" path="res://scripts/chars/AdeptEnemy.gd" id="1_rf7pr"]
+[ext_resource type="PackedScene" uid="uid://cxwta47m0lft8" path="res://scenes/chars/projectile_2.tscn" id="2_5ajxy"]
+[ext_resource type="SpriteFrames" uid="uid://dejor2o2ftyc8" path="res://themes/mage_2.tres" id="3_aoxg8"]
+[ext_resource type="AudioStream" uid="uid://bjtw0exmxmg23" path="res://assets/sfx/dmg1_sfx.wav" id="4_1v8tw"]
+[ext_resource type="AudioStream" uid="uid://d1vx5mgfixg3x" path="res://assets/sfx/kill_sfx.wav" id="5_1hvni"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_30yr1"]
 radius = 30.303028
 height = 163.63637
 
-[node name="Mage_2" type="Node2D" groups=["enemy"]]
+[node name="Enemy" type="Node2D" groups=["enemy"]]
 scale = Vector2(0.33, 0.33)
-script = ExtResource("1_ot1n3")
-projectile_scene = ExtResource("2_ik8oj")
+script = ExtResource("1_rf7pr")
+projectile_scene = ExtResource("2_5ajxy")
 max_hp = 90
 HP = 90
 
@@ -23,7 +23,7 @@ collision_layer = 2
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]
 position = Vector2(2, -133)
 scale = Vector2(3.8175, 3.8175)
-sprite_frames = ExtResource("1_00dj2")
+sprite_frames = ExtResource("3_aoxg8")
 animation = &"attack"
 autoplay = "idle"
 flip_h = true
@@ -42,9 +42,9 @@ autostart = true
 [node name="Sfx" type="Node" parent="."]
 
 [node name="Damage" type="AudioStreamPlayer2D" parent="Sfx"]
-stream = ExtResource("4_dxuui")
+stream = ExtResource("4_1v8tw")
 bus = &"FX"
 
 [node name="Death" type="AudioStreamPlayer2D" parent="Sfx"]
-stream = ExtResource("5_67qfc")
+stream = ExtResource("5_1hvni")
 bus = &"FX"

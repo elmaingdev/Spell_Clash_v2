@@ -2,8 +2,8 @@ extends Control
 class_name GameOverPanel
 
 const SM := preload("res://autoloads/SpeedManager.gd")
-const MENU_PATH_PRIMARY := "res://scenes/UI/menu.tscn"
-const MENU_PATH_FALLBACK := "res://scenes/ui/menu.tscn" # por si el nombre difiere en minúsculas
+const MENU_PATH_PRIMARY := "res://scenes/UI/Menu.tscn"
+const MENU_PATH_FALLBACK := "res://scenes/ui/Menu.tscn" # por si difiere en minúsculas
 
 @onready var _yes: Button = $PanelContainer/VBoxContainer/HBoxContainer/Yesbtn
 @onready var _no: Button  = $PanelContainer/VBoxContainer/HBoxContainer/Nobtn
@@ -11,7 +11,7 @@ const MENU_PATH_FALLBACK := "res://scenes/ui/menu.tscn" # por si el nombre difie
 @onready var _this_lbl: Label = $PanelContainer/VBoxContainer/This_lbl
 @onready var _pb_lbl: Label   = $PanelContainer/VBoxContainer/personal_best_lbl
 
-@onready var _enemy:  Mage2 = %Mage_2
+@onready var _enemy: EnemyBase = get_node_or_null("%Enemy") as EnemyBase
 @onready var _player: Mage1 = %Mage_1
 @onready var _bgm: AudioStreamPlayer = %BGM
 @onready var _bottom: Control = %BottomPanel
@@ -23,6 +23,9 @@ func _ready() -> void:
 	z_index = 1000
 	top_level = true
 
+	# Resolver nodos (por si %Enemy no estaba listo aún)
+	_resolve_enemy_player()
+
 	_yes.pressed.connect(_on_yes)
 	_no.pressed.connect(_on_no)
 
@@ -31,8 +34,35 @@ func _ready() -> void:
 	if _player and not _player.died.is_connected(_on_any_died):
 		_player.died.connect(_on_any_died)
 
+func _resolve_enemy_player() -> void:
+	if _enemy == null:
+		# 1) Unique Name
+		var n := get_node_or_null("%Enemy")
+		if n is EnemyBase:
+			_enemy = n as EnemyBase
+	# 2) Grupo 'enemy'
+	if _enemy == null:
+		var list := get_tree().get_nodes_in_group("enemy")
+		for e in list:
+			if e is EnemyBase:
+				_enemy = e as EnemyBase
+				break
+	# 3) Fallback por clase_name
+	if _enemy == null:
+		var by_class := get_tree().root.find_children("", "EnemyBase", true, false)
+		if by_class.size() > 0 and by_class[0] is EnemyBase:
+			_enemy = by_class[0] as EnemyBase
+
+	if _player == null:
+		var p := get_node_or_null("%Mage_1")
+		if p is Mage1:
+			_player = p as Mage1
+		else:
+			_player = get_tree().root.find_child("Mage_1", true, false) as Mage1
+
 func _on_any_died() -> void:
-	if visible: return
+	if visible:
+		return
 
 	# 1) Tomamos el tiempo de la run
 	var elapsed_ms: int = _get_run_time_ms()
@@ -57,7 +87,8 @@ func _on_any_died() -> void:
 		_bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	move_to_front()
 	get_tree().paused = true
-	if _bgm: _bgm.stop()
+	if _bgm:
+		_bgm.stop()
 	visible = true
 	_yes.grab_focus()
 
@@ -90,7 +121,8 @@ func _get_run_time_ms() -> int:
 	return int(rt.get_elapsed_ms()) if rt else 0
 
 static func _fmt_ms(ms: int) -> String:
-	if ms < 0: ms = 0
+	if ms < 0:
+		ms = 0
 	var msf: float = float(ms)
 	var minutes: int    = int(floor(msf / 60000.0))
 	var seconds: int    = int(floor(fmod(msf, 60000.0) / 1000.0))

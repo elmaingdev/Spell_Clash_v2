@@ -1,0 +1,50 @@
+[gd_scene load_steps=7 format=3 uid="uid://bxmxtmbhcrvo"]
+
+[ext_resource type="Script" uid="uid://vvjptkkw42h2" path="res://scripts/chars/EnemyBase.gd" id="1_bqhkw"]
+[ext_resource type="PackedScene" uid="uid://cxwta47m0lft8" path="res://scenes/chars/projectile_2.tscn" id="2_q3wj1"]
+[ext_resource type="SpriteFrames" uid="uid://dejor2o2ftyc8" path="res://themes/mage_2.tres" id="3_lm02i"]
+[ext_resource type="AudioStream" uid="uid://bjtw0exmxmg23" path="res://assets/sfx/dmg1_sfx.wav" id="4_atw4n"]
+[ext_resource type="AudioStream" uid="uid://d1vx5mgfixg3x" path="res://assets/sfx/kill_sfx.wav" id="5_2mbve"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_30yr1"]
+radius = 30.303028
+height = 163.63637
+
+[node name="Enemy" type="Node2D" groups=["enemy"]]
+scale = Vector2(0.33, 0.33)
+script = ExtResource("1_bqhkw")
+projectile_scene = ExtResource("2_q3wj1")
+max_hp = 90
+HP = 90
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+collision_layer = 2
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]
+position = Vector2(2, -133)
+scale = Vector2(3.8175, 3.8175)
+sprite_frames = ExtResource("3_lm02i")
+animation = &"attack"
+autoplay = "idle"
+flip_h = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+position = Vector2(-21.21212, -78.78788)
+shape = SubResource("CapsuleShape2D_30yr1")
+
+[node name="APoint" type="Marker2D" parent="CharacterBody2D"]
+position = Vector2(-137, -92)
+
+[node name="ShootTimer" type="Timer" parent="."]
+wait_time = 3.0
+autostart = true
+
+[node name="Sfx" type="Node" parent="."]
+
+[node name="Damage" type="AudioStreamPlayer2D" parent="Sfx"]
+stream = ExtResource("4_atw4n")
+bus = &"FX"
+
+[node name="Death" type="AudioStreamPlayer2D" parent="Sfx"]
+stream = ExtResource("5_2mbve")
+bus = &"FX"

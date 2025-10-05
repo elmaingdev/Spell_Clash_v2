@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://cpnrkcgy61lno"]
 
 [ext_resource type="FontFile" uid="uid://cb1upqnk6arqn" path="res://assets/fonts/PixelOperator8-Bold.ttf" id="1_lk26y"]
-[ext_resource type="Script" uid="uid://n35fbw23ykeh" path="res://scripts/GameOverPanel.gd" id="1_swu1w"]
+[ext_resource type="Script" uid="uid://n35fbw23ykeh" path="res://scripts/UI/GameOverPanel.gd" id="1_swu1w"]
 [ext_resource type="FontFile" uid="uid://gedy68241spt" path="res://assets/fonts/PixelOperator8.ttf" id="2_swu1w"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7ai4i"]

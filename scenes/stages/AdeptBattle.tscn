@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=4 uid="uid://bvbt7va51d2tc"]
+[gd_scene load_steps=19 format=4 uid="uid://bvbt7va51d2tc"]
 
 [ext_resource type="Script" uid="uid://dimk00kx0fxk5" path="res://scripts/Battle.gd" id="1_mmuyt"]
 [ext_resource type="Script" uid="uid://bcghxxakdsd3q" path="res://scripts/system/ModeSwitcher.gd" id="2_p1lbk"]
@@ -8,12 +8,11 @@
 [ext_resource type="PackedScene" uid="uid://c566mi0ppmg2g" path="res://scenes/UI/InfoPanel.tscn" id="6_gcd48"]
 [ext_resource type="PackedScene" uid="uid://ts0saqd7n1w" path="res://scenes/UI/ScorePanel.tscn" id="7_ej3v3"]
 [ext_resource type="PackedScene" uid="uid://bwyo15q3n6htl" path="res://scenes/UI/BottomPanel.tscn" id="8_vigir"]
-[ext_resource type="PackedScene" uid="uid://cpnrkcgy61lno" path="res://scenes/UI/GameOverPanel.tscn" id="9_6iydp"]
 [ext_resource type="PackedScene" uid="uid://bwjuv6o6yi6rb" path="res://scenes/UI/ComboPanel.tscn" id="10_oogxg"]
 [ext_resource type="PackedScene" uid="uid://cgv2y31m0qgut" path="res://scenes/UI/SpeedPanel.tscn" id="11_t7yv2"]
 [ext_resource type="PackedScene" uid="uid://c6xw45ilhwral" path="res://scenes/chars/mage_1.tscn" id="13_56eja"]
+[ext_resource type="PackedScene" uid="uid://ckcaxuam5dg5k" path="res://scenes/chars/Adept.tscn" id="13_lh6jn"]
 [ext_resource type="Texture2D" uid="uid://bd6e237p0odfj" path="res://assets/backgrounds/bg_cypt_tomb.png" id="14_lh6jn"]
-[ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/mage_2.tscn" id="14_rxt0l"]
 [ext_resource type="AudioStream" uid="uid://dtderyonblk36" path="res://assets/bgm/march_of_iron.wav" id="15_emwbx"]
 [ext_resource type="TileSet" uid="uid://hf1l66v0orbv" path="res://themes/TileMap.tres" id="15_kk0ja"]
 [ext_resource type="Script" uid="uid://cy4qmcgfo0a4c" path="res://scripts/system/ProjectilePool.gd" id="16_44x63"]
@@ -74,26 +73,21 @@ z_index = 500
 z_as_relative = false
 layout_mode = 1
 
-[node name="GameOverPanel" parent="CanvasLayer/UI" instance=ExtResource("9_6iydp")]
-unique_name_in_owner = true
-z_index = 1000
-z_as_relative = false
-layout_mode = 1
-
 [node name="ComboPanel" parent="CanvasLayer/UI" instance=ExtResource("10_oogxg")]
 layout_mode = 1
 
 [node name="SpeedPanel" parent="CanvasLayer/UI" instance=ExtResource("11_t7yv2")]
 layout_mode = 1
 
-[node name="Mage_1" parent="." instance=ExtResource("13_56eja")]
+[node name="Mage_1" parent="." node_paths=PackedStringArray("projectile_pool") instance=ExtResource("13_56eja")]
 unique_name_in_owner = true
 position = Vector2(169.00002, 275)
 typing_panel_path = NodePath("../CanvasLayer/UI/TypingPanel")
+projectile_pool = NodePath("../PlayerProjectilePool")
 
-[node name="Mage_2" parent="." instance=ExtResource("14_rxt0l")]
+[node name="Enemy" parent="." instance=ExtResource("13_lh6jn")]
 unique_name_in_owner = true
-position = Vector2(478.00003, 272.00003)
+position = Vector2(487, 272)
 
 [node name="Stage" type="Node2D" parent="."]
 

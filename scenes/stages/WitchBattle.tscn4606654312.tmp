@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=4 uid="uid://3byq85jh78o1"]
+[gd_scene load_steps=24 format=4 uid="uid://3byq85jh78o1"]
 
 [ext_resource type="Script" uid="uid://dimk00kx0fxk5" path="res://scripts/Battle.gd" id="1_gbtjg"]
 [ext_resource type="Script" uid="uid://bcghxxakdsd3q" path="res://scripts/system/ModeSwitcher.gd" id="2_orp30"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://c566mi0ppmg2g" path="res://scenes/UI/InfoPanel.tscn" id="6_6f7rb"]
 [ext_resource type="PackedScene" uid="uid://ts0saqd7n1w" path="res://scenes/UI/ScorePanel.tscn" id="7_xenrh"]
 [ext_resource type="PackedScene" uid="uid://bwyo15q3n6htl" path="res://scenes/UI/BottomPanel.tscn" id="8_myede"]
+[ext_resource type="PackedScene" uid="uid://cpnrkcgy61lno" path="res://scenes/UI/GameOverPanel.tscn" id="9_w2dtk"]
 [ext_resource type="PackedScene" uid="uid://bwjuv6o6yi6rb" path="res://scenes/UI/ComboPanel.tscn" id="10_r63kx"]
 [ext_resource type="PackedScene" uid="uid://cgv2y31m0qgut" path="res://scenes/UI/SpeedPanel.tscn" id="11_ykspv"]
 [ext_resource type="PackedScene" uid="uid://c6xw45ilhwral" path="res://scenes/chars/mage_1.tscn" id="12_e37tc"]
@@ -18,7 +19,7 @@
 [ext_resource type="Texture2D" uid="uid://dl513ptvav01m" path="res://assets/tilesets/Spritesheet_spell_clash.png" id="16_qieyk"]
 [ext_resource type="Script" uid="uid://cy4qmcgfo0a4c" path="res://scripts/system/ProjectilePool.gd" id="17_dqtoc"]
 [ext_resource type="PackedScene" uid="uid://baj4vmtxbrupq" path="res://scenes/chars/projectile_1.tscn" id="18_6aana"]
-[ext_resource type="PackedScene" uid="uid://dtmaoc2p4qkgk" path="res://scenes/chars/projectile_4.tscn" id="20_orp30"]
+[ext_resource type="PackedScene" uid="uid://cxwta47m0lft8" path="res://scenes/chars/projectile_2.tscn" id="19_07tkk"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wtc3i"]
 texture = ExtResource("15_c50xt")
@@ -419,6 +420,12 @@ z_index = 500
 z_as_relative = false
 layout_mode = 1
 
+[node name="GameOverPanel" parent="CanvasLayer/UI" instance=ExtResource("9_w2dtk")]
+unique_name_in_owner = true
+z_index = 1000
+z_as_relative = false
+layout_mode = 1
+
 [node name="ComboPanel" parent="CanvasLayer/UI" instance=ExtResource("10_r63kx")]
 layout_mode = 1
 
@@ -463,7 +470,7 @@ metadata/_custom_type_script = "uid://cy4qmcgfo0a4c"
 
 [node name="EnemyProjectilePool" type="Node" parent="."]
 script = ExtResource("17_dqtoc")
-projectile_scene = ExtResource("20_orp30")
+projectile_scene = ExtResource("19_07tkk")
 metadata/_custom_type_script = "uid://cy4qmcgfo0a4c"
 
 [connection signal="timeout" from="CanvasLayer/UI/TurnTimer" to="CanvasLayer/UI/TypingPanel" method="_on_timer_timeout"]

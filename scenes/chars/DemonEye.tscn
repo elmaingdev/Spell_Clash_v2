@@ -1,14 +1,20 @@
-[gd_scene load_steps=5 format=3 uid="uid://cer5srpw4wtn"]
+[gd_scene load_steps=6 format=3 uid="uid://cer5srpw4wtn"]
 
-[ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/mage_2.tscn" id="1_brebi"]
+[ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/EnemyBase.tscn" id="1_brebi"]
 [ext_resource type="SpriteFrames" uid="uid://bu05k4am0xwyd" path="res://themes/DemonEye.tres" id="2_do44k"]
+[ext_resource type="Script" uid="uid://qrtgurbn3odm" path="res://scripts/chars/DemonEye.gd" id="2_lt3pd"]
 [ext_resource type="PackedScene" uid="uid://dokx62fnb30ns" path="res://scenes/chars/projectile_5.tscn" id="2_r28ij"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_r28ij"]
 radius = 51.515152
 height = 218.18182
 
-[node name="Mage_2" instance=ExtResource("1_brebi")]
+[node name="Enemy" instance=ExtResource("1_brebi")]
+script = ExtResource("2_lt3pd")
+volley_count = 5
+volley_spacing = 0.1
+proj_speed = 110.0
+proj_damage = 8
 projectile_scene = ExtResource("2_r28ij")
 
 [node name="AnimatedSprite2D" parent="CharacterBody2D" index="0"]

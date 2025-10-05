@@ -1,22 +1,24 @@
-[gd_scene load_steps=5 format=3 uid="uid://bam71iqwn6ufo"]
+[gd_scene load_steps=6 format=3 uid="uid://bam71iqwn6ufo"]
 
-[ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/mage_2.tscn" id="1_y324x"]
+[ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/EnemyBase.tscn" id="1_y324x"]
 [ext_resource type="SpriteFrames" uid="uid://t03ndktycb70" path="res://themes/TheWitch.tres" id="2_0qjgg"]
 [ext_resource type="PackedScene" uid="uid://dtmaoc2p4qkgk" path="res://scenes/chars/projectile_4.tscn" id="2_jrk4o"]
+[ext_resource type="Script" uid="uid://baoi0631fd66x" path="res://scripts/chars/TheWitch.gd" id="2_mfdle"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0qjgg"]
 radius = 24.242422
 height = 163.63635
 
-[node name="Mage_2" instance=ExtResource("1_y324x")]
+[node name="Enemy" instance=ExtResource("1_y324x")]
+script = ExtResource("2_mfdle")
+block_chance = 0.25
+block_ms = 700
 projectile_scene = ExtResource("2_jrk4o")
 
 [node name="AnimatedSprite2D" parent="CharacterBody2D" index="0"]
 position = Vector2(-27.272728, -196.96967)
 scale = Vector2(3.5, 3.5)
 sprite_frames = ExtResource("2_0qjgg")
-frame = 0
-frame_progress = 0.0
 flip_h = false
 
 [node name="CollisionShape2D" parent="CharacterBody2D" index="1"]

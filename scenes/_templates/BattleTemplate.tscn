@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://0ij85ox8j5li" path="res://scenes/UI/DirectionsPanel.tscn" id="3_66ngm"]
 [ext_resource type="PackedScene" uid="uid://c6xw45ilhwral" path="res://scenes/chars/mage_1.tscn" id="4_a12nh"]
 [ext_resource type="PackedScene" uid="uid://ts0saqd7n1w" path="res://scenes/UI/ScorePanel.tscn" id="4_f4pi3"]
-[ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/mage_2.tscn" id="5_lpir7"]
+[ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/EnemyBase.tscn" id="5_lpir7"]
 [ext_resource type="PackedScene" uid="uid://cpnrkcgy61lno" path="res://scenes/UI/GameOverPanel.tscn" id="5_yahae"]
 [ext_resource type="AudioStream" uid="uid://dtderyonblk36" path="res://assets/bgm/march_of_iron.wav" id="6_6vh42"]
 [ext_resource type="PackedScene" uid="uid://bwyo15q3n6htl" path="res://scenes/UI/BottomPanel.tscn" id="6_v7i3o"]
@@ -111,7 +111,7 @@ unique_name_in_owner = true
 position = Vector2(169, 280.00003)
 typing_panel_path = NodePath("../CanvasLayer/UI/TypingPanel")
 
-[node name="Mage_2" parent="." instance=ExtResource("5_lpir7")]
+[node name="Enemy" parent="." instance=ExtResource("5_lpir7")]
 unique_name_in_owner = true
 position = Vector2(478, 279.00003)
 

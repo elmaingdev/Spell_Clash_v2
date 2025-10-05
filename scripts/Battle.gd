@@ -1,11 +1,11 @@
 extends Node2D
 class_name Battle
 
-@onready var enemy: Mage2    = get_node_or_null("%Mage_2")
-@onready var player: Mage1   = get_node_or_null("%Mage_1")
-@onready var info: InfoPanel = get_node_or_null("%InfoPanel")
+@onready var enemy: EnemyBase = get_node_or_null("%Enemy") as EnemyBase
+@onready var player: Mage1    = get_node_or_null("%Mage_1")
+@onready var info: InfoPanel  = get_node_or_null("%InfoPanel")
 
-# Referencias opcionales por Inspector (arrastra si quieres evitar búsquedas)
+# Referencias opcionales por Inspector (para evitar búsquedas)
 @export_node_path("Control") var typing_panel_path: NodePath     = NodePath("")
 @export_node_path("Control") var directions_panel_path: NodePath = NodePath("")
 @export_node_path("Control") var timer_path: NodePath            = NodePath("")
@@ -22,7 +22,7 @@ func _ready() -> void:
 		cc.call_deferred("rewire")
 		cc.call_deferred("emit_now")
 
-	# Cargar PB desde disco a SpeedManager, usando SaveManager
+	# Cargar PB desde disco a SpeedManager (vía SaveManager)
 	var saver: Node = get_node_or_null("/root/SaveManager")
 	if saver and saver.has_method("load_into_speed_manager"):
 		saver.call_deferred("load_into_speed_manager")
@@ -30,6 +30,9 @@ func _ready() -> void:
 	call_deferred("_wire_up")
 
 func _wire_up() -> void:
+	# Resolver enemigo si no está (por si el Unique Name no se asignó)
+	_resolve_enemy_if_needed()
+
 	# --- UI HP wiring ---
 	if enemy and info and info.has_method("set_enemy_hp"):
 		var cb_e: Callable = Callable(info, "set_enemy_hp")
@@ -52,6 +55,25 @@ func _wire_up() -> void:
 #        Candado anti “doble evento” (Timer vs. éxito)
 # ============================================================
 
+func _resolve_enemy_if_needed() -> void:
+	if enemy != null:
+		return
+	# 1) Unique Name
+	var n := get_node_or_null("%Enemy")
+	if n is EnemyBase:
+		enemy = n as EnemyBase
+		return
+	# 2) Grupo
+	var list := get_tree().get_nodes_in_group("enemy")
+	for e in list:
+		if e is EnemyBase:
+			enemy = e as EnemyBase
+			return
+	# 3) Fallback por clase_name
+	var by_class := get_tree().root.find_children("", "EnemyBase", true, false)
+	if by_class.size() > 0 and by_class[0] is EnemyBase:
+		enemy = by_class[0] as EnemyBase
+
 func _resolve_timer_and_panels() -> void:
 	# --- TurnTimer ---
 	if timer_path != NodePath(""):
@@ -59,7 +81,7 @@ func _resolve_timer_and_panels() -> void:
 		if t is TurnTimer:
 			timer_ref = t
 	if timer_ref == null:
-		timer_ref = get_node_or_null("%TurnTimer") as TurnTimer  # Unique Name recomendado
+		timer_ref = get_node_or_null("%TurnTimer") as TurnTimer   # Unique Name recomendado
 	if timer_ref == null:
 		timer_ref = get_tree().root.find_child("TurnTimer", true, false) as TurnTimer
 
