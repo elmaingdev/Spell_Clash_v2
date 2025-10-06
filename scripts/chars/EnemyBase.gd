@@ -10,7 +10,7 @@ signal died
 @onready var apoint: Marker2D         = $CharacterBody2D/APoint
 @onready var shoot_timer: Timer       = $ShootTimer
 
-# --- SFX locales (bus FX) ---
+# --- SFX ---
 @onready var sfx_damage: AudioStreamPlayer2D = $Sfx/Damage
 @onready var sfx_death:  AudioStreamPlayer2D = $Sfx/Death
 
@@ -19,15 +19,20 @@ const DMG_STREAMS: Array[AudioStream] = [
 	preload("res://assets/sfx/dmg2_sfx.wav"),
 ]
 
-# Disparo
-@export var projectile_scene: PackedScene      # fallback si no hay pool
-@export var projectile_pool: ProjectilePool    # pool de proyectiles enemigos (opcional)
+# -------- Config general --------
+@export var projectile_scene: PackedScene
+@export var projectile_pool: ProjectilePool
 @export var shoot_interval: float = 7.0
 @export var cast_delay: float = 0.3
 
-# Vida
 @export var max_hp: int = 40
 @export var HP: int = 40
+
+# -------- Modo base (rápido) --------
+@export var activate_custom: bool = false  # ← OFF por defecto: sin patrones especiales
+@export var base_mode_hp: int = 15
+@export var base_mode_shoot_interval: float = 7.0
+@export var base_mode_cast_delay: float = 0.3
 
 var is_dead: bool = false
 var _fire_sfx_idx: int = 0
@@ -42,6 +47,13 @@ func _ready() -> void:
 		sprite.play("idle")
 		if not sprite.animation_finished.is_connected(_on_anim_finished):
 			sprite.animation_finished.connect(_on_anim_finished)
+
+	# Si NO usamos comportamiento custom, forzamos un enemigo “ligero”
+	if not activate_custom:
+		max_hp = base_mode_hp
+		HP = base_mode_hp
+		shoot_interval = base_mode_shoot_interval
+		cast_delay = base_mode_cast_delay
 
 	HP = clampi(HP, 0, max_hp)
 	call_deferred("_emit_initial_hp")
@@ -59,7 +71,7 @@ func _emit_initial_hp() -> void:
 func _on_shoot_timer_timeout() -> void:
 	attack_and_cast()
 
-# ---------- Loop de ataque (se puede sobreescribir) ----------
+# ---------- Ataque base ----------
 func attack_and_cast() -> void:
 	if is_dead:
 		return
@@ -77,12 +89,10 @@ func attack_and_cast() -> void:
 	var start_pos: Vector2 = (apoint.global_position if is_instance_valid(apoint) else global_position)
 	proj.global_position = start_pos
 
-	# SFX de disparo secuenciado (si el proyectil lo soporta)
 	if "sfx_index" in proj:
 		proj.sfx_index = _fire_sfx_idx
 		_fire_sfx_idx = (_fire_sfx_idx + 1) % 3
 
-	# Reactivar estados (añade al grupo, activa colisiones y reproduce SFX)
 	if proj.has_method("reactivate"):
 		proj.reactivate()
 
@@ -143,11 +153,9 @@ func _play_death_sfx() -> void:
 	if sfx_death:
 		sfx_death.play()
 
-# ====== Hooks de personalización (override en subclases) ======
+# ====== Hooks de personalización ======
 func _before_shoot() -> void:
-	# Ej.: cargar un “tell”, cambiar animación, aplicar estados, etc.
 	pass
 
 func _after_shoot(_proj: Node2D) -> void:
-	# Ej.: modificar velocidad/daño del proyectil, aplicar patrones, etc.
 	pass

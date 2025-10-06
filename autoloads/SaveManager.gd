@@ -18,22 +18,28 @@ func new_game() -> void:
 func load_into_speed_manager() -> bool:
 	if not has_save():
 		return false
+
 	var fa: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.READ)
 	if fa == null:
 		return false
+
 	var txt: String = fa.get_as_text()
 	fa.close()
 
-	var data: Variant = JSON.parse_string(txt)
-	if typeof(data) != TYPE_DICTIONARY:
+	# ⚠️ Tipamos explícitamente el parseo para evitar Variant-inferred warning
+	var data_any: Variant = JSON.parse_string(txt)
+	if typeof(data_any) != TYPE_DICTIONARY:
 		return false
 
-	var dict: Dictionary = data
+	var dict: Dictionary = data_any as Dictionary
 	var pb: int = int(dict.get("personal_best_ms", -1))
 
 	var sm: Node = get_node_or_null("/root/SpeedManager")
 	if sm:
 		sm.call("set_personal_best", pb)
+		# Al cargar, el tiempo de run siempre vuelve a 0
+		sm.call("set_run_time", 0)
+
 	return true
 
 func save_from_speed_manager() -> bool:
@@ -54,6 +60,7 @@ func _save_from_speed_manager() -> bool:
 	var fa: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if fa == null:
 		return false
+
 	fa.store_string(JSON.stringify(payload))
 	fa.close()
 	return true

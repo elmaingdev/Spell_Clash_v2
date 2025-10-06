@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://cqtct4bo5es3n"]
 
-[ext_resource type="Script" uid="uid://562tav1ctutw" path="res://scripts/TypingPanel.gd" id="1_1jxtd"]
+[ext_resource type="Script" uid="uid://562tav1ctutw" path="res://scripts/UI/TypingPanel.gd" id="1_1jxtd"]
 [ext_resource type="StyleBox" uid="uid://boc3wul5wjxip" path="res://themes/boxflat.tres" id="2_ylh55"]
 [ext_resource type="LabelSettings" uid="uid://de705pwk1itxt" path="res://themes/spell_lbl.tres" id="3_d7kjs"]
 [ext_resource type="FontFile" uid="uid://gedy68241spt" path="res://assets/fonts/PixelOperator8.ttf" id="4_gh7xp"]

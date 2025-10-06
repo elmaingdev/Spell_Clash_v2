@@ -21,15 +21,21 @@ func _ready() -> void:
 		if parent_ctrl:
 			_label = parent_ctrl.find_child("CurrentTimeLabel", true, false) as Label
 
-	# Auto-tick
+	# Auto-tick (este Timer sólo “tiquea” la UI; no controla el tiempo de juego)
 	wait_time = tick_interval
 	one_shot = false
 	autostart = true
 	if not timeout.is_connected(_on_tick):
 		timeout.connect(_on_tick)
 
-	reset_run()
-	start()
+	# Pinta el tiempo actual si viene de SpeedManager (por ejemplo al entrar a otra stage)
+	var sm := get_node_or_null("/root/SpeedManager")
+	if sm:
+		var ms0: int = int(sm.get("run_time"))
+		_elapsed_before_pause = ms0
+		_set_label(ms0)
+
+	start() # inicia el tiqueo del label
 
 func _on_tick() -> void:
 	if not _running:
@@ -37,11 +43,29 @@ func _on_tick() -> void:
 	var ms: int = _elapsed_before_pause + (Time.get_ticks_msec() - _start_msec)
 	_set_label(ms)
 
+	# Sincroniza con SpeedManager para que las nuevas stages continúen
+	var sm := get_node_or_null("/root/SpeedManager")
+	if sm:
+		sm.call("set_run_time", ms)
+
 # ===== API =====
 func start_run() -> void:
+	# Comienzo de run → resetea el acumulado tanto local como en SpeedManager
 	_elapsed_before_pause = 0
 	_start_msec = Time.get_ticks_msec()
 	_running = true
+	var sm := get_node_or_null("/root/SpeedManager")
+	if sm:
+		sm.call("set_run_time", 0)
+	if is_stopped():
+		start()
+
+func continue_from(ms: int) -> void:
+	# Continúa una run ya en progreso (p.ej. tras cambiar de escena)
+	_elapsed_before_pause = max(0, ms)
+	_start_msec = Time.get_ticks_msec()
+	_running = true
+	_set_label(ms)
 	if is_stopped():
 		start()
 
@@ -49,12 +73,16 @@ func stop_run() -> void:
 	if not _running: return
 	_elapsed_before_pause += (Time.get_ticks_msec() - _start_msec)
 	_running = false
+	# No tocamos SpeedManager: queda con el último valor
 
 func reset_run() -> void:
 	_running = false
 	_elapsed_before_pause = 0
 	_start_msec = Time.get_ticks_msec()
 	_set_label(0)
+	var sm := get_node_or_null("/root/SpeedManager")
+	if sm:
+		sm.call("set_run_time", 0)
 
 func get_elapsed_ms() -> int:
 	return _elapsed_before_pause + (Time.get_ticks_msec() - _start_msec) if _running else _elapsed_before_pause

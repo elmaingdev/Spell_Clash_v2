@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dimk00kx0fxk5" path="res://scripts/Battle.gd" id="1_l6kok"]
 [ext_resource type="Script" uid="uid://bcghxxakdsd3q" path="res://scripts/system/ModeSwitcher.gd" id="2_v4ynp"]
-[ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/UI/turn_timer.tscn" id="3_2oexe"]
+[ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/UI/TurnTimer.tscn" id="3_2oexe"]
 [ext_resource type="PackedScene" uid="uid://cqtct4bo5es3n" path="res://scenes/UI/TypingPanel.tscn" id="4_ia1xb"]
 [ext_resource type="PackedScene" uid="uid://0ij85ox8j5li" path="res://scenes/UI/DirectionsPanel.tscn" id="5_y5xpa"]
 [ext_resource type="PackedScene" uid="uid://c566mi0ppmg2g" path="res://scenes/UI/InfoPanel.tscn" id="6_faivx"]
@@ -88,6 +88,7 @@ projectile_pool = NodePath("../PlayerProjectilePool")
 [node name="Enemy" parent="." node_paths=PackedStringArray("projectile_pool") instance=ExtResource("13_l6kok")]
 unique_name_in_owner = true
 position = Vector2(489, 262.00003)
+use_custom_attack = false
 projectile_pool = NodePath("../EnemyProjectilePool")
 
 [node name="Stage" type="Node2D" parent="."]

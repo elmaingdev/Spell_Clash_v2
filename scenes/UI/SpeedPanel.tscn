@@ -1,9 +1,9 @@
 [gd_scene load_steps=10 format=3 uid="uid://cgv2y31m0qgut"]
 
 [ext_resource type="FontFile" uid="uid://gedy68241spt" path="res://assets/fonts/PixelOperator8.ttf" id="1_ixsyo"]
-[ext_resource type="Script" uid="uid://cmnjp4ef6cyni" path="res://scripts/SpeedPanel.gd" id="1_w84ci"]
+[ext_resource type="Script" uid="uid://cmnjp4ef6cyni" path="res://scripts/UI/SpeedPanel.gd" id="1_w84ci"]
 [ext_resource type="LabelSettings" uid="uid://n5tqhjxd2h0i" path="res://themes/speedpanel_label.tres" id="2_n8kdl"]
-[ext_resource type="Script" uid="uid://sciv6a3iqmg7" path="res://scripts/RunTimer.gd" id="3_n8kdl"]
+[ext_resource type="Script" uid="uid://sciv6a3iqmg7" path="res://scripts/system/RunTimer.gd" id="3_n8kdl"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ixsyo"]
 content_margin_left = 9.0

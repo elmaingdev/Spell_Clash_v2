@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dimk00kx0fxk5" path="res://scripts/Battle.gd" id="1_p0caf"]
 [ext_resource type="PackedScene" uid="uid://cqtct4bo5es3n" path="res://scenes/UI/TypingPanel.tscn" id="1_th188"]
-[ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/UI/turn_timer.tscn" id="2_p1qf1"]
+[ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/UI/TurnTimer.tscn" id="2_p1qf1"]
 [ext_resource type="PackedScene" uid="uid://c566mi0ppmg2g" path="res://scenes/UI/InfoPanel.tscn" id="3_4k1nj"]
 [ext_resource type="PackedScene" uid="uid://0ij85ox8j5li" path="res://scenes/UI/DirectionsPanel.tscn" id="3_66ngm"]
 [ext_resource type="PackedScene" uid="uid://c6xw45ilhwral" path="res://scenes/chars/mage_1.tscn" id="4_a12nh"]

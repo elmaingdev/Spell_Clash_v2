@@ -21,6 +21,7 @@ Sfx="*res://autoloads/Sfx.gd"
 ComboCounter="*res://autoloads/ComboCounter.gd"
 SpeedManager="*res://autoloads/SpeedManager.gd"
 SaveManager="*res://autoloads/SaveManager.gd"
+StageFlow="*res://autoloads/StageFlow.gd"
 
 [display]
 

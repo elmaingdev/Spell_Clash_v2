@@ -1,14 +1,16 @@
 extends Control
 class_name SpeedPanel
 
-# Usa el tipo del script (no la instancia autoload)
 const SM := preload("res://autoloads/SpeedManager.gd")
 
 @export var title_text: String = "RUN TIME"
 
+# Ajustado a tus 4 stages actuales
 const LEVEL_TO_LABEL_NODE := {
-	"Red Adept": "RedAdeptTime",
-	"Sk Mage": "SkMageTime",
+	"Sk Mage":    "SkMageTime",
+	"Witch":      "WitchTime",
+	"Red Adept":  "RedAdeptTime",
+	"Demon Eye":  "DemonTime",
 }
 
 var _title: Label = null
@@ -49,8 +51,20 @@ func reset_run() -> void:
 		if _current: _current.text = "00:00.00"
 
 func _auto_start_run() -> void:
-	if _run_timer:
-		_run_timer.start_run()
+	if _run_timer == null:
+		return
+
+	var sm := get_node_or_null("/root/SpeedManager")
+	var ms := 0
+	if sm:
+		ms = int(sm.get("run_time"))
+
+	# Si nunca se ha iniciado (ms == 0) → iniciar; si ya había tiempo → continuar
+	if ms <= 0:
+		if not _run_timer.is_running():
+			_run_timer.start_run()
+	else:
+		_run_timer.continue_from(ms)
 
 func _resolve_nodes() -> void:
 	_title      = find_child("TitleLabel", true, false) as Label
@@ -96,14 +110,12 @@ func _refresh_pb_from_manager() -> void:
 	if sm:
 		var pb := int(sm.get("personal_best"))
 		if pb >= 0:
-			# Llamamos a la función estática desde el TIPO (script preloaded)
 			txt = "TOP: %s" % SM.fmt_ms(pb)
 	_pb_label.text = txt
 
 func _on_pb_changed(_ms: int) -> void:
 	_refresh_pb_from_manager()
 
-# Utilidad local para splits (puedes mantenerla)
 static func _fmt_ms(ms: int) -> String:
 	if ms < 0: return "--:--.--"
 	var msf: float = float(ms)

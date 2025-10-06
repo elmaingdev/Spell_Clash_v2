@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bmg5ivlx0bfvn"]
 
-[ext_resource type="Script" uid="uid://bal7uhwax1k2o" path="res://scripts/TurnTimer.gd" id="1_0gp04"]
+[ext_resource type="Script" uid="uid://bal7uhwax1k2o" path="res://scripts/UI/TurnTimer.gd" id="1_0gp04"]
 [ext_resource type="FontFile" uid="uid://cb1upqnk6arqn" path="res://assets/fonts/PixelOperator8-Bold.ttf" id="1_3svr6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qcnr2"]

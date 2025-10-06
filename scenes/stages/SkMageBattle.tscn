@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dimk00kx0fxk5" path="res://scripts/Battle.gd" id="1_byw5n"]
 [ext_resource type="Script" uid="uid://bcghxxakdsd3q" path="res://scripts/system/ModeSwitcher.gd" id="2_rtx34"]
-[ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/UI/turn_timer.tscn" id="3_mfjwe"]
+[ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/UI/TurnTimer.tscn" id="3_mfjwe"]
 [ext_resource type="PackedScene" uid="uid://cqtct4bo5es3n" path="res://scenes/UI/TypingPanel.tscn" id="4_fkek3"]
 [ext_resource type="PackedScene" uid="uid://0ij85ox8j5li" path="res://scenes/UI/DirectionsPanel.tscn" id="5_wl6ti"]
 [ext_resource type="PackedScene" uid="uid://c566mi0ppmg2g" path="res://scenes/UI/InfoPanel.tscn" id="6_3ulmb"]
