@@ -5,12 +5,11 @@ const SM := preload("res://autoloads/SpeedManager.gd")
 
 @export var title_text: String = "RUN TIME"
 
-# Ajustado a tus 4 stages actuales
 const LEVEL_TO_LABEL_NODE := {
-	"Sk Mage":    "SkMageTime",
-	"Witch":      "WitchTime",
-	"Red Adept":  "RedAdeptTime",
-	"Demon Eye":  "DemonTime",
+	"Sk Mage":   "SkMageTime",
+	"Witch":     "WitchTime",
+	"Adept":     "AdeptTime",
+	"Demon Eye": "DemonEyeTime",
 }
 
 var _title: Label = null
@@ -24,18 +23,21 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_resolve_nodes()
 
-	if _title:
-		_title.text = title_text
+	if _title: _title.text = title_text
 	if _current and (_current.text == "" or _current.text == null):
 		_current.text = "00:00.00"
 
 	_map_split_labels()
 	_refresh_all_split_rows()
 	_refresh_pb_from_manager()
+	_refresh_pb_splits_from_manager()
 
 	var sm := get_node_or_null("/root/SpeedManager")
-	if sm and not sm.personal_best_changed.is_connected(_on_pb_changed):
-		sm.personal_best_changed.connect(_on_pb_changed)
+	if sm:
+		if sm.has_signal("personal_best_changed") and not sm.personal_best_changed.is_connected(_on_pb_changed):
+			sm.personal_best_changed.connect(_on_pb_changed)
+		if sm.has_signal("personal_best_splits_changed") and not sm.personal_best_splits_changed.is_connected(_on_pb_splits_changed):
+			sm.personal_best_splits_changed.connect(_on_pb_splits_changed)
 
 	call_deferred("_auto_start_run")
 
@@ -51,15 +53,10 @@ func reset_run() -> void:
 		if _current: _current.text = "00:00.00"
 
 func _auto_start_run() -> void:
-	if _run_timer == null:
-		return
-
+	if _run_timer == null: return
 	var sm := get_node_or_null("/root/SpeedManager")
 	var ms := 0
-	if sm:
-		ms = int(sm.get("run_time"))
-
-	# Si nunca se ha iniciado (ms == 0) → iniciar; si ya había tiempo → continuar
+	if sm: ms = int(sm.get("run_time"))
 	if ms <= 0:
 		if not _run_timer.is_running():
 			_run_timer.start_run()
@@ -71,12 +68,7 @@ func _resolve_nodes() -> void:
 	_current    = find_child("CurrentTimeLabel", true, false) as Label
 	_pb_label   = find_child("PBLabel", true, false) as Label
 	_splits_box = find_child("SplitsBox", true, false) as VBoxContainer
-
-	_run_timer = get_node_or_null("RunTimer") as RunTimer
-	if _run_timer == null:
-		var rt := find_child("RunTimer", true, false)
-		if rt is RunTimer:
-			_run_timer = rt as RunTimer
+	_run_timer  = find_child("RunTimer", true, false) as RunTimer
 
 func _map_split_labels() -> void:
 	_split_labels.clear()
@@ -113,8 +105,25 @@ func _refresh_pb_from_manager() -> void:
 			txt = "TOP: %s" % SM.fmt_ms(pb)
 	_pb_label.text = txt
 
+func _refresh_pb_splits_from_manager() -> void:
+	var sm := get_node_or_null("/root/SpeedManager")
+	if sm == null: return
+	var v: Variant = sm.get("personal_best_splits")
+	if not (v is Dictionary): 
+		# borra a "--:--.--"
+		for k in _split_labels.keys():
+			_set_split_row(k, -1, 0, false)
+		return
+	var splits: Dictionary = v as Dictionary
+	for name_key in _split_labels.keys():
+		var ms_val: int = int(splits.get(name_key, -1))
+		_set_split_row(name_key, ms_val, 0, false)
+
 func _on_pb_changed(_ms: int) -> void:
 	_refresh_pb_from_manager()
+
+func _on_pb_splits_changed(_splits: Dictionary) -> void:
+	_refresh_pb_splits_from_manager()
 
 static func _fmt_ms(ms: int) -> String:
 	if ms < 0: return "--:--.--"

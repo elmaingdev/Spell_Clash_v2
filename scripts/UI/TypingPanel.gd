@@ -4,7 +4,7 @@ class_name TypingPanel
 
 signal score_ready(rating: String)
 signal round_started
-signal next_requested                  # cuando el jugador escribe NEXT/END RUN
+signal next_requested      # se emite cuando el jugador escribe NEXT/END RUN
 signal spell_success(phrase: String)
 
 @onready var _label: Label    = %PhraseLabel
@@ -22,9 +22,8 @@ var _rng := RandomNumberGenerator.new()
 var _round_active := false
 var _round_start_msec := 0
 var _awaiting_next := false
-
-# ---- cache seguro del autoload ----
-var _stageflow: Node = null
+var _next_sent: bool = false                 # evita reentradas al pasar de stage
+var _flow: Node = null                       # ← StageFlow cacheado
 
 func _ready() -> void:
 	_rng.randomize()
@@ -38,8 +37,8 @@ func _ready() -> void:
 	if _input and not _input.text_changed.is_connected(_on_text):
 		_input.text_changed.connect(_on_text)
 
-	# Cachear StageFlow una sola vez (estamos dentro del árbol)
-	_stageflow = get_node_or_null("/root/StageFlow")
+	# Cachear StageFlow una vez dentro del árbol
+	_flow = _resolve_stage_flow()
 
 	# Escuchar muerte del enemigo de la escena
 	_wire_enemy_died()
@@ -48,13 +47,20 @@ func _ready() -> void:
 		call_deferred("start_round")
 
 func _exit_tree() -> void:
-	# Evita usar referencias cuando la escena ya salió del árbol
-	_stageflow = null
+	# Evita que entren callbacks cuando ya no estamos en el árbol
+	if _input and _input.text_changed.is_connected(_on_text):
+		_input.text_changed.disconnect(_on_text)
+	_next_sent = false
+
+# -------- helpers de autoload --------
+func _resolve_stage_flow() -> Node:
+	var root := (get_tree().root if get_tree() != null else null)
+	return root.get_node_or_null("StageFlow") if root else null
 
 # --- Sincroniza la palabra de avance según si es última stage ---
 func _sync_next_keyword_to_stage() -> void:
-	var flow := _get_stageflow()
-	if flow and flow.has_method("is_last_stage") and bool(flow.call("is_last_stage")):
+	if _flow == null: _flow = _resolve_stage_flow()
+	if _flow and _flow.has_method("is_last_stage") and bool(_flow.call("is_last_stage")):
 		next_keyword = "END RUN"
 	else:
 		next_keyword = "NEXT"
@@ -69,7 +75,6 @@ func _wire_enemy_died() -> void:
 		enemy.died.connect(_on_enemy_died)
 
 func _on_enemy_died() -> void:
-	# Ajusta la palabra y muestra el prompt correcto
 	_sync_next_keyword_to_stage()
 	set_mode_enabled(true)   # fuerza ATTACK activo
 	visible = true
@@ -77,7 +82,6 @@ func _on_enemy_died() -> void:
 
 # ---------------- Modo / rondas ----------------
 func set_mode_enabled(active: bool) -> void:
-	# Si estamos esperando NEXT/END RUN, mantenemos ATTACK y el prompt
 	if _awaiting_next and active:
 		mode_enabled = true
 		show_next_prompt()
@@ -122,6 +126,9 @@ func on_timeout() -> void:
 
 # ---------------- Input ----------------
 func _on_text(new_text: String) -> void:
+	# Si ya no pertenecemos al árbol activo, no busques nada global
+	if not is_inside_tree():
+		return
 	if not mode_enabled or not _round_active:
 		return
 
@@ -138,12 +145,17 @@ func _on_text(new_text: String) -> void:
 	_round_active = false
 
 	if is_next_word:
+		if _next_sent:
+			return
+		_next_sent = true
 		_awaiting_next = false
+		if _input: _input.editable = false
 		next_requested.emit()
-		var flow := _get_stageflow()
-		# Llamamos DEFERRED para no cambiar de escena dentro del callback del LineEdit
-		if flow and flow.has_method("go_next"):
-			flow.call_deferred("go_next")  # en última stage hará finalize_and_return_to_menu()
+
+		# Usa la referencia cacheada (sin get_node con ruta absoluta)
+		if _flow == null: _flow = _resolve_stage_flow()
+		if _flow and _flow.has_method("go_next"):
+			_flow.call_deferred("go_next")
 		return
 
 	# Acierto normal
@@ -180,12 +192,3 @@ func _pick_spell() -> String:
 		"terra spina","ventus celer","runas vivas","draco minor","nova runica"
 	]
 	return fb[_rng.randi_range(0, fb.size() - 1)]
-
-# Devuelve la referencia cacheada si sigue viva; si aún estamos en árbol y se perdió, reintenta
-func _get_stageflow() -> Node:
-	if is_instance_valid(_stageflow):
-		return _stageflow
-	if is_inside_tree():
-		_stageflow = get_node_or_null("/root/StageFlow")
-		return _stageflow
-	return null
