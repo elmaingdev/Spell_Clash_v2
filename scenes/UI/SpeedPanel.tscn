@@ -123,13 +123,13 @@ layout_mode = 2
 text = "The Witch:"
 label_settings = SubResource("LabelSettings_iecqj")
 
-[node name="RedAdeptTime" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/SplitsBox"]
+[node name="AdeptTime" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/SplitsBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "The Adept: "
 label_settings = SubResource("LabelSettings_iecqj")
 
-[node name="DemonTime" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/SplitsBox"]
+[node name="DemonEyeTime" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/SplitsBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Demon Eye:"

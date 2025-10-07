@@ -4,7 +4,7 @@ class_name TypingPanel
 
 signal score_ready(rating: String)
 signal round_started
-signal next_requested      # se emite cuando el jugador escribe NEXT/END RUN
+signal next_requested                  # cuando el jugador escribe NEXT/END RUN
 signal spell_success(phrase: String)
 
 @onready var _label: Label    = %PhraseLabel
@@ -23,6 +23,9 @@ var _round_active := false
 var _round_start_msec := 0
 var _awaiting_next := false
 
+# ---- cache seguro del autoload ----
+var _stageflow: Node = null
+
 func _ready() -> void:
 	_rng.randomize()
 
@@ -35,15 +38,22 @@ func _ready() -> void:
 	if _input and not _input.text_changed.is_connected(_on_text):
 		_input.text_changed.connect(_on_text)
 
+	# Cachear StageFlow una sola vez (estamos dentro del árbol)
+	_stageflow = get_node_or_null("/root/StageFlow")
+
 	# Escuchar muerte del enemigo de la escena
 	_wire_enemy_died()
 
 	if visible:
 		call_deferred("start_round")
 
+func _exit_tree() -> void:
+	# Evita usar referencias cuando la escena ya salió del árbol
+	_stageflow = null
+
 # --- Sincroniza la palabra de avance según si es última stage ---
 func _sync_next_keyword_to_stage() -> void:
-	var flow := get_node_or_null("/root/StageFlow")
+	var flow := _get_stageflow()
 	if flow and flow.has_method("is_last_stage") and bool(flow.call("is_last_stage")):
 		next_keyword = "END RUN"
 	else:
@@ -130,9 +140,10 @@ func _on_text(new_text: String) -> void:
 	if is_next_word:
 		_awaiting_next = false
 		next_requested.emit()
-		var flow := get_node_or_null("/root/StageFlow")
+		var flow := _get_stageflow()
+		# Llamamos DEFERRED para no cambiar de escena dentro del callback del LineEdit
 		if flow and flow.has_method("go_next"):
-			flow.call("go_next")  # en última stage hará finalize_and_return_to_menu()
+			flow.call_deferred("go_next")  # en última stage hará finalize_and_return_to_menu()
 		return
 
 	# Acierto normal
@@ -169,3 +180,12 @@ func _pick_spell() -> String:
 		"terra spina","ventus celer","runas vivas","draco minor","nova runica"
 	]
 	return fb[_rng.randi_range(0, fb.size() - 1)]
+
+# Devuelve la referencia cacheada si sigue viva; si aún estamos en árbol y se perdió, reintenta
+func _get_stageflow() -> Node:
+	if is_instance_valid(_stageflow):
+		return _stageflow
+	if is_inside_tree():
+		_stageflow = get_node_or_null("/root/StageFlow")
+		return _stageflow
+	return null
