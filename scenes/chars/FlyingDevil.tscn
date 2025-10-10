@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://b8vxynlvh3mxq"]
+
+[ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/EnemyBase.tscn" id="1_8uuci"]
+[ext_resource type="SpriteFrames" uid="uid://flx5pcs271f4" path="res://themes/flying_devil.tres" id="2_reavh"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_m4rq1"]
+radius = 66.66666
+height = 206.06058
+
+[node name="Enemy" instance=ExtResource("1_8uuci")]
+
+[node name="AnimatedSprite2D" parent="CharacterBody2D" index="0"]
+position = Vector2(33.33333, -145.45454)
+sprite_frames = ExtResource("2_reavh")
+animation = &"idle"
+frame_progress = 0.96099365
+flip_h = false
+
+[node name="CollisionShape2D" parent="CharacterBody2D" index="1"]
+position = Vector2(9.090906, -112.12121)
+shape = SubResource("CapsuleShape2D_m4rq1")

@@ -1,0 +1,123 @@
+[gd_scene load_steps=19 format=4 uid="uid://2dsdc8x0angr"]
+
+[ext_resource type="Script" uid="uid://dimk00kx0fxk5" path="res://scripts/Battle.gd" id="1_oe5qh"]
+[ext_resource type="Script" uid="uid://bcghxxakdsd3q" path="res://scripts/system/ModeSwitcher.gd" id="2_4huqy"]
+[ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/UI/TurnTimer.tscn" id="3_mxvgg"]
+[ext_resource type="PackedScene" uid="uid://cqtct4bo5es3n" path="res://scenes/UI/TypingPanel.tscn" id="4_ui7nc"]
+[ext_resource type="PackedScene" uid="uid://0ij85ox8j5li" path="res://scenes/UI/DirectionsPanel.tscn" id="5_1dcaf"]
+[ext_resource type="PackedScene" uid="uid://c566mi0ppmg2g" path="res://scenes/UI/InfoPanel.tscn" id="6_cl253"]
+[ext_resource type="PackedScene" uid="uid://ts0saqd7n1w" path="res://scenes/UI/ScorePanel.tscn" id="7_bxqpb"]
+[ext_resource type="PackedScene" uid="uid://bwyo15q3n6htl" path="res://scenes/UI/BottomPanel.tscn" id="8_utb1g"]
+[ext_resource type="PackedScene" uid="uid://bwjuv6o6yi6rb" path="res://scenes/UI/ComboPanel.tscn" id="9_ahsad"]
+[ext_resource type="PackedScene" uid="uid://cgv2y31m0qgut" path="res://scenes/UI/SpeedPanel.tscn" id="10_wbd2j"]
+[ext_resource type="PackedScene" uid="uid://c6xw45ilhwral" path="res://scenes/chars/mage_1.tscn" id="11_ic130"]
+[ext_resource type="PackedScene" uid="uid://dtmaoc2p4qkgk" path="res://scenes/chars/projectile_4.tscn" id="13_4huqy"]
+[ext_resource type="Texture2D" uid="uid://d2mt5x5c1phe0" path="res://assets/backgrounds/bg_forest.png" id="13_uwhdy"]
+[ext_resource type="TileSet" uid="uid://hf1l66v0orbv" path="res://themes/TileMap.tres" id="14_ol1qc"]
+[ext_resource type="AudioStream" uid="uid://dtderyonblk36" path="res://assets/bgm/march_of_iron.wav" id="15_yoi3j"]
+[ext_resource type="Script" uid="uid://cy4qmcgfo0a4c" path="res://scripts/system/ProjectilePool.gd" id="16_pxmk1"]
+[ext_resource type="PackedScene" uid="uid://baj4vmtxbrupq" path="res://scenes/chars/projectile_1.tscn" id="17_l0usq"]
+[ext_resource type="PackedScene" uid="uid://lclyghb1ymc0" path="res://scenes/chars/medusa.tscn" id="18_oe5qh"]
+
+[node name="Battle" type="Node2D"]
+script = ExtResource("1_oe5qh")
+typing_panel_path = NodePath("CanvasLayer/UI/TypingPanel")
+directions_panel_path = NodePath("CanvasLayer/UI/DirectionsPanel")
+timer_path = NodePath("CanvasLayer/UI/TurnTimer")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="UI" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ModeSwitcher" type="Node" parent="CanvasLayer/UI"]
+unique_name_in_owner = true
+script = ExtResource("2_4huqy")
+typing_path = NodePath("../TypingPanel")
+defend_path = NodePath("../DirectionsPanel")
+bottom_path = NodePath("../BottomPanel")
+timer_path = NodePath("../TurnTimer")
+
+[node name="TurnTimer" parent="CanvasLayer/UI" instance=ExtResource("3_mxvgg")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="TypingPanel" parent="CanvasLayer/UI" node_paths=PackedStringArray("timer_ref") instance=ExtResource("4_ui7nc")]
+unique_name_in_owner = true
+layout_mode = 1
+timer_ref = NodePath("../TurnTimer")
+
+[node name="DirectionsPanel" parent="CanvasLayer/UI" node_paths=PackedStringArray("timer_ref") instance=ExtResource("5_1dcaf")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+timer_ref = NodePath("../TurnTimer")
+player_path = NodePath("../../../Mage_1")
+
+[node name="InfoPanel" parent="CanvasLayer/UI" instance=ExtResource("6_cl253")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="ScorePanel" parent="CanvasLayer/UI" instance=ExtResource("7_bxqpb")]
+layout_mode = 1
+typing_panel_path = NodePath("../TypingPanel")
+
+[node name="BottomPanel" parent="CanvasLayer/UI" instance=ExtResource("8_utb1g")]
+unique_name_in_owner = true
+z_index = 500
+z_as_relative = false
+layout_mode = 1
+
+[node name="ComboPanel" parent="CanvasLayer/UI" instance=ExtResource("9_ahsad")]
+layout_mode = 1
+
+[node name="SpeedPanel" parent="CanvasLayer/UI" instance=ExtResource("10_wbd2j")]
+layout_mode = 1
+
+[node name="Mage_1" parent="." node_paths=PackedStringArray("projectile_pool") instance=ExtResource("11_ic130")]
+unique_name_in_owner = true
+position = Vector2(169.00002, 275)
+typing_panel_path = NodePath("../CanvasLayer/UI/TypingPanel")
+projectile_pool = NodePath("../PlayerProjectilePool")
+
+[node name="Enemy" parent="." node_paths=PackedStringArray("projectile_pool") instance=ExtResource("18_oe5qh")]
+unique_name_in_owner = true
+position = Vector2(468, 270.00003)
+projectile_pool = NodePath("../EnemyProjectilePool")
+
+[node name="Stage" type="Node2D" parent="."]
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="Stage"]
+
+[node name="BG" type="Sprite2D" parent="Stage/ParallaxBackground"]
+position = Vector2(320, 84)
+scale = Vector2(0.41659537, 0.41659537)
+texture = ExtResource("13_uwhdy")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="Stage"]
+tile_map_data = PackedByteArray("AAAAABEAAAABAA4AAAAAABIAAAABAA8AAAAAABMAAAABABAAAAABABEAAAACAA4AAAABABIAAAACAA8AAAABABMAAAACABAAAAACABEAAAADAA4AAAACABIAAAADAA8AAAACABMAAAADABAAAAADABEAAAAEAA4AAAADABIAAAAEAA8AAAADABMAAAAEABAAAAAEABEAAAAFAA4AAAAEABIAAAAFAA8AAAAEABMAAAAFABAAAAAFABEAAAAGAA4AAAAFABIAAAAGAA8AAAAFABMAAAAGABAAAAAGABEAAAAHAA4AAAAGABIAAAAHAA8AAAAGABMAAAAHABAAAAAHABEAAAABAA4AAAAHABIAAAABAA8AAAAHABMAAAABABAAAAAIABEAAAACAA4AAAAIABIAAAACAA8AAAAIABMAAAACABAAAAAJABEAAAADAA4AAAAJABIAAAADAA8AAAAJABMAAAADABAAAAAKABEAAAAEAA4AAAAKABIAAAAEAA8AAAAKABMAAAAEABAAAAALABEAAAAFAA4AAAALABIAAAAFAA8AAAALABMAAAAFABAAAAAMABEAAAAGAA4AAAAMABIAAAAGAA8AAAAMABMAAAAGABAAAAANABEAAAAHAA4AAAANABIAAAAHAA8AAAANABMAAAAHABAAAAAOABEAAAABAA4AAAAOABIAAAABAA8AAAAOABMAAAABABAAAAAPABEAAAACAA4AAAAPABIAAAACAA8AAAAPABMAAAACABAAAAAQABEAAAADAA4AAAAQABIAAAADAA8AAAAQABMAAAADABAAAAARABEAAAAEAA4AAAARABIAAAAEAA8AAAARABMAAAAEABAAAAASABEAAAAFAA4AAAASABIAAAAFAA8AAAASABMAAAAFABAAAAATABEAAAAGAA4AAAATABIAAAAGAA8AAAATABMAAAAGABAAAAAUABEAAAAHAA4AAAAUABIAAAAHAA8AAAAUABMAAAAHABAAAAAVABEAAAABAA4AAAAVABIAAAABAA8AAAAVABMAAAABABAAAAAWABEAAAACAA4AAAAWABIAAAACAA8AAAAWABMAAAACABAAAAAXABEAAAADAA4AAAAXABIAAAADAA8AAAAXABMAAAADABAAAAAYABEAAAAEAA4AAAAYABIAAAAEAA8AAAAYABMAAAAEABAAAAAZABEAAAAFAA4AAAAZABIAAAAFAA8AAAAZABMAAAAFABAAAAAaABEAAAAGAA4AAAAaABIAAAAGAA8AAAAaABMAAAAGABAAAAAbABEAAAAHAA4AAAAbABIAAAAHAA8AAAAbABMAAAAHABAAAAAcABEAAAABAA4AAAAcABIAAAABAA8AAAAcABMAAAABABAAAAAdABEAAAACAA4AAAAdABIAAAACAA8AAAAdABMAAAACABAAAAAeABEAAAADAA4AAAAeABIAAAADAA8AAAAeABMAAAADABAAAAAfABEAAAAEAA4AAAAfABIAAAAEAA8AAAAfABMAAAAEABAAAAAgABEAAAAFAA4AAAAgABIAAAAFAA8AAAAgABMAAAAFABAAAAAhABEAAAAGAA4AAAAhABIAAAAGAA8AAAAhABMAAAAGABAAAAAiABEAAAAHAA4AAAAiABIAAAAHAA8AAAAiABMAAAAHABAAAAAjABEAAAABAA4AAAAjABIAAAABAA8AAAAjABMAAAABABAAAAAkABEAAAACAA4AAAAkABIAAAACAA8AAAAkABMAAAACABAAAAAlABEAAAADAA4AAAAlABIAAAADAA8AAAAlABMAAAADABAAAAAmABEAAAAEAA4AAAAmABIAAAAEAA8AAAAmABMAAAAEABAAAAAnABEAAAAFAA4AAAAnABIAAAAFAA8AAAAnABMAAAAFABAAAAAAABQAAAABABAAAAABABQAAAACABAAAAACABQAAAADABAAAAADABQAAAAEABAAAAAEABQAAAAFABAAAAAFABQAAAAGABAAAAAGABQAAAAHABAAAAAHABQAAAABABAAAAAIABQAAAACABAAAAAJABQAAAADABAAAAAKABQAAAAEABAAAAALABQAAAAFABAAAAAMABQAAAAGABAAAAANABQAAAAHABAAAAAOABQAAAABABAAAAAPABQAAAACABAAAAAQABQAAAADABAAAAARABQAAAAEABAAAAASABQAAAAFABAAAAATABQAAAAGABAAAAAUABQAAAAHABAAAAAVABQAAAABABAAAAAWABQAAAACABAAAAAXABQAAAADABAAAAAYABQAAAAEABAAAAAZABQAAAAFABAAAAAaABQAAAAGABAAAAAbABQAAAAHABAAAAAcABQAAAABABAAAAAdABQAAAACABAAAAAeABQAAAADABAAAAAfABQAAAAEABAAAAAgABQAAAAFABAAAAAhABQAAAAGABAAAAAiABQAAAAHABAAAAAjABQAAAABABAAAAAkABQAAAACABAAAAAlABQAAAADABAAAAAmABQAAAAEABAAAAAnABQAAAAFABAAAAAAABUAAAABABAAAAABABUAAAACABAAAAACABUAAAADABAAAAADABUAAAAEABAAAAAEABUAAAAFABAAAAAFABUAAAAGABAAAAAGABUAAAAHABAAAAAHABUAAAABABAAAAAIABUAAAACABAAAAAJABUAAAADABAAAAAKABUAAAAEABAAAAALABUAAAAFABAAAAAMABUAAAAGABAAAAANABUAAAAHABAAAAAOABUAAAABABAAAAAPABUAAAACABAAAAAQABUAAAADABAAAAARABUAAAAEABAAAAASABUAAAAFABAAAAATABUAAAAGABAAAAAUABUAAAAHABAAAAAVABUAAAABABAAAAAWABUAAAACABAAAAAXABUAAAADABAAAAAYABUAAAAEABAAAAAZABUAAAAFABAAAAAaABUAAAAGABAAAAAbABUAAAAHABAAAAAcABUAAAABABAAAAAdABUAAAACABAAAAAeABUAAAADABAAAAAfABUAAAAEABAAAAAgABUAAAAFABAAAAAhABUAAAAGABAAAAAiABUAAAAHABAAAAAjABUAAAABABAAAAAkABUAAAACABAAAAAlABUAAAADABAAAAAmABUAAAAEABAAAAAnABUAAAAFABAAAAAAABYAAAABABAAAAABABYAAAACABAAAAACABYAAAADABAAAAADABYAAAAEABAAAAAEABYAAAAFABAAAAAFABYAAAAGABAAAAAGABYAAAAHABAAAAAHABYAAAABABAAAAAIABYAAAACABAAAAAJABYAAAADABAAAAAKABYAAAAEABAAAAALABYAAAAFABAAAAAMABYAAAAGABAAAAANABYAAAAHABAAAAAOABYAAAABABAAAAAPABYAAAACABAAAAAQABYAAAADABAAAAARABYAAAAEABAAAAASABYAAAAFABAAAAATABYAAAAGABAAAAAUABYAAAAHABAAAAAVABYAAAABABAAAAAWABYAAAACABAAAAAXABYAAAADABAAAAAYABYAAAAEABAAAAAZABYAAAAFABAAAAAaABYAAAAGABAAAAAbABYAAAAHABAAAAAcABYAAAABABAAAAAdABYAAAACABAAAAAeABYAAAADABAAAAAfABYAAAAEABAAAAAgABYAAAAFABAAAAAhABYAAAAGABAAAAAiABYAAAAHABAAAAAjABYAAAABABAAAAAkABYAAAACABAAAAAlABYAAAADABAAAAAmABYAAAAEABAAAAAnABYAAAAFABAAAAA=")
+tile_set = ExtResource("14_ol1qc")
+
+[node name="BGM" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("15_yoi3j")
+volume_db = -6.0
+autoplay = true
+bus = &"BGM"
+
+[node name="PlayerProjectilePool" type="Node" parent="."]
+script = ExtResource("16_pxmk1")
+projectile_scene = ExtResource("17_l0usq")
+metadata/_custom_type_script = "uid://cy4qmcgfo0a4c"
+
+[node name="EnemyProjectilePool" type="Node" parent="."]
+script = ExtResource("16_pxmk1")
+projectile_scene = ExtResource("13_4huqy")
+metadata/_custom_type_script = "uid://cy4qmcgfo0a4c"
+
+[connection signal="timeout" from="CanvasLayer/UI/TurnTimer" to="CanvasLayer/UI/TypingPanel" method="_on_timer_timeout"]

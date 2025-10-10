@@ -6,7 +6,7 @@ class_name Menu
 @onready var quit_btn: Button = %Quitbtn
 
 const STAGE1_PATHS := [
-	"res://scenes/stages/SkMageBattle.tscn",
+	"res://scenes/stages/PoisonSkullBattle.tscn",
 ]
 
 func _ready() -> void:

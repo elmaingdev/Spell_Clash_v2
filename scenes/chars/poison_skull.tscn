@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://d35xfpo0o41up"]
+
+[ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/EnemyBase.tscn" id="1_gkt67"]
+[ext_resource type="SpriteFrames" uid="uid://dv8k8uf0jfgs" path="res://themes/poison_skull.tres" id="2_lxbng"]
+[ext_resource type="PackedScene" uid="uid://dtmaoc2p4qkgk" path="res://scenes/chars/projectile_4.tscn" id="2_snrin"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_snrin"]
+radius = 42.42424
+height = 181.81816
+
+[node name="Enemy" instance=ExtResource("1_gkt67")]
+projectile_scene = ExtResource("2_snrin")
+
+[node name="AnimatedSprite2D" parent="CharacterBody2D" index="0"]
+position = Vector2(6.4521666, -125.76609)
+scale = Vector2(2.742254, 2.7574055)
+sprite_frames = ExtResource("2_lxbng")
+animation = &"idle"
+frame_progress = 0.90758663
+flip_h = false
+
+[node name="CollisionShape2D" parent="CharacterBody2D" index="1"]
+position = Vector2(6.060605, -87.878784)
+shape = SubResource("CapsuleShape2D_snrin")
+
+[node name="APoint" parent="CharacterBody2D" index="2"]
+position = Vector2(-133.33333, -48.48485)

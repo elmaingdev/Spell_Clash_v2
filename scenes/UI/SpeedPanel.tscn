@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cgv2y31m0qgut"]
+[gd_scene load_steps=12 format=3 uid="uid://cgv2y31m0qgut"]
 
 [ext_resource type="FontFile" uid="uid://gedy68241spt" path="res://assets/fonts/PixelOperator8.ttf" id="1_ixsyo"]
 [ext_resource type="Script" uid="uid://cmnjp4ef6cyni" path="res://scripts/UI/SpeedPanel.gd" id="1_w84ci"]
@@ -34,7 +34,7 @@ outline_color = Color(0, 0, 0, 1)
 shadow_size = 0
 shadow_color = Color(0, 0, 0, 0.756863)
 
-[sub_resource type="LabelSettings" id="LabelSettings_iecqj"]
+[sub_resource type="LabelSettings" id="LabelSettings_6v3t2"]
 font = ExtResource("1_ixsyo")
 font_size = 8
 outline_size = 1
@@ -42,7 +42,23 @@ outline_color = Color(0, 0, 0, 1)
 shadow_size = 0
 shadow_color = Color(0, 0, 0, 0.756863)
 
-[sub_resource type="LabelSettings" id="LabelSettings_setwy"]
+[sub_resource type="LabelSettings" id="LabelSettings_0aw1g"]
+font = ExtResource("1_ixsyo")
+font_size = 8
+outline_size = 1
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 0
+shadow_color = Color(0, 0, 0, 0.756863)
+
+[sub_resource type="LabelSettings" id="LabelSettings_fucvl"]
+font = ExtResource("1_ixsyo")
+font_size = 8
+outline_size = 1
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 0
+shadow_color = Color(0, 0, 0, 0.756863)
+
+[sub_resource type="LabelSettings" id="LabelSettings_hf5au"]
 font = ExtResource("1_ixsyo")
 font_size = 8
 outline_size = 1
@@ -115,25 +131,25 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 text = "Skt. Mage: "
-label_settings = SubResource("LabelSettings_iecqj")
-
-[node name="WitchTime" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/SplitsBox"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "The Witch:"
-label_settings = SubResource("LabelSettings_iecqj")
+label_settings = SubResource("LabelSettings_6v3t2")
 
 [node name="AdeptTime" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/SplitsBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "The Adept: "
-label_settings = SubResource("LabelSettings_iecqj")
+label_settings = SubResource("LabelSettings_0aw1g")
+
+[node name="WitchTime" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/SplitsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "The Witch:"
+label_settings = SubResource("LabelSettings_fucvl")
 
 [node name="DemonEyeTime" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/SplitsBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Demon Eye:"
-label_settings = SubResource("LabelSettings_setwy")
+label_settings = SubResource("LabelSettings_hf5au")
 
 [node name="RunTimer" type="Timer" parent="."]
 unique_name_in_owner = true
