@@ -20,8 +20,8 @@ projectile_scene = ExtResource("2_41d1m")
 collision_layer = 4
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]
-position = Vector2(0, -103)
-scale = Vector2(3.57692, 3.57692)
+position = Vector2(-1.9073486e-06, -109.0909)
+scale = Vector2(3.9256005, 3.9256005)
 sprite_frames = ExtResource("2_dnwws")
 animation = &"block"
 autoplay = "idle"
@@ -34,7 +34,7 @@ position = Vector2(-1, -84)
 shape = SubResource("CapsuleShape2D_sfmj8")
 
 [node name="SPoint" type="Marker2D" parent="CharacterBody2D"]
-position = Vector2(139, -101)
+position = Vector2(151.51514, -106.0606)
 
 [node name="Sfx" type="Node" parent="."]
 

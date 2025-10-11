@@ -15,4 +15,3 @@ func _apply_custom_stats() -> void:
 	projectile_damage = custom_damage
 	shoot_interval = custom_shoot_interval
 	block_chance = custom_block_chance
-	# block_interval queda heredado (0.8s), modifícalo aquí si quieres otro valor

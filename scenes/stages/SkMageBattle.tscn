@@ -87,7 +87,7 @@ projectile_pool = NodePath("../PlayerProjectilePool")
 
 [node name="Enemy" parent="." node_paths=PackedStringArray("projectile_pool") instance=ExtResource("14_hdrmo")]
 unique_name_in_owner = true
-position = Vector2(498, 273)
+position = Vector2(475.00003, 273)
 projectile_pool = NodePath("../EnemyProjectilePool")
 
 [node name="Stage" type="Node2D" parent="."]

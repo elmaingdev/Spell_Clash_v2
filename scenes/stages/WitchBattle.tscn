@@ -434,6 +434,13 @@ projectile_pool = NodePath("../PlayerProjectilePool")
 [node name="Enemy" parent="." node_paths=PackedStringArray("projectile_pool") instance=ExtResource("13_gbtjg")]
 unique_name_in_owner = true
 position = Vector2(491.00003, 284)
+normal_shots_before_pair = 3
+pair_gap = 2.0
+hits_to_trigger_forced_blocks = 3
+forced_blocks_count = 3
+hp_threshold_ratio = 0.5
+phase2_block_chance = 0.33
+phase2_shoot_interval = 4.0
 projectile_pool = NodePath("../EnemyProjectilePool")
 
 [node name="Stage" type="Node2D" parent="."]

@@ -7,7 +7,7 @@
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0qjgg"]
 radius = 24.242422
-height = 163.63635
+height = 218.1818
 
 [node name="Enemy" instance=ExtResource("1_y324x")]
 script = ExtResource("2_mfdle")
@@ -20,11 +20,14 @@ projectile_scene = ExtResource("2_jrk4o")
 block_chance = 0.25
 
 [node name="AnimatedSprite2D" parent="CharacterBody2D" index="0"]
-position = Vector2(-27.272728, -196.96967)
-scale = Vector2(3.5, 3.5)
+position = Vector2(-33.333332, -212.1212)
+scale = Vector2(3.762121, 3.762121)
 sprite_frames = ExtResource("2_0qjgg")
 flip_h = false
 
 [node name="CollisionShape2D" parent="CharacterBody2D" index="1"]
 position = Vector2(-3.030303, -118.181816)
 shape = SubResource("CapsuleShape2D_0qjgg")
+
+[node name="APoint" parent="CharacterBody2D" index="2"]
+position = Vector2(-157.57574, -133.33333)

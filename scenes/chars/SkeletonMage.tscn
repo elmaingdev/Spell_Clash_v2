@@ -7,15 +7,18 @@
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_y1w7j"]
 radius = 33.33333
-height = 169.69695
+height = 193.93938
 
 [node name="Enemy" instance=ExtResource("1_3dwmw")]
 script = ExtResource("2_nvauw")
 custom_hp = 170
 custom_damage = 10
 custom_shoot_interval = 5.0
-custom_block_chance = 0.2
-custom_block_interval = 0.3
+custom_block_chance = 0.06
+hp_burst_threshold_ratio = 0.5
+normal_shots_before_pair = 3
+special_pair_gap = 2.0
+block_after_half = 0.25
 max_hp = 60
 HP = 60
 projectile_scene = ExtResource("2_y1w7j")
@@ -23,13 +26,16 @@ projectile_damage = 15
 block_chance = 0.25
 
 [node name="AnimatedSprite2D" parent="CharacterBody2D" index="0"]
-position = Vector2(-6.0606055, -139.39392)
-scale = Vector2(2.9, 2.9)
+position = Vector2(-9.536743e-07, -154.54544)
+scale = Vector2(3.130871, 3.130871)
 sprite_frames = ExtResource("2_fckbc")
 
 [node name="CollisionShape2D" parent="CharacterBody2D" index="1"]
-position = Vector2(3.030303, -84.84848)
+position = Vector2(6.060606, -96.96969)
 shape = SubResource("CapsuleShape2D_y1w7j")
+
+[node name="APoint" parent="CharacterBody2D" index="2"]
+position = Vector2(-163.63635, -115.15151)
 
 [node name="ShootTimer" parent="." index="1"]
 wait_time = 6.0

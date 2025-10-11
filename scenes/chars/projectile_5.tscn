@@ -59,13 +59,13 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_t8d4t"]
-radius = 45.55544
+radius = 51.515152
 
 [node name="projectile_2" instance=ExtResource("1_hm1ob")]
 
 [node name="AnimatedSprite2D" parent="." index="0"]
-position = Vector2(1.9073486e-06, -1.9073486e-06)
-scale = Vector2(7.7128778, 7.7128778)
+position = Vector2(0, 0)
+scale = Vector2(10.10644, 10.10644)
 sprite_frames = SubResource("SpriteFrames_dagjj")
 
 [node name="CollisionShape2D" parent="." index="1"]

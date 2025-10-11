@@ -84,6 +84,10 @@ func _emit_initial_hp() -> void:
 	hp_changed.emit(HP, max_hp)
 
 func _on_shoot_timer_timeout() -> void:
+	# Permite que los derivados bloqueen el disparo normal si están en modo especial
+	if has_method("_should_fire_on_timer"):
+		if not call("_should_fire_on_timer"):
+			return
 	attack_and_cast()
 
 # ---------- Ataque base ----------
