@@ -1,8 +1,8 @@
-# res://scripts/chars/DemonEye.gd
+# res://scripts/chars/Medusa.gd
 extends EnemyBase
-class_name DemonEye
+class_name Medusa
 
-@export var custom_hp: int = 120
+@export var custom_hp: int = 130
 @export var custom_damage: int = 12
 @export var custom_shoot_interval: float = 5.0
 @export_range(0.0, 1.0, 0.01) var custom_block_chance: float = 0.0

@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://b8vxynlvh3mxq"]
+[gd_scene load_steps=5 format=3 uid="uid://b8vxynlvh3mxq"]
 
 [ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/EnemyBase.tscn" id="1_8uuci"]
+[ext_resource type="Script" uid="uid://cpiacyi1ky5p1" path="res://scripts/chars/FlyingDevil.gd" id="2_1pqmj"]
 [ext_resource type="SpriteFrames" uid="uid://flx5pcs271f4" path="res://themes/flying_devil.tres" id="2_reavh"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_m4rq1"]
@@ -8,6 +9,14 @@ radius = 66.66666
 height = 206.06058
 
 [node name="Enemy" instance=ExtResource("1_8uuci")]
+script = ExtResource("2_1pqmj")
+custom_hp = 210
+custom_damage = 16
+custom_shoot_interval = 4.0
+custom_block_chance = 0.25
+custom_block_interval = 0.3
+max_hp = 100
+HP = 100
 
 [node name="AnimatedSprite2D" parent="CharacterBody2D" index="0"]
 position = Vector2(33.33333, -145.45454)

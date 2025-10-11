@@ -1,15 +1,24 @@
-[gd_scene load_steps=5 format=3 uid="uid://d35xfpo0o41up"]
+[gd_scene load_steps=6 format=3 uid="uid://d35xfpo0o41up"]
 
 [ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/EnemyBase.tscn" id="1_gkt67"]
 [ext_resource type="SpriteFrames" uid="uid://dv8k8uf0jfgs" path="res://themes/poison_skull.tres" id="2_lxbng"]
-[ext_resource type="PackedScene" uid="uid://dtmaoc2p4qkgk" path="res://scenes/chars/projectile_4.tscn" id="2_snrin"]
+[ext_resource type="Script" uid="uid://bb3wlc7ek41di" path="res://scripts/chars/PoisonSkull.gd" id="2_snrin"]
+[ext_resource type="PackedScene" uid="uid://dtmaoc2p4qkgk" path="res://scenes/chars/projectile_4.tscn" id="3_snrin"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_snrin"]
 radius = 42.42424
 height = 181.81816
 
 [node name="Enemy" instance=ExtResource("1_gkt67")]
-projectile_scene = ExtResource("2_snrin")
+script = ExtResource("2_snrin")
+custom_hp = 110
+custom_damage = 8
+custom_shoot_interval = 5.5
+custom_block_chance = 0.05
+max_hp = 40
+HP = 40
+projectile_scene = ExtResource("3_snrin")
+block_chance = 0.15
 
 [node name="AnimatedSprite2D" parent="CharacterBody2D" index="0"]
 position = Vector2(6.4521666, -125.76609)

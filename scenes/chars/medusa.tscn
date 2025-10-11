@@ -1,21 +1,30 @@
-[gd_scene load_steps=5 format=3 uid="uid://lclyghb1ymc0"]
+[gd_scene load_steps=6 format=3 uid="uid://lclyghb1ymc0"]
 
 [ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/EnemyBase.tscn" id="1_puk11"]
 [ext_resource type="SpriteFrames" uid="uid://cpquc1c4kful3" path="res://themes/medusa.tres" id="2_t8mc1"]
-[ext_resource type="PackedScene" uid="uid://dtmaoc2p4qkgk" path="res://scenes/chars/projectile_4.tscn" id="2_tiqj6"]
+[ext_resource type="Script" uid="uid://d2qh11f448o8s" path="res://scripts/chars/Medusa.gd" id="2_tiqj6"]
+[ext_resource type="PackedScene" uid="uid://dtmaoc2p4qkgk" path="res://scenes/chars/projectile_4.tscn" id="3_i4iie"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_tiqj6"]
 radius = 30.303028
 height = 163.63637
 
 [node name="Enemy" instance=ExtResource("1_puk11")]
-projectile_scene = ExtResource("2_tiqj6")
+script = ExtResource("2_tiqj6")
+custom_hp = 180
+custom_damage = 12
+custom_shoot_interval = 40.4
+custom_block_chance = 0.2
+custom_block_interval = 0.3
+max_hp = 100
+HP = 100
+projectile_scene = ExtResource("3_i4iie")
 
 [node name="AnimatedSprite2D" parent="CharacterBody2D" index="0"]
 position = Vector2(-21.212124, -139.39394)
 scale = Vector2(2.971228, 3.0723867)
 sprite_frames = ExtResource("2_t8mc1")
-animation = &"block"
+animation = &"idle"
 flip_h = false
 
 [node name="CollisionShape2D" parent="CharacterBody2D" index="1"]

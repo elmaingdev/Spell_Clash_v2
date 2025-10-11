@@ -19,26 +19,35 @@ const DMG_STREAMS: Array[AudioStream] = [
 	preload("res://assets/sfx/dmg2_sfx.wav"),
 ]
 
-# -------- Config general --------
+@export var debug_log_stats: bool = true
+# -------- Config base (EDITABLES) --------
+@export var max_hp: int = 100
+@export var HP: int = 100
+
 @export var projectile_scene: PackedScene
 @export var projectile_pool: ProjectilePool
-@export var shoot_interval: float = 7.0
+
+@export var projectile_damage: int = 10
+@export var shoot_interval: float = 5.0
 @export var cast_delay: float = 0.3
 
-@export var max_hp: int = 40
-@export var HP: int = 40
+# Bloqueo (0 → nunca, 1 → siempre)
+@export_range(0.0, 1.0, 0.01) var block_chance: float = 0
+@export var block_interval: float = 0.3  # segundos tras el spawn del proyectil del jugador
 
-# -------- Modo base (rápido) --------
-@export var activate_custom: bool = false  # ← OFF por defecto: sin patrones especiales
-@export var base_mode_hp: int = 15
-@export var base_mode_shoot_interval: float = 7.0
-@export var base_mode_cast_delay: float = 0.3
+# MODO CUSTOM ENEMIGOS
+@export var custom_enemy: bool = true 
 
 var is_dead: bool = false
 var _fire_sfx_idx: int = 0
+var _rng := RandomNumberGenerator.new()
+
+# Una sola tirada por proyectil
+var _block_pending: Dictionary = {}  # proj_id (int) -> true
 
 func _ready() -> void:
 	add_to_group("enemy")
+	_rng.randomize()
 
 	if body:
 		body.collision_layer = 2
@@ -48,12 +57,8 @@ func _ready() -> void:
 		if not sprite.animation_finished.is_connected(_on_anim_finished):
 			sprite.animation_finished.connect(_on_anim_finished)
 
-	# Si NO usamos comportamiento custom, forzamos un enemigo “ligero”
-	if not activate_custom:
-		max_hp = base_mode_hp
-		HP = base_mode_hp
-		shoot_interval = base_mode_shoot_interval
-		cast_delay = base_mode_cast_delay
+	# Delega en el hijo la aplicación de stats custom si corresponde
+	_apply_custom_if_enabled()
 
 	HP = clampi(HP, 0, max_hp)
 	call_deferred("_emit_initial_hp")
@@ -64,6 +69,16 @@ func _ready() -> void:
 		shoot_timer.autostart = true
 		if not shoot_timer.timeout.is_connected(_on_shoot_timer_timeout):
 			shoot_timer.timeout.connect(_on_shoot_timer_timeout)
+
+func _apply_custom_if_enabled() -> void:
+	if custom_enemy and has_method("_apply_custom_stats"):
+		call("_apply_custom_stats")
+		if shoot_timer:
+			shoot_timer.wait_time = shoot_interval
+
+	# 🔎 Depuración: ver qué quedó realmente
+	if debug_log_stats:
+		_debug_dump_stats()
 
 func _emit_initial_hp() -> void:
 	hp_changed.emit(HP, max_hp)
@@ -89,10 +104,18 @@ func attack_and_cast() -> void:
 	var start_pos: Vector2 = (apoint.global_position if is_instance_valid(apoint) else global_position)
 	proj.global_position = start_pos
 
+	# SFX index (si el proyectil lo soporta)
 	if "sfx_index" in proj:
 		proj.sfx_index = _fire_sfx_idx
 		_fire_sfx_idx = (_fire_sfx_idx + 1) % 3
 
+	# Daño si el proyectil lo soporta
+	if proj.has_method("set_damage"):
+		proj.call("set_damage", projectile_damage)
+	elif "damage" in proj:
+		proj.set("damage", projectile_damage)
+
+	# (Re)activar
 	if proj.has_method("reactivate"):
 		proj.reactivate()
 
@@ -129,17 +152,25 @@ func _die() -> void:
 	if is_dead:
 		return
 	is_dead = true
+
+	# Detén su cadencia
 	if shoot_timer:
 		shoot_timer.stop()
+
+	# Purga inmediata de proyectiles (enemigos y jugador)
+	_purge_all_projectiles()
+
+	# Anim de muerte (si existe) y luego señal
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("death"):
 		sprite.play("death")
 		await sprite.animation_finished
+
 	died.emit()
 
 func _on_anim_finished() -> void:
 	if is_dead:
 		return
-	if sprite and (sprite.animation == "attack" or sprite.animation == "hurt"):
+	if sprite and (sprite.animation == "attack" or sprite.animation == "hurt" or sprite.animation == "block"):
 		sprite.play("idle")
 
 # ====== SFX ======
@@ -153,9 +184,96 @@ func _play_death_sfx() -> void:
 	if sfx_death:
 		sfx_death.play()
 
-# ====== Hooks de personalización ======
+# ====== Hooks de personalización (override en derivados) ======
 func _before_shoot() -> void:
 	pass
 
 func _after_shoot(_proj: Node2D) -> void:
 	pass
+
+# ====== Bloqueo centralizado ======
+# Mage1 debe llamar: get_tree().call_group("enemy", "on_player_projectile_spawned", projectile)
+func on_player_projectile_spawned(proj: Node) -> void:
+	if is_dead or proj == null or not is_instance_valid(proj):
+		return
+	if block_chance <= 0.0:
+		return
+	var id := proj.get_instance_id()
+	if _block_pending.has(id):
+		return
+	_block_pending[id] = true
+	# Programar chequeo después de block_interval
+	call_deferred("_block_check_after_delay", proj, id)
+
+func _block_check_after_delay(proj: Node, proj_id: int) -> void:
+	await get_tree().create_timer(max(0.0, block_interval)).timeout
+	_block_pending.erase(proj_id)
+
+	if is_dead or block_chance <= 0.0:
+		return
+	if proj == null or not is_instance_valid(proj):
+		return
+
+	if _rng.randf() < block_chance:
+		await _play_block_anim()
+		_block_projectile(proj)
+
+func _play_block_anim() -> void:
+	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("block"):
+		sprite.play("block")
+		# Pequeña espera por si la anim no tiene fin declarado
+		await get_tree().create_timer(0.18).timeout
+		if not is_dead and sprite.animation == "block" and sprite.sprite_frames.has_animation("idle"):
+			sprite.play("idle")
+
+func _block_projectile(p: Node) -> void:
+	if p == null or not is_instance_valid(p):
+		return
+	# Preferencia: API del proyectil
+	if p.has_method("vanish_blocked"):
+		p.call_deferred("vanish_blocked")
+		return
+	# Fallbacks
+	if p.has_method("set_deferred"):
+		p.set_deferred("monitoring", false)
+	if "collision_layer" in p: p.set("collision_layer", 0)
+	if "collision_mask"  in p: p.set("collision_mask", 0)
+	if p.has_method("queue_free"):
+		p.queue_free()
+
+func _debug_dump_stats() -> void:
+	print("Enemy <", name, "> stats → HP:", max_hp, 
+		" DMG:", projectile_damage, 
+		" ShootInt:", str("%.2f" % shoot_interval), 
+		" Block:", str("%.2f" % block_chance), 
+		" BlockInt:", str("%.2f" % block_interval),
+		" custom_enemy:", custom_enemy)
+
+# Elimina/neutraliza todos los proyectiles activos de ambos bandos con anim si es posible.
+func _purge_all_projectiles() -> void:
+	var to_clean: Array = []
+	# Recoge ambos grupos
+	to_clean.append_array(get_tree().get_nodes_in_group("enemy_projectile"))
+	to_clean.append_array(get_tree().get_nodes_in_group("player_projectile"))
+
+	for n in to_clean:
+		if n == null or not is_instance_valid(n):
+			continue
+
+		# Preferimos APIs “amables” que ya animan y reciclan
+		if n.has_method("neutralize_now"):        # p.ej. Projectile2 (enemigo)
+			n.call_deferred("neutralize_now")
+			continue
+		if n.has_method("vanish_blocked"):        # p.ej. Projectile1 (jugador)
+			n.call_deferred("vanish_blocked")
+			continue
+		if n.has_method("disable"):               # compat: algunos usan 'disable'
+			n.call_deferred("disable")
+			continue
+
+		# Fallback seguro
+		if "monitoring" in n: n.set_deferred("monitoring", false)
+		if "collision_layer" in n: n.set("collision_layer", 0)
+		if "collision_mask"  in n: n.set("collision_mask", 0)
+		if n.has_method("queue_free"):
+			n.call_deferred("queue_free")

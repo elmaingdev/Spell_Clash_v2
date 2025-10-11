@@ -11,9 +11,13 @@ height = 163.63635
 
 [node name="Enemy" instance=ExtResource("1_y324x")]
 script = ExtResource("2_mfdle")
-block_chance = 0.25
-block_ms = 700
+custom_hp = 280
+custom_damage = 14
+custom_shoot_interval = 4.2
+custom_block_chance = 0.25
+custom_block_interval = 0.3
 projectile_scene = ExtResource("2_jrk4o")
+block_chance = 0.25
 
 [node name="AnimatedSprite2D" parent="CharacterBody2D" index="0"]
 position = Vector2(-27.272728, -196.96967)

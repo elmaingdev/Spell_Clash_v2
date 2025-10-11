@@ -1,36 +1,19 @@
 # res://scripts/chars/TheWitch.gd
 extends EnemyBase
+class_name TheWitch
 
-@export_range(0.0, 1.0, 0.01) var block_chance: float = 0.25
-@export var block_ms: int = 700
+# Valores por defecto (según la tabla de balance)
+@export var custom_hp: int = 280
+@export var custom_damage: int = 14
+@export var custom_shoot_interval: float = 4.2
+@export_range(0.0, 1.0, 0.01) var custom_block_chance: float = 0.18
+@export var custom_block_interval: float = 0.3  # opcional; si quieres que herede el de EnemyBase, pon 0.0
 
-var _blocking: bool = false
-
-func take_dmg(amount: int = 1) -> void:
-	if _blocking:
-		return
-	super.take_dmg(amount)
-
-func attack_and_cast() -> void:
-	# Sin custom → base
-	if not activate_custom:
-		await super.attack_and_cast()
-		return
-
-	if is_dead:
-		return
-
-	if randf() < block_chance:
-		await _block_now()
-		return
-
-	await super.attack_and_cast()
-
-func _block_now() -> void:
-	_blocking = true
-	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("block"):
-		sprite.play("block")
-	await get_tree().create_timer(float(block_ms) / 1000.0).timeout
-	_blocking = false
-	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("idle"):
-		sprite.play("idle")
+func _apply_custom_stats() -> void:
+	max_hp = custom_hp
+	HP = custom_hp
+	projectile_damage = custom_damage
+	shoot_interval = custom_shoot_interval
+	block_chance = custom_block_chance
+	if custom_block_interval > 0.0:
+		block_interval = custom_block_interval

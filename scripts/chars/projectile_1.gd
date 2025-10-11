@@ -19,6 +19,7 @@ const SPELL_STREAMS: Array[AudioStream] = [
 var _start: Vector2 = Vector2.ZERO
 var _alive: bool = true
 var _initialized: bool = false
+var launch_msec: int = -1
 
 func _ready() -> void:
 	z_index = 20
@@ -67,8 +68,15 @@ func reactivate() -> void:
 	set_deferred("monitoring", true)
 	collision_layer = 1
 	collision_mask  = 2
+	launch_msec = Time.get_ticks_msec()
+
 	if anim and anim.sprite_frames and anim.sprite_frames.has_animation("fly"):
 		anim.play("fly")
+
+	# Asegura pertenecer al grupo para que los enemigos puedan “verlo”
+	if not is_in_group("player_projectile"):
+		add_to_group("player_projectile")
+
 	_play_spell_sfx()
 
 func _recycle() -> void:
@@ -81,6 +89,28 @@ func _recycle() -> void:
 		pool.recycle_self(self)
 	else:
 		queue_free()
+
+func vanish_blocked() -> void:
+	# Llamado por enemigos que bloquean el proyectil
+	if not _alive:
+		return
+	_alive = false
+	set_deferred("monitoring", false)
+	collision_layer = 0
+	collision_mask  = 0
+
+	# Intenta reproducir animación de “desaparecer” si existe
+	var played := false
+	if anim and anim.sprite_frames:
+		if anim.sprite_frames.has_animation("disappear"):
+			anim.play("disappear"); played = true
+		elif anim.sprite_frames.has_animation("disapear"): # por si tu anim se llama así
+			anim.play("disapear"); played = true
+
+	if played:
+		await anim.animation_finished
+
+	_recycle()
 
 # ================== SFX ==================
 func _ensure_spell_player() -> void:

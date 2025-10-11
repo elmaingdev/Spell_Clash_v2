@@ -1,3 +1,4 @@
+# res://scripts/chars/mage_1.gd
 extends Node2D
 class_name Mage1
 
@@ -38,6 +39,16 @@ var _last_rating: String = "Good"
 @export var max_hp: int = 100
 @export var HP: int = 100
 
+# ---- Daño por combo (propuesta) ----
+const BASE_GOOD: int = 10
+const BASE_NICE: int = 16
+const BASE_PERFECT: int = 24
+const COMBO_SCALE: float = 0.22     # +22% por stack
+const COMBO_CAP: float = 3.0        # tope x3.0
+
+# Delay para sync de anim de bloqueo con la desaparición del proyectil enemigo
+@export var block_anim_delay: float = 0.2
+
 var typing_panel: TypingPanel
 var charge: ChargeBar = null
 
@@ -51,6 +62,8 @@ var _burst_ready: bool = false
 # Daño calculado (con combo) para el próximo disparo (se establece en score_ready)
 var _pending_shot_damage: int = -1
 
+var defend_panel: DirectionsPanel = null
+
 func _ready() -> void:
 	if body:
 		body.collision_layer = 3
@@ -60,6 +73,7 @@ func _ready() -> void:
 
 	_wire_typing_panel()
 	_wire_chargebar()
+	_wire_defend_panel()
 
 	HP = clampi(HP, 0, max_hp)
 	call_deferred("_emit_initial_hp")
@@ -96,6 +110,26 @@ func _wire_chargebar() -> void:
 	elif charge == null:
 		push_warning("Mage1: no encontré #Chargebar (Unique Name). Marca la ProgressBar en BottomPanel como Unique Name 'Chargebar'.")
 
+func _wire_defend_panel() -> void:
+	var n: Node = get_node_or_null("%DirectionsPanel")
+	if n is DirectionsPanel:
+		defend_panel = n
+	if defend_panel == null:
+		var found: Node = get_tree().root.find_child("DirectionsPanel", true, false)
+		if found is DirectionsPanel:
+			defend_panel = found
+	if defend_panel and not defend_panel.block_success.is_connected(_on_block_from_defend):
+		defend_panel.block_success.connect(_on_block_from_defend)
+
+func _on_block_from_defend() -> void:
+	# Pequeño delay para sincronizar con la desaparición del proyectil enemigo
+	await get_tree().create_timer(max(0.0, block_anim_delay)).timeout
+	play_block_anim()
+
+func play_block_anim() -> void:
+	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("block"):
+		sprite.play("block")
+
 func _emit_initial_hp() -> void:
 	hp_changed.emit(HP, max_hp)
 
@@ -121,19 +155,37 @@ func _get_combo_current() -> int:
 			return int(node.current)
 	return 0
 
+# ---------- Cálculo de daño (base + combo) ----------
+func _base_damage_from_rating(rating: String) -> int:
+	match rating:
+		"Perfect": return BASE_PERFECT
+		"Nice":    return BASE_NICE
+		"Good":    return BASE_GOOD
+		_:         return 0
+
+func _final_damage(rating: String, combo_count: int) -> int:
+	var base: int = _base_damage_from_rating(rating)
+	if base <= 0:
+		return 0
+	var stacks: int = max(0, combo_count - 1)
+	var mul: float = 1.0 + COMBO_SCALE * float(stacks)
+	if mul > COMBO_CAP:
+		mul = COMBO_CAP
+	return int(round(float(base) * mul))
+
 # Se emite apenas terminas de teclear la palabra (antes del spell_success)
 func _on_TypingPanel_score_ready(rating: String) -> void:
 	_last_rating = rating
-	dmg = DamageCalculator.base_damage_from_rating(rating)
+	dmg = _base_damage_from_rating(rating)
 	_pending_shot_damage = -1
 	if dmg > 0:
 		var next_combo: int = _get_combo_current() + 1
-		_pending_shot_damage = DamageCalculator.final_damage(rating, next_combo)
+		_pending_shot_damage = _final_damage(rating, next_combo)
 
 # Al finalizar el spell (palabra correcta) se dispara
 func _on_TypingPanel_spell_success(_phrase: String) -> void:
 	var combo_now: int = maxi(1, _get_combo_current())
-	var shot_dmg: int = (_pending_shot_damage if _pending_shot_damage >= 0 else DamageCalculator.final_damage(_last_rating, combo_now))
+	var shot_dmg: int = (_pending_shot_damage if _pending_shot_damage >= 0 else _final_damage(_last_rating, combo_now))
 
 	if _burst_ready and charge and charge.is_full():
 		await _shoot_burst(burst_count, burst_spacing, shot_dmg)
@@ -189,9 +241,12 @@ func _spawn_projectile(damage_override: int = -1) -> void:
 	p.sfx_index = _player_spell_sfx_idx
 	_player_spell_sfx_idx = (_player_spell_sfx_idx + 1) % 3
 
-	# 🔁 IMPORTANTE: aunque no venga del pool, reactivamos (reproduce SFX y resetea estado)
+	# Reactiva estado y SFX (también fija launch_msec y añade al grupo 'player_projectile')
 	if p.has_method("reactivate"):
 		p.reactivate()
+
+	# Notificar a todos los enemigos para el sistema de bloqueos temporizados
+	get_tree().call_group("enemy", "on_player_projectile_spawned", p)
 
 func _shoot_burst(count: int = 3, spacing: float = 0.12, damage_override: int = -1) -> void:
 	if is_dead:
@@ -234,7 +289,7 @@ func _die() -> void:
 func _on_anim_finished() -> void:
 	if is_dead:
 		return
-	if sprite and (sprite.animation == "attack" or sprite.animation == "hurt"):
+	if sprite and (sprite.animation == "attack" or sprite.animation == "hurt" or sprite.animation == "block"):
 		sprite.play("idle")
 
 # ====== SFX locales ======

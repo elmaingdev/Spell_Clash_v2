@@ -209,7 +209,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"block",
-"speed": 10.0
+"speed": 17.0
 }, {
 "frames": [{
 "duration": 1.0,

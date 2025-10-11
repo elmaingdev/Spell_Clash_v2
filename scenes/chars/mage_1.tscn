@@ -25,6 +25,8 @@ scale = Vector2(3.57692, 3.57692)
 sprite_frames = ExtResource("2_dnwws")
 animation = &"block"
 autoplay = "idle"
+frame = 8
+frame_progress = 1.0
 flip_h = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]

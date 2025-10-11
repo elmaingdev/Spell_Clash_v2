@@ -1,9 +1,9 @@
-# res://scripts/chars/DemonEye.gd
+# res://scripts/chars/FlyingDevil.gd
 extends EnemyBase
-class_name DemonEye
+class_name FlyingDevil
 
-@export var custom_hp: int = 120
-@export var custom_damage: int = 12
+@export var custom_hp: int = 90
+@export var custom_damage: int = 9
 @export var custom_shoot_interval: float = 5.0
 @export_range(0.0, 1.0, 0.01) var custom_block_chance: float = 0.0
 @export var custom_block_interval: float = -1.0

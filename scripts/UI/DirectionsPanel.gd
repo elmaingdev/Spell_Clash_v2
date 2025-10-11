@@ -43,6 +43,7 @@ var _hit_lock_until_msec := 0
 const INPUT_IGNORE_MS := 90
 var _ignore_input_until_msec := 0
 
+
 @export var danger_stable_ms := 40
 
 func _ready() -> void:

@@ -1,13 +1,22 @@
-[gd_scene load_steps=4 format=3 uid="uid://dihlnjtxvan23"]
+[gd_scene load_steps=5 format=3 uid="uid://dihlnjtxvan23"]
 
 [ext_resource type="PackedScene" uid="uid://bxmxtmbhcrvo" path="res://scenes/chars/EnemyBase.tscn" id="1_cgl06"]
 [ext_resource type="SpriteFrames" uid="uid://dnrmu0clq4ui3" path="res://themes/Imp.tres" id="2_svpe1"]
+[ext_resource type="Script" uid="uid://bjxxtp08jt012" path="res://scripts/chars/Imp.gd" id="3_u7m6f"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_svpe1"]
 radius = 39.393936
 height = 199.99997
 
 [node name="Enemy" instance=ExtResource("1_cgl06")]
+script = ExtResource("3_u7m6f")
+custom_hp = 130
+custom_damage = 10
+custom_shoot_interval = 4.8
+custom_block_chance = 0.1
+custom_block_interval = 0.3
+max_hp = 100
+HP = 100
 
 [node name="CharacterBody2D" parent="." index="0"]
 position = Vector2(-3.0303028, 24.242422)
@@ -16,8 +25,6 @@ position = Vector2(-3.0303028, 24.242422)
 position = Vector2(18.181814, -160.60606)
 scale = Vector2(4.4736176, 5.261654)
 sprite_frames = ExtResource("2_svpe1")
-animation = &"idle"
-frame_progress = 0.7944821
 
 [node name="CollisionShape2D" parent="CharacterBody2D" index="1"]
 position = Vector2(18.181816, -133.33333)

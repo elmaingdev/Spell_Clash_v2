@@ -11,10 +11,11 @@ height = 218.18182
 
 [node name="Enemy" instance=ExtResource("1_brebi")]
 script = ExtResource("2_lt3pd")
-volley_count = 5
-volley_spacing = 0.1
-proj_speed = 110.0
-proj_damage = 8
+custom_hp = 360
+custom_damage = 16
+custom_shoot_interval = 3.8
+custom_block_chance = 0.33
+custom_block_interval = 0.3
 projectile_scene = ExtResource("2_r28ij")
 
 [node name="AnimatedSprite2D" parent="CharacterBody2D" index="0"]

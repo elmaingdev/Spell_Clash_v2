@@ -13,9 +13,13 @@ height = 163.63637
 [node name="Enemy" type="Node2D" groups=["enemy"]]
 scale = Vector2(0.33, 0.33)
 script = ExtResource("1_rf7pr")
-projectile_scene = ExtResource("2_5ajxy")
+custom_hp = 220
+custom_damage = 12
+custom_block_chance = 0.25
+custom_block_interval = 0.3
 max_hp = 90
 HP = 90
+projectile_scene = ExtResource("2_5ajxy")
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
 collision_layer = 2
