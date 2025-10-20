@@ -2,47 +2,57 @@ extends Control
 class_name ComboPanel
 
 ## Apariencia / comportamiento
-@export var autohide: bool = true                 # Ocultar todo cuando combo = 0
-@export var play_anim_name: String = "on"         # Animación en cada Icon*
+@export var autohide: bool = true         # Ocultar contenedores cuando combo = 0
+@export var play_anim_name: String = "on" # Animación de Icon1..Icon5
 @export var pulse_new_icon: bool = true
 @export var pulse_scale: float = 1.12
 @export var pulse_time: float = 0.12
+@export var debug_log: bool = false
 
-## Referencias (se auto-resuelven si las dejas vacías)
-@export_node_path("HBoxContainer") var icons_box_path: NodePath
+## Referencias (opcionalmente asignables por Inspector)
+@export_node_path("VBoxContainer") var icons_box_path: NodePath
 @export_node_path("HBoxContainer") var strike_box_path: NodePath
 @export_node_path("Label") var count_label_path: NodePath
-@export_node_path("Node") var combo_counter_path: NodePath  # Nodo que emite combo_changed/combo_reset
+@export_node_path("Label") var combo_label_path: NodePath
+@export_node_path("Node") var combo_counter_path: NodePath  # Autoload o nodo en escena
 
-@onready var icons_box: HBoxContainer = null
+@onready var icons_box: VBoxContainer = null
 @onready var strike_box: HBoxContainer = null
 @onready var count_lbl: Label = null
+@onready var combo_lbl: Label = null
 
-var _icons: Array[Node] = []                # Icon1..Icon5 (AnimatedSprite2D o TextureRect)
+var _icons: Array[AnimatedSprite2D] = []   # Icon1..Icon5
 var _combo_current: int = 0
-var _tween_per_icon: Dictionary = {}        # Node -> Tween
+var _tween_per_icon: Dictionary = {}       # Node2D -> Tween
 
 func _ready() -> void:
 	_wire_nodes()
 	_collect_icons()
-	# Visibilidad inicial: todo oculto
 	_set_all_hidden()
+	_connect_combo_counter()
 	_sync(0)
 
+# ---------------- Wiring de nodos hijos ----------------
 func _wire_nodes() -> void:
-	# Icons (HBox con Icon1..Icon5)
+	# ComboIcons (VBoxContainer)
 	if icons_box_path != NodePath():
-		icons_box = get_node_or_null(icons_box_path) as HBoxContainer
+		icons_box = get_node_or_null(icons_box_path) as VBoxContainer
 	if icons_box == null:
-		icons_box = ($ComboIcons if has_node("ComboIcons") else (find_child("ComboIcons", true, false) as HBoxContainer))
+		if has_node("ComboIcons"):
+			icons_box = $"ComboIcons"
+		else:
+			icons_box = find_child("ComboIcons", true, false) as VBoxContainer
 
-	# Barra inferior del contador (xN + "Combo")
+	# ComboStrike (HBoxContainer)
 	if strike_box_path != NodePath():
 		strike_box = get_node_or_null(strike_box_path) as HBoxContainer
 	if strike_box == null:
-		strike_box = ($ComboStrike if has_node("ComboStrike") else (find_child("ComboStrike", true, false) as HBoxContainer))
+		if has_node("ComboStrike"):
+			strike_box = $"ComboStrike"
+		else:
+			strike_box = find_child("ComboStrike", true, false) as HBoxContainer
 
-	# Label del contador
+	# Label del número (Combo_count)
 	if count_label_path != NodePath():
 		count_lbl = get_node_or_null(count_label_path) as Label
 	if count_lbl == null:
@@ -51,137 +61,137 @@ func _wire_nodes() -> void:
 		else:
 			count_lbl = find_child("Combo_count", true, false) as Label
 
-	# Fuente de señales (autoload o nodo en escena)
-	var cc: Node = null
-	if combo_counter_path != NodePath():
-		cc = get_node_or_null(combo_counter_path)
-	if cc == null:
-		cc = get_node_or_null("/root/ComboCounter")  # autoload (sin class_name)
-	if cc == null:
-		var g := get_tree().get_nodes_in_group("combo_counter") # por si pusiste al autoload en un grupo
-		if not g.is_empty(): cc = g[0]
-	if cc == null:
-		cc = get_tree().root.find_child("ComboCounter", true, false)
-
-	if cc and cc.has_signal("combo_changed") and not cc.combo_changed.is_connected(_on_combo_changed):
-		cc.combo_changed.connect(_on_combo_changed)
-	if cc and cc.has_signal("combo_reset") and not cc.combo_reset.is_connected(_on_combo_reset):
-		cc.combo_reset.connect(_on_combo_reset)
+	# Label del texto “Combo” (Combo_label)
+	if combo_label_path != NodePath():
+		combo_lbl = get_node_or_null(combo_label_path) as Label
+	if combo_lbl == null:
+		if has_node("ComboStrike/Combo_label"):
+			combo_lbl = $"ComboStrike/Combo_label"
+		else:
+			combo_lbl = find_child("Combo_label", true, false) as Label
 
 func _collect_icons() -> void:
 	_icons.clear()
 	_tween_per_icon.clear()
 	if icons_box == null:
 		return
-	for child: Node in icons_box.get_children():
-		if child is AnimatedSprite2D or child is TextureRect or child is CanvasItem:
-			_icons.append(child)
-	# apaga todo al inicio
-	for i in _icons.size():
-		_set_icon_on(_icons[i], false, false, false, 0, 0.0)
+	for child in icons_box.get_children():
+		if child is AnimatedSprite2D:
+			_icons.append(child as AnimatedSprite2D)
+	for spr in _icons:
+		_icon_set_visible(spr, false)
 
 func _set_all_hidden() -> void:
 	if icons_box: icons_box.visible = false
 	if strike_box: strike_box.visible = false
-	for ic: Node in _icons:
-		if ic is CanvasItem:
-			(ic as CanvasItem).visible = false
-		if ic is AnimatedSprite2D:
-			var spr := ic as AnimatedSprite2D
-			spr.stop()
-			spr.frame = 0
-			spr.frame_progress = 0.0
+	if count_lbl: count_lbl.visible = false
+	if combo_lbl: combo_lbl.visible = false
+	for spr in _icons:
+		_icon_set_visible(spr, false)
 
+# ---------------- Conexión a ComboCounter (autoload) ----------------
+func _connect_combo_counter() -> void:
+	var cc: Node = null
+	# 1) Path directo (Inspector)
+	if combo_counter_path != NodePath():
+		cc = get_node_or_null(combo_counter_path)
+	# 2) Autoload por ruta absoluta
+	if cc == null:
+		cc = get_node_or_null("/root/ComboCounter")
+	# 3) Grupo alternativo
+	if cc == null:
+		var g := get_tree().get_nodes_in_group("combo_counter")
+		if not g.is_empty():
+			cc = g[0]
+	# 4) Búsqueda por nombre/clase
+	if cc == null:
+		cc = get_tree().root.find_child("ComboCounter", true, false)
+
+	if cc:
+		# Forma robusta por string (evita problemas de tipado de señal)
+		var cb1 := Callable(self, "_on_combo_changed")
+		var cb2 := Callable(self, "_on_combo_reset")
+		if not cc.is_connected("combo_changed", cb1):
+			cc.connect("combo_changed", cb1)
+		if not cc.is_connected("combo_reset", cb2):
+			cc.connect("combo_reset", cb2)
+
+		if debug_log:
+			print("[ComboPanel] Conectado a ComboCounter =", cc)
+	else:
+		push_warning("ComboPanel: no encontré ComboCounter (autoload). El panel no se actualizará.")
+
+# ---------------- Callbacks del contador ----------------
 func _on_combo_changed(current: int, _best: int) -> void:
 	_sync(current)
 
 func _on_combo_reset() -> void:
 	_sync(0)
 
+# ---------------- Render del estado ----------------
 func _sync(current: int) -> void:
 	_combo_current = max(0, current)
+	var has_combo: bool = (_combo_current > 0)
 
-	# Ocultar todo si combo = 0
-	if _combo_current == 0:
-		if autohide:
-			_set_all_hidden()
-		else:
-			# Si no quieres ocultar todo, al menos apaga los iconos
-			for ic in _icons:
-				_set_icon_on(ic, false, false, false, 0, 0.0)
-			if strike_box:
-				strike_box.visible = true
-			if icons_box:
-				icons_box.visible = true
-		if count_lbl:
-			count_lbl.text = "x0"
-		return
+	# Contenedores
+	if strike_box:
+		strike_box.visible = (has_combo or not autohide)
+	if icons_box:
+		icons_box.visible = (has_combo or not autohide)
 
-	# Mostrar contenedores
-	if icons_box: icons_box.visible = true
-	if strike_box: strike_box.visible = true
-
-	# Cantidad de iconos encendidos (1..N)
-	var should_on: int = min(_combo_current, _icons.size())
-
-	# Busca un icono reproduciendo para sincronizar fase
-	var ref_frame: int = 0
-	var ref_prog: float = 0.0
-	var ref_found: bool = false
-	for ic: Node in _icons:
-		if ic is AnimatedSprite2D:
-			var spr: AnimatedSprite2D = ic as AnimatedSprite2D
-			if spr.is_playing():
-				ref_frame = spr.frame
-				ref_prog  = spr.frame_progress
-				ref_found = true
-				break
-
-	for i in _icons.size():
-		var ic: Node = _icons[i]
-		var turn_on: bool = i < should_on
-		var is_new: bool = false
-		if turn_on and ic is CanvasItem:
-			is_new = not (ic as CanvasItem).visible
-		_set_icon_on(ic, turn_on, is_new, ref_found, ref_frame, ref_prog)
-
-	# contador
+	# Labels
+	if combo_lbl:
+		combo_lbl.visible = has_combo
 	if count_lbl:
+		count_lbl.visible = true
 		count_lbl.text = "x" + str(_combo_current)
 
-func _set_icon_on(icon: Node, turn_on: bool, is_new: bool, sync_from_ref: bool, ref_frame: int, ref_prog: float) -> void:
-	# Visibilidad
-	if icon is CanvasItem:
-		(icon as CanvasItem).visible = turn_on
+	# Iconos encendidos según combo actual
+	var should_on: int = min(_combo_current, _icons.size())
 
-	# AnimatedSprite2D → reproducir / detener y (opcional) sincronizar fase
-	if icon is AnimatedSprite2D:
-		var spr: AnimatedSprite2D = icon as AnimatedSprite2D
+	# Referencia de fase (si alguno ya está reproduciendo)
+	var ref_found: bool = false
+	var ref_frame: int = 0
+	var ref_prog: float = 0.0
+	for spr in _icons:
+		if spr.is_playing():
+			ref_found = true
+			ref_frame = spr.frame
+			ref_prog = spr.frame_progress
+			break
+
+	for i in _icons.size():
+		var spr: AnimatedSprite2D = _icons[i]
+		var turn_on: bool = (i < should_on)
+		var was_visible: bool = spr.visible
+		_icon_set_visible(spr, turn_on)
+
 		if turn_on:
 			if spr.sprite_frames and spr.sprite_frames.has_animation(play_anim_name):
 				spr.play(play_anim_name)
 			else:
-				spr.play() # anim por defecto si no existe "on"
-			if sync_from_ref:
+				spr.play()
+			if ref_found and not was_visible:
 				spr.frame = ref_frame
 				spr.frame_progress = ref_prog
+			if pulse_new_icon and not was_visible:
+				_pulse(spr)
 		else:
 			spr.stop()
 			spr.frame = 0
 			spr.frame_progress = 0.0
 
-	# Pulso leve al encender NUEVO icono
-	if turn_on and is_new and pulse_new_icon and icon is Node2D:
-		var n2d: Node2D = icon as Node2D
-		# mata tween previo si había
-		if _tween_per_icon.has(icon):
-			var tw_old: Tween = _tween_per_icon.get(icon)
-			if is_instance_valid(tw_old):
-				tw_old.kill()
-		var tw: Tween = create_tween()
-		_tween_per_icon[icon] = tw
-		var base: Vector2 = n2d.scale
-		tw.tween_property(n2d, "scale", base * pulse_scale, pulse_time)\
-			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		tw.tween_property(n2d, "scale", base, pulse_time)\
-			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+# ---------------- Utilidades ----------------
+func _icon_set_visible(spr: AnimatedSprite2D, on: bool) -> void:
+	spr.visible = on
+
+func _pulse(node: Node2D) -> void:
+	if _tween_per_icon.has(node):
+		var old: Tween = (_tween_per_icon[node] as Tween)
+		if is_instance_valid(old):
+			old.kill()
+	var tw: Tween = create_tween()
+	_tween_per_icon[node] = tw
+	var base: Vector2 = node.scale
+	tw.tween_property(node, "scale", base * pulse_scale, pulse_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tw.tween_property(node, "scale", base,           pulse_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)

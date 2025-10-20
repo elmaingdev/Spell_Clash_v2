@@ -2,14 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bal7uhwax1k2o" path="res://scripts/UI/TurnTimer.gd" id="1_0gp04"]
 [ext_resource type="FontFile" uid="uid://cb1upqnk6arqn" path="res://assets/fonts/PixelOperator8-Bold.ttf" id="1_3svr6"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qcnr2"]
-bg_color = Color(0.722038, 0.572263, 0.351259, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_size = 4
+[ext_resource type="StyleBox" uid="uid://dskrgl7suamv8" path="res://themes/TimerBox.tres" id="3_w6id1"]
 
 [node name="TurnTimer" type="Control"]
 layout_mode = 3
@@ -22,23 +15,51 @@ mouse_filter = 2
 script = ExtResource("1_0gp04")
 metadata/_edit_use_anchors_ = true
 
-[node name="Bar" type="ProgressBar" parent="."]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 259.0
-offset_top = 131.0
-offset_right = 369.0
-offset_bottom = 143.0
-theme_override_constants/outline_size = 9
-theme_override_fonts/font = ExtResource("1_3svr6")
-theme_override_font_sizes/font_size = 32
-theme_override_styles/fill = SubResource("StyleBoxFlat_qcnr2")
-max_value = 5.0
-value = 5.0
-show_percentage = false
-
 [node name="Limit" type="Timer" parent="."]
 unique_name_in_owner = true
 one_shot = true
+
+[node name="LeftTime" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.1140625
+anchor_top = 0.4722222
+anchor_right = -0.1140625
+anchor_bottom = 0.4722222
+offset_left = 249.0
+offset_top = 146.0
+offset_right = 359.0
+offset_bottom = 158.0
+theme_override_constants/outline_size = 9
+theme_override_fonts/font = ExtResource("1_3svr6")
+theme_override_font_sizes/font_size = 32
+theme_override_styles/fill = ExtResource("3_w6id1")
+max_value = 5.0
+value = 5.0
+fill_mode = 1
+show_percentage = false
+metadata/_edit_use_anchors_ = true
+
+[node name="RightTime" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.0921875
+anchor_top = 0.4722222
+anchor_right = -0.0921875
+anchor_bottom = 0.4722222
+offset_left = 412.0
+offset_top = 146.0
+offset_right = 522.0
+offset_bottom = 158.0
+theme_override_constants/outline_size = 9
+theme_override_fonts/font = ExtResource("1_3svr6")
+theme_override_font_sizes/font_size = 32
+theme_override_styles/fill = ExtResource("3_w6id1")
+max_value = 5.0
+value = 5.0
+show_percentage = false
+metadata/_edit_use_anchors_ = true
 
 [connection signal="timeout" from="Limit" to="." method="_on_limit_timeout"]

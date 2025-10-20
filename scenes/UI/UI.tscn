@@ -1,0 +1,147 @@
+[gd_scene load_steps=15 format=3 uid="uid://bu60ffsuwanpr"]
+
+[ext_resource type="PackedScene" uid="uid://bh43ih5fx6qh7" path="res://scenes/UI/EnemyInfo.tscn" id="1_thnqs"]
+[ext_resource type="PackedScene" uid="uid://bfnvupgmaksw5" path="res://scenes/UI/PlayerPanel.tscn" id="2_gl4co"]
+[ext_resource type="PackedScene" uid="uid://cqtct4bo5es3n" path="res://scenes/UI/TypingPanel.tscn" id="3_lj5up"]
+[ext_resource type="PackedScene" uid="uid://cgv2y31m0qgut" path="res://scenes/UI/SpeedPanel.tscn" id="4_gl4co"]
+[ext_resource type="PackedScene" uid="uid://0ij85ox8j5li" path="res://scenes/UI/DirectionsPanel.tscn" id="5_lj5up"]
+[ext_resource type="PackedScene" uid="uid://ts0saqd7n1w" path="res://scenes/UI/ScorePanel.tscn" id="6_wgnrc"]
+[ext_resource type="PackedScene" uid="uid://bwjuv6o6yi6rb" path="res://scenes/UI/ComboPanel.tscn" id="7_84lt7"]
+[ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/UI/TurnTimer.tscn" id="8_2ttv2"]
+[ext_resource type="Script" uid="uid://bcghxxakdsd3q" path="res://scripts/system/ModeSwitcher.gd" id="9_u6q2i"]
+[ext_resource type="Texture2D" uid="uid://cni8x56oth4mx" path="res://assets/UI/BGbox_02A.png" id="10_t1j05"]
+[ext_resource type="Texture2D" uid="uid://cc5ncay1gabyv" path="res://assets/UI/atkwand.png" id="11_0odk7"]
+[ext_resource type="Texture2D" uid="uid://c44xmxwgm6f71" path="res://assets/UI/defwand.png" id="12_alvv5"]
+[ext_resource type="SpriteFrames" uid="uid://dfdodwy3gddrv" path="res://themes/animated_book.tres" id="13_uw5bg"]
+
+[sub_resource type="Theme" id="Theme_jfcp0"]
+Button/colors/icon_disabled_color = Color(1, 1, 1, 0)
+Button/colors/icon_focus_color = Color(1, 1, 1, 0)
+Button/colors/icon_hover_color = Color(1, 1, 1, 0)
+Button/colors/icon_hover_pressed_color = Color(1, 1, 1, 0)
+Button/colors/icon_normal_color = Color(1, 1, 1, 0)
+Button/colors/icon_pressed_color = Color(0.7413847, 0.7413847, 0.7413844, 0.8862745)
+
+[node name="UI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TurnTimer" parent="." instance=ExtResource("8_2ttv2")]
+unique_name_in_owner = true
+layout_mode = 1
+typing_panel_path = NodePath("../TypingPanel")
+
+[node name="EnemyInfo" parent="." instance=ExtResource("1_thnqs")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="PlayerPanel" parent="." instance=ExtResource("2_gl4co")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="TypingPanel" parent="." node_paths=PackedStringArray("timer_ref") instance=ExtResource("3_lj5up")]
+unique_name_in_owner = true
+layout_mode = 1
+timer_ref = NodePath("../TurnTimer")
+timer_path = NodePath("../TurnTimer")
+
+[node name="SpeedPanel" parent="." instance=ExtResource("4_gl4co")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="DirectionsPanel" parent="." node_paths=PackedStringArray("timer_ref") instance=ExtResource("5_lj5up")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+timer_ref = NodePath("../TurnTimer")
+timer_path = NodePath("../TurnTimer")
+
+[node name="ScorePanel" parent="." instance=ExtResource("6_wgnrc")]
+unique_name_in_owner = true
+layout_mode = 1
+typing_panel_path = NodePath("../TypingPanel")
+
+[node name="ComboPanel" parent="." instance=ExtResource("7_84lt7")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="ModeSwitcher" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("9_u6q2i")
+typing_path = NodePath("../TypingPanel")
+defend_path = NodePath("../DirectionsPanel")
+mode_buttons_path = NodePath("../ModeButtons")
+timer_path = NodePath("../TurnTimer")
+
+[node name="ModeButtons" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AtkBox" type="TextureRect" parent="ModeButtons"]
+layout_mode = 0
+offset_left = 111.0
+offset_top = 293.0
+offset_right = 255.00003
+offset_bottom = 437.0
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("10_t1j05")
+
+[node name="DefBox" type="TextureRect" parent="ModeButtons"]
+layout_mode = 0
+offset_left = 473.0
+offset_top = 292.0
+offset_right = 617.0
+offset_bottom = 436.0
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("10_t1j05")
+
+[node name="AtkWand" type="TextureRect" parent="ModeButtons"]
+layout_mode = 0
+offset_left = 122.0
+offset_top = 302.0
+offset_right = 186.0
+offset_bottom = 366.0
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("11_0odk7")
+
+[node name="DefWand" type="TextureRect" parent="ModeButtons"]
+layout_mode = 0
+offset_left = 479.00003
+offset_top = 298.0
+offset_right = 543.0
+offset_bottom = 362.0
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("12_alvv5")
+flip_h = true
+
+[node name="AtkBtn" type="TextureButton" parent="ModeButtons"]
+layout_mode = 0
+offset_left = 122.0
+offset_top = 304.0
+offset_right = 158.0
+offset_bottom = 340.0
+theme = SubResource("Theme_jfcp0")
+
+[node name="DefBtn" type="TextureButton" parent="ModeButtons"]
+layout_mode = 0
+offset_left = 484.0
+offset_top = 303.0
+offset_right = 520.0
+offset_bottom = 339.0
+theme = SubResource("Theme_jfcp0")
+
+[node name="Book" type="AnimatedSprite2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(320, 319)
+scale = Vector2(0.1, 0.1)
+sprite_frames = ExtResource("13_uw5bg")
+animation = &"next"

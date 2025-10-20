@@ -1,21 +1,30 @@
+# res://scripts/system/ModeSwitcher.gd
 extends Node
 class_name ModeSwitcher
 
 @export_node_path("Control") var typing_path: NodePath = NodePath("")
 @export_node_path("Control") var defend_path: NodePath = NodePath("")
-@export_node_path("Control") var bottom_path: NodePath = NodePath("")
+@export_node_path("Control") var mode_buttons_path: NodePath = NodePath("")
 @export_node_path("Control") var timer_path: NodePath  = NodePath("")
 
 var typing: TypingPanel = null
 var defend: DirectionsPanel = null
-var bottom: BottomPanel = null
 var timer: TurnTimer = null
+var mode_buttons: Control = null
+
+# Referencias visuales dentro de ModeButtons
+var atk_btn: TextureButton = null
+var def_btn: TextureButton = null
+var atk_box: TextureRect = null
+var def_box: TextureRect = null
+var atk_wand: TextureRect = null
+var def_wand: TextureRect = null
 
 @export var round_time: float = 5.0
 @export var inter_round_delay: float = 0.25
 
-var _is_attack: bool = true  # Attack por defecto
-var _forced_attack_lock: bool = false  # ← lock mientras esperamos NEXT
+var _is_attack: bool = true            # Attack por defecto
+var _forced_attack_lock: bool = false  # lock mientras esperamos NEXT
 
 func _ready() -> void:
 	set_process_input(true)
@@ -24,19 +33,19 @@ func _ready() -> void:
 func _wire_up() -> void:
 	typing = _resolve_node(typing_path, "TypingPanel") as TypingPanel
 	defend = _resolve_node(defend_path, "DirectionsPanel") as DirectionsPanel
-	bottom = _resolve_node(bottom_path, "BottomPanel") as BottomPanel
+	mode_buttons = _resolve_node(mode_buttons_path, "ModeButtons") as Control
 	timer  = _resolve_node(timer_path,  "TurnTimer") as TurnTimer
 
-	_connect_bottom_inputs()
+	# Conexiones con TypingPanel / TurnTimer
 	_connect_typing_signals()
 	_connect_enemy_died()
-
-	# Sólo ATTACK avanza rondas con el timer
 	if typing and not typing.score_ready.is_connected(_on_score_ready):
 		typing.score_ready.connect(_on_score_ready)
-
 	if timer and not timer.timeout.is_connected(_on_turn_timeout):
 		timer.timeout.connect(_on_turn_timeout)
+
+	# Preparar los botones visuales (solo indicadores, sin interacción de mouse)
+	_setup_mode_buttons()
 
 	_set_attack_mode(true)
 
@@ -53,27 +62,6 @@ func _resolve_node(path: NodePath, name_fallback: String) -> Node:
 			return n
 	return get_tree().root.find_child(name_fallback, true, false)
 
-func _connect_bottom_inputs() -> void:
-	if bottom:
-		if bottom.has_signal("attack_clicked") and not bottom.attack_clicked.is_connected(_on_attack):
-			bottom.attack_clicked.connect(_on_attack)
-		if bottom.has_signal("defend_clicked") and not bottom.defend_clicked.is_connected(_on_defend):
-			bottom.defend_clicked.connect(_on_defend)
-
-	var atk_btn_n: Node = get_node_or_null(NodePath("%Attackbtn"))
-	var def_btn_n: Node = get_node_or_null(NodePath("%Defbtn"))
-	if atk_btn_n is BaseButton:
-		var atk_btn := atk_btn_n as BaseButton
-		if not atk_btn.pressed.is_connected(_on_attack):
-			atk_btn.pressed.connect(_on_attack)
-	if def_btn_n is BaseButton:
-		var def_btn := def_btn_n as BaseButton
-		if not def_btn.pressed.is_connected(_on_defend):
-			def_btn.pressed.connect(_on_defend)
-
-	if bottom:
-		_autoconnect_buttons_by_name(bottom)
-
 func _connect_typing_signals() -> void:
 	if typing and not typing.next_requested.is_connected(_on_next_requested):
 		typing.next_requested.connect(_on_next_requested)
@@ -87,32 +75,52 @@ func _connect_enemy_died() -> void:
 	if enemy and enemy.has_signal("died") and not enemy.died.is_connected(_on_enemy_died):
 		enemy.died.connect(_on_enemy_died)
 
-func _autoconnect_buttons_by_name(root: Node) -> void:
-	var candidates: Array[BaseButton] = []
-	_collect_buttons(root, candidates)
-	for btn in candidates:
-		var name_l := btn.name.to_lower()
-		if _is_attack_button_name(name_l):
-			if not btn.pressed.is_connected(_on_attack):
-				btn.pressed.connect(_on_attack)
-		elif _is_defend_button_name(name_l):
-			if not btn.pressed.is_connected(_on_defend):
-				btn.pressed.connect(_on_defend)
+# ---------- Preparar/actualizar ModeButtons ----------
+func _setup_mode_buttons() -> void:
+	if mode_buttons == null:
+		return
 
-func _collect_buttons(n: Node, out: Array[BaseButton]) -> void:
-	for c in n.get_children():
-		if c is BaseButton:
-			out.append(c as BaseButton)
-		_collect_buttons(c, out)
+	# Encuentra nodos por nombre dentro de ModeButtons
+	atk_btn = mode_buttons.find_child("AtkBtn", true, false) as TextureButton
+	def_btn = mode_buttons.find_child("DefBtn", true, false) as TextureButton
+	atk_box = mode_buttons.find_child("AtkBox", true, false) as TextureRect
+	def_box = mode_buttons.find_child("DefBox", true, false) as TextureRect
+	atk_wand = mode_buttons.find_child("AtkWand", true, false) as TextureRect
+	def_wand = mode_buttons.find_child("DefWand", true, false) as TextureRect
 
-func _is_attack_button_name(n: String) -> bool:
-	return n.find("attack") != -1 or n.find("atk") != -1 or n == "attackbtn"
+	# Los botones solo son indicadores: sin foco, deshabilitados y consumen clicks
+	for btn in [atk_btn, def_btn]:
+		if btn:
+			btn.toggle_mode = true
+			btn.disabled = true
+			btn.focus_mode = Control.FOCUS_NONE
+			if not btn.gui_input.is_connected(_swallow_gui_input):
+				btn.gui_input.connect(_swallow_gui_input)
 
-func _is_defend_button_name(n: String) -> bool:
-	return n.find("defend") != -1 or n.find("def") != -1 or n.find("guard") != -1 or n == "defbtn"
+	_update_mode_visuals()  # sincroniza estado inicial
+
+func _swallow_gui_input(_event: InputEvent) -> void:
+	# Consume cualquier intento de click/touch en los botones
+	get_viewport().set_input_as_handled()
+
+func _update_mode_visuals() -> void:
+	# Estado "burbuja" (usamos pressed + modulate como refuerzo visual)
+	if atk_btn:
+		atk_btn.set_pressed_no_signal(_is_attack)
+		atk_btn.modulate = Color(1,1,1, 1.0 if _is_attack else 0.5)
+	if def_btn:
+		def_btn.set_pressed_no_signal(not _is_attack)
+		def_btn.modulate = Color(1,1,1, 1.0 if not _is_attack else 0.5)
+
+	# Si quieres reforzar con cajas/varitas (opcionales)
+	if atk_box:  atk_box.modulate  = Color(1,1,1, 1.0 if _is_attack else 0.35)
+	if def_box:  def_box.modulate  = Color(1,1,1, 1.0 if not _is_attack else 0.35)
+	if atk_wand: atk_wand.modulate = Color(1,1,1, 1.0 if _is_attack else 0.6)
+	if def_wand: def_wand.modulate = Color(1,1,1, 1.0 if not _is_attack else 0.6)
 
 # ----------------- Entrada (teclado) -----------------
 func _input(event: InputEvent) -> void:
+	# Debes tener una acción "mode_toggle" en el Input Map (asigna la tecla Tab)
 	if event is InputEventKey and event.pressed and not event.echo and event.is_action_pressed("mode_toggle"):
 		# Si hay lock, ignora el toggle
 		if _forced_attack_lock:
@@ -122,19 +130,6 @@ func _input(event: InputEvent) -> void:
 		_restart_cycle()
 		get_viewport().set_input_as_handled()
 
-# ----------------- Callbacks de botones -----------------
-func _on_attack() -> void:
-	_set_attack_mode(true)
-	_restart_cycle()
-
-func _on_defend() -> void:
-	# Si hay lock (esperando NEXT), ignorar el intento de ir a DEFEND
-	if _forced_attack_lock:
-		return
-	_set_attack_mode(false)
-	get_viewport().gui_release_focus()
-	_restart_cycle()
-
 # ----------------- Lógica de switching -----------------
 func _set_attack_mode(is_attack: bool) -> void:
 	# Si estamos bloqueados en ataque, fuerza true
@@ -142,8 +137,7 @@ func _set_attack_mode(is_attack: bool) -> void:
 		is_attack = true
 
 	if _is_attack == is_attack:
-		if bottom:
-			bottom.highlight_mode(is_attack)
+		_update_mode_visuals()
 		return
 
 	_is_attack = is_attack
@@ -158,8 +152,7 @@ func _set_attack_mode(is_attack: bool) -> void:
 		if defend.has_method("set_mode_enabled"):
 			defend.set_mode_enabled(not _is_attack)
 
-	if bottom:
-		bottom.highlight_mode(is_attack)
+	_update_mode_visuals()
 
 func _restart_cycle() -> void:
 	if _forced_attack_lock:

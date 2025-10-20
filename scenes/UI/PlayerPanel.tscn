@@ -1,0 +1,70 @@
+[gd_scene load_steps=9 format=3 uid="uid://bfnvupgmaksw5"]
+
+[ext_resource type="Script" uid="uid://dg41v5kt3818k" path="res://scripts/UI/PlayerPanel.gd" id="1_0p3ll"]
+[ext_resource type="Texture2D" uid="uid://c7cb4blcf00wn" path="res://assets/UI/Orb_Frame_Empty.png" id="1_d6n5i"]
+[ext_resource type="Script" uid="uid://cot0ohq5o5oi5" path="res://scripts/UI/PlayerHealthBar.gd" id="2_1t66j"]
+[ext_resource type="Texture2D" uid="uid://dfceihobol7p2" path="res://assets/UI/Orb_Frame_HP.png" id="2_ajk25"]
+[ext_resource type="Texture2D" uid="uid://bafkp8nik0762" path="res://assets/UI/DecoratedFrame1_Left.png" id="3_1t66j"]
+[ext_resource type="Texture2D" uid="uid://bpxdjxwpfwkcv" path="res://assets/UI/Orb_Frame_MP.png" id="4_jd02g"]
+[ext_resource type="Texture2D" uid="uid://buess4ywlihvj" path="res://assets/UI/DecoratedFrame1_Right.png" id="5_7dup0"]
+[ext_resource type="Script" uid="uid://bj5qs4xjpmi21" path="res://scripts/UI/ChargeBar.gd" id="5_bhfhm"]
+
+[node name="PlayerPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0p3ll")
+
+[node name="LifeBar" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_1t66j")
+
+[node name="PlayerHP" type="TextureProgressBar" parent="LifeBar"]
+layout_mode = 0
+offset_left = 39.0
+offset_top = 275.0
+offset_right = 183.0
+offset_bottom = 419.0
+scale = Vector2(0.5, 0.5)
+value = 100.0
+fill_mode = 3
+texture_under = ExtResource("1_d6n5i")
+texture_progress = ExtResource("2_ajk25")
+
+[node name="HPContainer" type="Sprite2D" parent="LifeBar"]
+position = Vector2(51.5, 310.5)
+scale = Vector2(0.50416666, 0.5125)
+texture = ExtResource("3_1t66j")
+
+[node name="ChargeBar" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_bhfhm")
+
+[node name="PlayerMP" type="TextureProgressBar" parent="ChargeBar"]
+layout_mode = 0
+offset_left = 530.0
+offset_top = 275.0
+offset_right = 674.0
+offset_bottom = 419.0
+scale = Vector2(0.5, 0.5)
+fill_mode = 3
+texture_under = ExtResource("1_d6n5i")
+texture_progress = ExtResource("4_jd02g")
+
+[node name="MPContainer" type="Sprite2D" parent="ChargeBar"]
+position = Vector2(590, 310)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("5_7dup0")

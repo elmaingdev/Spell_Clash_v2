@@ -1,15 +1,7 @@
-[gd_scene load_steps=19 format=4 uid="uid://bvbt7va51d2tc"]
+[gd_scene load_steps=11 format=4 uid="uid://bvbt7va51d2tc"]
 
 [ext_resource type="Script" uid="uid://dimk00kx0fxk5" path="res://scripts/Battle.gd" id="1_mmuyt"]
-[ext_resource type="Script" uid="uid://bcghxxakdsd3q" path="res://scripts/system/ModeSwitcher.gd" id="2_p1lbk"]
-[ext_resource type="PackedScene" uid="uid://bmg5ivlx0bfvn" path="res://scenes/UI/TurnTimer.tscn" id="3_fyrce"]
-[ext_resource type="PackedScene" uid="uid://cqtct4bo5es3n" path="res://scenes/UI/TypingPanel.tscn" id="4_ynd1l"]
-[ext_resource type="PackedScene" uid="uid://0ij85ox8j5li" path="res://scenes/UI/DirectionsPanel.tscn" id="5_bnt7n"]
-[ext_resource type="PackedScene" uid="uid://c566mi0ppmg2g" path="res://scenes/UI/InfoPanel.tscn" id="6_gcd48"]
-[ext_resource type="PackedScene" uid="uid://ts0saqd7n1w" path="res://scenes/UI/ScorePanel.tscn" id="7_ej3v3"]
-[ext_resource type="PackedScene" uid="uid://bwyo15q3n6htl" path="res://scenes/UI/BottomPanel.tscn" id="8_vigir"]
-[ext_resource type="PackedScene" uid="uid://bwjuv6o6yi6rb" path="res://scenes/UI/ComboPanel.tscn" id="10_oogxg"]
-[ext_resource type="PackedScene" uid="uid://cgv2y31m0qgut" path="res://scenes/UI/SpeedPanel.tscn" id="11_t7yv2"]
+[ext_resource type="PackedScene" uid="uid://bu60ffsuwanpr" path="res://scenes/UI/UI.tscn" id="2_rbfol"]
 [ext_resource type="PackedScene" uid="uid://c6xw45ilhwral" path="res://scenes/chars/mage_1.tscn" id="13_56eja"]
 [ext_resource type="PackedScene" uid="uid://ckcaxuam5dg5k" path="res://scenes/chars/Adept.tscn" id="13_lh6jn"]
 [ext_resource type="Texture2D" uid="uid://0f3d0tubpgef" path="res://assets/backgrounds/boss_bg_def.png" id="13_m6rjf"]
@@ -21,68 +13,14 @@
 
 [node name="Battle" type="Node2D"]
 script = ExtResource("1_mmuyt")
-typing_panel_path = NodePath("CanvasLayer/UI/TypingPanel")
-directions_panel_path = NodePath("CanvasLayer/UI/DirectionsPanel")
-timer_path = NodePath("CanvasLayer/UI/TurnTimer")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="UI" type="Control" parent="CanvasLayer"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="ModeSwitcher" type="Node" parent="CanvasLayer/UI"]
-unique_name_in_owner = true
-script = ExtResource("2_p1lbk")
-typing_path = NodePath("../TypingPanel")
-defend_path = NodePath("../DirectionsPanel")
-bottom_path = NodePath("../BottomPanel")
-timer_path = NodePath("../TurnTimer")
-
-[node name="TurnTimer" parent="CanvasLayer/UI" instance=ExtResource("3_fyrce")]
-unique_name_in_owner = true
-layout_mode = 1
-
-[node name="TypingPanel" parent="CanvasLayer/UI" node_paths=PackedStringArray("timer_ref") instance=ExtResource("4_ynd1l")]
-unique_name_in_owner = true
-layout_mode = 1
-timer_ref = NodePath("../TurnTimer")
-
-[node name="DirectionsPanel" parent="CanvasLayer/UI" node_paths=PackedStringArray("timer_ref") instance=ExtResource("5_bnt7n")]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-timer_ref = NodePath("../TurnTimer")
-player_path = NodePath("../../../Mage_1")
-
-[node name="InfoPanel" parent="CanvasLayer/UI" instance=ExtResource("6_gcd48")]
-unique_name_in_owner = true
-layout_mode = 1
-
-[node name="ScorePanel" parent="CanvasLayer/UI" instance=ExtResource("7_ej3v3")]
-layout_mode = 1
-typing_panel_path = NodePath("../TypingPanel")
-
-[node name="BottomPanel" parent="CanvasLayer/UI" instance=ExtResource("8_vigir")]
-unique_name_in_owner = true
-z_index = 500
-z_as_relative = false
-layout_mode = 1
-
-[node name="ComboPanel" parent="CanvasLayer/UI" instance=ExtResource("10_oogxg")]
-layout_mode = 1
-
-[node name="SpeedPanel" parent="CanvasLayer/UI" instance=ExtResource("11_t7yv2")]
-layout_mode = 1
+[node name="UI" parent="CanvasLayer" instance=ExtResource("2_rbfol")]
 
 [node name="Mage_1" parent="." node_paths=PackedStringArray("projectile_pool") instance=ExtResource("13_56eja")]
 unique_name_in_owner = true
 position = Vector2(169.00002, 275)
-typing_panel_path = NodePath("../CanvasLayer/UI/TypingPanel")
 projectile_pool = NodePath("../PlayerProjectilePool")
 
 [node name="Enemy" parent="." node_paths=PackedStringArray("projectile_pool") instance=ExtResource("13_lh6jn")]
@@ -119,5 +57,3 @@ metadata/_custom_type_script = "uid://cy4qmcgfo0a4c"
 script = ExtResource("16_44x63")
 projectile_scene = ExtResource("18_t1gv0")
 metadata/_custom_type_script = "uid://cy4qmcgfo0a4c"
-
-[connection signal="timeout" from="CanvasLayer/UI/TurnTimer" to="CanvasLayer/UI/TypingPanel" method="_on_timer_timeout"]

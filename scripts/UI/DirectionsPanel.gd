@@ -15,7 +15,8 @@ signal block_fail
 @export var mode_enabled: bool = false
 
 @export var timer_ref: TurnTimer
-@export_node_path("Control") var timer_path
+@export_node_path("Control") var timer_path: NodePath = NodePath("")
+@export_node_path("Node2D") var player_path: NodePath = NodePath("")
 
 @export var tex_up: Texture2D
 @export var tex_right: Texture2D
@@ -24,51 +25,51 @@ signal block_fail
 
 @export var poll_interval: float = 0.02
 
-@export_node_path("Node2D") var player_path
 var _player: Node2D
 
 # === NUEVO ===
-@export var show_result_ms: int = 300                
-@export var max_tracked_projectiles: int = 4         # cola máx 4
+@export var show_result_ms: int = 300
+@export var max_tracked_projectiles: int = 4
 
 var _rng := RandomNumberGenerator.new()
 
-# Secuencia mostrada y tipeada
 var _seq: PackedStringArray = []
 var _typed: PackedStringArray = []
 
-# Cola de proyectiles y mapa id->secuencia
-var _pq: Array[Area2D] = []        # proyectiles activos ordenados por distancia
-var _seq_map: Dictionary = {}      # { instance_id:int : PackedStringArray }
+var _pq: Array[Area2D] = []
+var _seq_map: Dictionary = {}   # { int: PackedStringArray }
 
-var _active := false
-var _round_start_msec := 0
-var _poll_accum := 0.0
+var _active: bool = false
+var _round_start_msec: int = 0
+var _poll_accum: float = 0.0
 
-var _danger := false
-var _danger_target := false
-var _danger_change_stamp_ms := 0
+var _danger: bool = false
+var _danger_target: bool = false
+var _danger_change_stamp_ms: int = 0
 
 const HIT_LOCK_MS := 120
-var _hit_lock_until_msec := 0
+var _hit_lock_until_msec: int = 0
 const INPUT_IGNORE_MS := 90
-var _ignore_input_until_msec := 0
+var _ignore_input_until_msec: int = 0
 
-@export var danger_stable_ms := 40
+@export var danger_stable_ms: int = 40
 
 func _ready() -> void:
 	_rng.randomize()
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	if timer_ref == null and timer_path != NodePath():
-		var n := get_node_or_null(timer_path)
+	if timer_ref == null and timer_path != NodePath(""):
+		var n: Node = get_node_or_null(timer_path)
 		if n is TurnTimer: timer_ref = n
 
-	if player_path != NodePath():
-		var p := get_node_or_null(player_path)
-		if p is Node2D: _player = p
+	if player_path != NodePath(""):
+		var p: Node = get_node_or_null(player_path)
+		if p is Node2D: _player = p as Node2D
 	if _player == null:
 		_player = get_node_or_null("%Mage_1") as Node2D
+	if _player == null:
+		var any: Array = get_tree().get_nodes_in_group("player")
+		if not any.is_empty(): _player = any[0] as Node2D
 
 	if is_instance_valid(_player) and _player.has_signal("got_hit"):
 		if not _player.got_hit.is_connected(_on_player_got_hit):
@@ -105,7 +106,6 @@ func start_round() -> void:
 		_round_start_msec = Time.get_ticks_msec()
 		return
 
-	# Secuencia del proyectil frontal (más cercano)
 	var front: Area2D = _pq[0]
 	var front_id: int = int(front.get_instance_id())
 
@@ -131,7 +131,7 @@ func _process(delta: float) -> void:
 	_poll_accum = 0.0
 
 	_update_queue()
-	var now_target := (_pq.size() > 0)
+	var now_target: bool = (_pq.size() > 0)
 	_update_danger_target(now_target)
 	_apply_danger_if_stable(false)
 
@@ -150,13 +150,12 @@ func _apply_danger_if_stable(force: bool) -> void:
 			if _danger: start_round()
 			else: _show_danger_free()
 
-# ---------------- Input ----------------
 func _input(event: InputEvent) -> void:
 	if not mode_enabled or not _active: return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if Time.get_ticks_msec() < _ignore_input_until_msec:
 			accept_event(); return
-		var sym := _map_event(event)
+		var sym: String = _map_event(event)
 		if sym == "": return
 		accept_event()
 		Sfx.key_click_sfx()
@@ -210,7 +209,7 @@ func _input(event: InputEvent) -> void:
 				_continue_after_result()
 
 func _on_player_got_hit() -> void:
-	var now := Time.get_ticks_msec()
+	var now: int = Time.get_ticks_msec()
 	_hit_lock_until_msec = now + HIT_LOCK_MS
 	_ignore_input_until_msec = now + INPUT_IGNORE_MS
 	_typed.clear()
@@ -268,7 +267,7 @@ func _clear_icons() -> void:
 	if seq4: seq4.texture = null
 
 func _set_icon(idx: int, sym: String) -> void:
-	var tex := _tex(sym)
+	var tex: Texture2D = _tex(sym)
 	match idx:
 		0: if seq1: seq1.texture = tex
 		1: if seq2: seq2.texture = tex
@@ -296,7 +295,7 @@ func _update_queue() -> void:
 	while actives.size() > max_tracked_projectiles:
 		actives.remove_at(actives.size() - 1)
 
-	var active_ids := {}
+	var active_ids: Dictionary = {}
 	for a in actives:
 		active_ids[int(a.get_instance_id())] = true
 
@@ -305,7 +304,7 @@ func _update_queue() -> void:
 			_seq_map.erase(int(id))
 
 	for a in actives:
-		var id := int(a.get_instance_id())
+		var id: int = int(a.get_instance_id())
 		if not _seq_map.has(id):
 			_seq_map[id] = _make_seq()
 
@@ -313,11 +312,11 @@ func _update_queue() -> void:
 
 func _get_active_enemy_projectiles_sorted() -> Array[Area2D]:
 	var out: Array[Area2D] = []
-	var list := get_tree().get_nodes_in_group("enemy_projectile")
+	var list: Array = get_tree().get_nodes_in_group("enemy_projectile")
 	if list.is_empty(): return out
 
 	for n in list:
-		var a := n as Area2D
+		var a: Area2D = n as Area2D
 		if a == null: continue
 		if _proj_active(a):
 			out.append(a)
@@ -332,13 +331,13 @@ func _cmp_proj_by_distance(a: Area2D, b: Area2D) -> bool:
 	if a == null or b == null:
 		return false
 	var origin: Vector2 = ( _player.global_position if (is_instance_valid(_player) and _player != null) else global_position )
-	var da := a.global_position.distance_to(origin)
-	var db := b.global_position.distance_to(origin)
+	var da: float = a.global_position.distance_to(origin)
+	var db: float = b.global_position.distance_to(origin)
 	return da < db
 
 func _proj_active(a: Area2D) -> bool:
 	if a == null: return false
-	var active := false
+	var active: bool = false
 	if a.has_method("is_active"):
 		active = bool(a.call("is_active"))
 	else:

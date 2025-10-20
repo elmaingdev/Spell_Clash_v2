@@ -1,12 +1,12 @@
 [gd_scene load_steps=9 format=3 uid="uid://0ij85ox8j5li"]
 
 [ext_resource type="Script" uid="uid://bef5hdr857usi" path="res://scripts/UI/DirectionsPanel.gd" id="1_byls2"]
-[ext_resource type="StyleBox" uid="uid://boc3wul5wjxip" path="res://themes/boxflat.tres" id="2_dass1"]
-[ext_resource type="Texture2D" uid="uid://b2lbb5n0k8esk" path="res://assets/icons/arrow_up.png" id="2_lf8xo"]
-[ext_resource type="Texture2D" uid="uid://n2oad8mhjl1v" path="res://assets/icons/arrow_right.png" id="3_b7vkp"]
-[ext_resource type="Texture2D" uid="uid://c4kn71piaak6f" path="res://assets/icons/arrow_left.png" id="3_jxok8"]
+[ext_resource type="Texture2D" uid="uid://cadej1ql2fsby" path="res://assets/icons/arrow_up.png" id="2_lf8xo"]
+[ext_resource type="Texture2D" uid="uid://cpgy0fhrq2vko" path="res://assets/icons/arrow_right.png" id="3_b7vkp"]
+[ext_resource type="Texture2D" uid="uid://dsirexkhqjhcn" path="res://assets/icons/arrow_left.png" id="3_jxok8"]
 [ext_resource type="LabelSettings" uid="uid://de705pwk1itxt" path="res://themes/spell_lbl.tres" id="3_lf8xo"]
-[ext_resource type="Texture2D" uid="uid://cpwytmcl6xvuf" path="res://assets/icons/arrow_down.png" id="4_b7vkp"]
+[ext_resource type="Texture2D" uid="uid://bsbq6d2ye0jry" path="res://assets/icons/arrow_down.png" id="4_b7vkp"]
+[ext_resource type="StyleBox" uid="uid://d0vmgu4kc28ha" path="res://themes/SeqLabel.tres" id="6_nv0xt"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ljces"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -31,20 +31,20 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -110.0
-offset_top = 12.0
+offset_top = 75.0
 offset_right = 110.0
-offset_bottom = 130.0
+offset_bottom = 193.0
 grow_horizontal = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ljces")
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
-theme_override_constants/separation = 34
+theme_override_constants/separation = 14
 
 [node name="SeqLine" type="Label" parent="Panel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/normal = ExtResource("2_dass1")
+theme_override_styles/normal = ExtResource("6_nv0xt")
 text = "Danger Free"
 label_settings = ExtResource("3_lf8xo")
 horizontal_alignment = 1

@@ -10,12 +10,12 @@ content_margin_left = 9.0
 content_margin_top = 9.0
 content_margin_right = 9.0
 content_margin_bottom = 9.0
-bg_color = Color(0.6627451, 0.5176471, 0.29803923, 0.31764707)
+bg_color = Color(0.4371832, 0.53034776, 0.81376576, 0.31764707)
 border_width_left = 4
 border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
-border_color = Color(0.3298666, 0.1990245, 0.09153529, 1)
+border_color = Color(0.20990899, 0.22721449, 0.32444763, 1)
 corner_detail = 5
 
 [sub_resource type="LabelSettings" id="LabelSettings_w84ci"]
@@ -84,9 +84,9 @@ anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
 offset_left = -144.0
-offset_top = -125.0
+offset_top = -115.0
 offset_right = -10.0
-offset_bottom = -1.0
+offset_bottom = 9.0
 grow_horizontal = 0
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ixsyo")

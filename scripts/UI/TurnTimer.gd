@@ -1,74 +1,90 @@
+# res://scripts/UI/TurnTimer.gd
 extends Control
 class_name TurnTimer
 
 signal timeout
 signal started(total_time: float)
 
-@onready var bar: ProgressBar = null
-@onready var limit: Timer = null
+@onready var left_time: ProgressBar  = null   # "LeftTime" (Fill: End→Begin)
+@onready var right_time: ProgressBar = null   # "RightTime" (Fill: Begin→End)
+@onready var limit: Timer            = null   # "Limit" (Timer)
+@onready var book: AnimatedSprite2D  = null   # "Book" (opcional)
 
 @export var total_time: float = 5.0
 @export var autostart_on_ready: bool = false
 
-# Modo bucle independiente
+# Bucle autónomo
 @export var loop: bool = true
-@export var loop_delay: float = 0.0  # si quieres una micro-pausa visual (p.ej. 0.25)
+@export var loop_delay: float = 0.0
+
+# (Opcional) para animar el libro
+@export_node_path("Control") var typing_panel_path: NodePath = NodePath("")
+@export var book_next_anim: String = "next"
+@export var book_mode_anim: String = "previous"
 
 var _running: bool = false
 
-# --- Ventana anti-race (ignora timeout si acabas de resolver el turno) ---
+# Ventana anti-race (ignora timeout si acabas de resolver el turno)
 const RESOLVE_WINDOW_MS: int = 30
 var _resolved_until_msec: int = 0
 
 func _ready() -> void:
-	# Resolver nodos hijos
-	if has_node("Bar"):
-		bar = $"Bar"
-	else:
-		var b: Node = find_child("Bar", true, false)
-		if b is ProgressBar:
-			bar = b
+	# Resolver hijos
+	left_time  = (find_child("LeftTime",  true, false)  as ProgressBar)
+	right_time = (find_child("RightTime", true, false)  as ProgressBar)
+	limit      = (find_child("Limit",     true, false)  as Timer)
+	book       = (find_child("Book",      true, false)  as AnimatedSprite2D)
 
-	if has_node("Limit"):
-		limit = $"Limit"
-	else:
-		var t: Node = find_child("Limit", true, false)
-		if t is Timer:
-			limit = t
-
-	if bar == null or limit == null:
-		push_error("TurnTimer: no encontré 'Bar'(ProgressBar) o 'Limit'(Timer).")
+	if left_time == null or right_time == null or limit == null:
+		push_error("TurnTimer: faltan hijos requeridos: LeftTime/RightTime/Limit.")
 		return
 
-	# Config inicial
-	bar.show_percentage = false
-	bar.min_value = 0.0
-	bar.max_value = total_time
-	bar.value = total_time
+	# Config inicial de barras
+	for bar in [left_time, right_time]:
+		bar.show_percentage = false
+		bar.min_value = 0.0
+		bar.max_value = total_time
+		bar.value = total_time
 
+	# Timer
 	limit.one_shot = true
 	limit.autostart = false
 	limit.wait_time = total_time
-
 	if not limit.timeout.is_connected(_on_limit_timeout):
 		limit.timeout.connect(_on_limit_timeout)
+
+	# (Opcional) Detectar TypingPanel para animar el libro en cada nueva ronda
+	if typing_panel_path != NodePath(""):
+		var tp := get_node_or_null(typing_panel_path)
+		if tp is TypingPanel and not tp.round_started.is_connected(_on_round_started):
+			tp.round_started.connect(_on_round_started)
+	else:
+		var maybe_tp := get_tree().root.find_child("TypingPanel", true, false)
+		if maybe_tp is TypingPanel and not maybe_tp.round_started.is_connected(_on_round_started):
+			maybe_tp.round_started.connect(_on_round_started)
 
 	if autostart_on_ready:
 		start(total_time)
 
+	set_process(true)
+
 func _process(_d: float) -> void:
 	if _running and limit != null:
-		bar.value = time_left()
+		var tl := time_left()
+		# Ambas barras muestran el mismo tiempo restante
+		left_time.value  = tl
+		right_time.value = tl
 
 # =================== API ===================
 
 func start(duration: float = -1.0) -> void:
-	if bar == null or limit == null:
+	if left_time == null or right_time == null or limit == null:
 		return
 	if duration > 0.0:
 		total_time = duration
-	bar.max_value = total_time
-	bar.value = total_time
+	for bar in [left_time, right_time]:
+		bar.max_value = total_time
+		bar.value = total_time
 	limit.stop()
 	limit.wait_time = total_time
 	limit.start()
@@ -76,11 +92,9 @@ func start(duration: float = -1.0) -> void:
 	started.emit(total_time)
 
 func restart() -> void:
-	# Compat: usa la versión segura
 	restart_safe()
 
 func restart_safe() -> void:
-	# Marca resuelto para ignorar un posible timeout “cruzado”
 	mark_resolved_for_next_frame()
 	start(total_time)
 
@@ -109,10 +123,25 @@ func stop_and_restart_after(delay_sec: float) -> void:
 	await get_tree().create_timer(delay_sec).timeout
 	restart()
 
+# ============== Libro (opcional) ==============
+
+func play_book_next() -> void:
+	if book and book.sprite_frames and book.sprite_frames.has_animation(book_next_anim):
+		book.play(book_next_anim)
+
+func play_book_mode(_is_attack: bool=true) -> void:
+	if book and book.sprite_frames:
+		# puedes tener dos anims distintas, p.ej. "mode_attack" / "mode_defend"
+		var anim := book_mode_anim
+		if book.sprite_frames.has_animation("mode_attack") and book.sprite_frames.has_animation("mode_defend"):
+			anim = ("mode_attack" if _is_attack else "mode_defend")
+		if book.sprite_frames.has_animation(anim):
+			book.play(anim)
+
 # ============== Internos ==============
 
 func _on_limit_timeout() -> void:
-	# Si el turno quedó “resuelto” hace nada, ignora este timeout
+	# Evita timeout si el turno acaba de resolverse (score o bloqueo justo al borde)
 	if is_resolve_window_open():
 		return
 
@@ -124,3 +153,7 @@ func _on_limit_timeout() -> void:
 		if loop_delay > 0.0:
 			await get_tree().create_timer(loop_delay).timeout
 		start(total_time)
+
+func _on_round_started() -> void:
+	# Animación “Next” cuando comienza una nueva palabra en TypingPanel
+	play_book_next()

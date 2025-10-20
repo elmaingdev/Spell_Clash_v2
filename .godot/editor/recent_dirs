@@ -1,6 +1,8 @@
-res://assets/backgrounds
+res://scripts/UI
 res://themes
 res://assets/UI
+res://scenes/UI
+res://assets/backgrounds
 res://assets/flying_demon
 res://assets/medusa
 res://scenes/chars
@@ -18,5 +20,4 @@ res://scenes
 res://scripts
 res://
 res://assets/icons
-res://assets/mage1
 C:/Users/Main/Documents/spell_clash_v2/data

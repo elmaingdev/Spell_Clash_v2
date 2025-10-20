@@ -19,6 +19,7 @@ const DMG_STREAMS: Array[AudioStream] = [
 	preload("res://assets/sfx/dmg1_sfx.wav"),
 	preload("res://assets/sfx/dmg2_sfx.wav"),
 ]
+const BLOCK_STREAM: AudioStream = preload("res://assets/sfx/block_sfx.wav")
 
 @export var projectile_scene: PackedScene               # fallback si no hay pool
 @export var shoot_delay: float = 0.2
@@ -71,6 +72,16 @@ func _ready() -> void:
 		sprite.play("idle")
 		sprite.animation_finished.connect(_on_anim_finished)
 
+	# Asegura el stream/bus/volumen del sfx de bloqueo
+	if sfx_block:
+		if sfx_block.stream == null:
+			sfx_block.stream = BLOCK_STREAM
+		var sfx_bus_idx: int = AudioServer.get_bus_index("SFX")
+		if sfx_bus_idx >= 0:
+			sfx_block.bus = "SFX"
+		if sfx_block.volume_db < -40.0:
+			sfx_block.volume_db = 0.0
+
 	_wire_typing_panel()
 	_wire_chargebar()
 	_wire_defend_panel()
@@ -97,31 +108,43 @@ func _wire_typing_panel() -> void:
 			typing_panel.round_started.connect(_on_round_started)
 
 func _wire_chargebar() -> void:
-	var n: Node = get_node_or_null("%Chargebar")
-	if n is ChargeBar:
-		charge = n as ChargeBar
-	if charge == null:
-		var found: Node = get_tree().root.find_child("Chargebar", true, false)
-		if found is ChargeBar:
-			charge = found as ChargeBar
+	# 1) Unique Name %Chargebar
+	var n1: Node = get_node_or_null("%Chargebar")
+	if n1 is ChargeBar:
+		charge = n1 as ChargeBar
 
+	# 2) Búsqueda por clase en todo el árbol (UI nueva)
+	if charge == null:
+		var found: Array[Node] = get_tree().root.find_children("", "ChargeBar", true, false)
+		if found.size() > 0 and found[0] is ChargeBar:
+			charge = found[0] as ChargeBar
+
+	# 3) Fallback por nombre
+	if charge == null:
+		var any: Node = get_tree().root.find_child("ChargeBar", true, false)
+		if any is ChargeBar:
+			charge = any as ChargeBar
+
+	# Conexión de señal
 	if charge and not charge.charged.is_connected(_on_charge_full):
 		charge.charged.connect(_on_charge_full)
 	elif charge == null:
-		push_warning("Mage1: no encontré #Chargebar (Unique Name). Marca la ProgressBar en BottomPanel como Unique Name 'Chargebar'.")
+		push_warning("Mage1: no se encontró una ChargeBar en la UI (ni %Chargebar, ni por clase/nombre).")
 
 func _wire_defend_panel() -> void:
 	var n: Node = get_node_or_null("%DirectionsPanel")
 	if n is DirectionsPanel:
 		defend_panel = n
 	if defend_panel == null:
-		var found: Node = get_tree().root.find_child("DirectionsPanel", true, false)
-		if found is DirectionsPanel:
-			defend_panel = found
+		var found2: Node = get_tree().root.find_child("DirectionsPanel", true, false)
+		if found2 is DirectionsPanel:
+			defend_panel = found2
 	if defend_panel and not defend_panel.block_success.is_connected(_on_block_from_defend):
 		defend_panel.block_success.connect(_on_block_from_defend)
 
 func _on_block_from_defend() -> void:
+	# Sonido inmediato de bloqueo
+	_play_block_sfx()
 	# Pequeño delay para sincronizar con la desaparición del proyectil enemigo
 	await get_tree().create_timer(max(0.0, block_anim_delay)).timeout
 	play_block_anim()
@@ -302,8 +325,32 @@ func _play_damage_sfx() -> void:
 	sfx_damage.play()
 
 func _play_block_sfx() -> void:
+	# Intenta con el nodo dedicado; si falta, crea un one-shot
 	if sfx_block:
+		if sfx_block.stream == null:
+			sfx_block.stream = BLOCK_STREAM
+		# re-dispara aunque estuviera sonando
+		if sfx_block.playing:
+			sfx_block.stop()
+		sfx_block.pitch_scale = 1.0 + randf_range(-0.02, 0.02)
+		# asegura bus/volumen
+		var sfx_bus_idx: int = AudioServer.get_bus_index("SFX")
+		if sfx_bus_idx >= 0:
+			sfx_block.bus = "SFX"
+		if sfx_block.volume_db < -40.0:
+			sfx_block.volume_db = 0.0
 		sfx_block.play()
+	else:
+		var one: AudioStreamPlayer2D = AudioStreamPlayer2D.new()
+		one.stream = BLOCK_STREAM
+		one.pitch_scale = 1.0 + randf_range(-0.02, 0.02)
+		var sfx_bus_idx2: int = AudioServer.get_bus_index("SFX")
+		if sfx_bus_idx2 >= 0:
+			one.bus = "SFX"
+		one.volume_db = 0.0
+		add_child(one)
+		one.finished.connect(func(): one.queue_free())
+		one.play()
 
 func _play_death_sfx() -> void:
 	if sfx_death:

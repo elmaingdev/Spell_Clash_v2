@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://cqtct4bo5es3n"]
+[gd_scene load_steps=7 format=3 uid="uid://cqtct4bo5es3n"]
 
 [ext_resource type="Script" uid="uid://562tav1ctutw" path="res://scripts/UI/TypingPanel.gd" id="1_1jxtd"]
+[ext_resource type="StyleBox" uid="uid://d0vmgu4kc28ha" path="res://themes/SeqLabel.tres" id="2_bcblk"]
 [ext_resource type="StyleBox" uid="uid://boc3wul5wjxip" path="res://themes/boxflat.tres" id="2_ylh55"]
 [ext_resource type="LabelSettings" uid="uid://de705pwk1itxt" path="res://themes/spell_lbl.tres" id="3_d7kjs"]
 [ext_resource type="FontFile" uid="uid://gedy68241spt" path="res://assets/fonts/PixelOperator8.ttf" id="4_gh7xp"]
@@ -25,20 +26,20 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -110.0
-offset_top = 12.0
+offset_top = 75.0
 offset_right = 110.0
-offset_bottom = 114.0
+offset_bottom = 157.0
 grow_horizontal = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ljces")
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
-theme_override_constants/separation = 34
+theme_override_constants/separation = 14
 
 [node name="PhraseLabel" type="Label" parent="Panel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/normal = ExtResource("2_ylh55")
+theme_override_styles/normal = ExtResource("2_bcblk")
 text = "Spell"
 label_settings = ExtResource("3_d7kjs")
 horizontal_alignment = 1
