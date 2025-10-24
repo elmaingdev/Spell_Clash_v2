@@ -3,6 +3,9 @@ extends Node
 
 signal stage_cleared(stage_name: String, run_time_ms: int)
 
+# Ruta del nodo Autoload de la transición (debe llamarse "SceneTransition" en Project Settings → Autoload)
+const TRANSITION_NODE_PATH := "/root/SceneTransition"
+
 # ---- Orden completo de la run (minions + bosses) ----
 const STAGES: Array[String] = [
 	"res://scenes/stages/PoisonSkullBattle.tscn",
@@ -43,11 +46,18 @@ func _current_scene_path() -> String:
 	var cs := get_tree().current_scene
 	return cs.get_scene_file_path() if cs else ""
 
+func _same_path(a: String, b: String) -> bool:
+	# Normaliza a ruta absoluta del SO y compara en minúsculas
+	var ga := ProjectSettings.globalize_path(a).to_lower()
+	var gb := ProjectSettings.globalize_path(b).to_lower()
+	return ga == gb
+
 func _index_for_path(p: String) -> int:
 	if p == "":
 		return -1
 	for i in STAGES.size():
-		if ResourceLoader.exists(STAGES[i]) and STAGES[i] == p:
+		var s := STAGES[i]
+		if ResourceLoader.exists(s) and _same_path(s, p):
 			return i
 	return -1
 
@@ -82,12 +92,11 @@ func go_next() -> void:
 	var cur_path: String = _current_scene_path()
 	var idx: int = _index_for_path(cur_path)
 
-	# Si no estamos en una stage (p.ej. venimos del menú), ir a la primera existente
+	# Si no estamos en una stage (venimos del menú), ir a la primera existente
 	if idx == -1:
 		var start: String = _first_existing(STAGES)
 		if start != "":
-			get_tree().change_scene_to_file(start)
-		await get_tree().process_frame
+			await change_scene(start)  # con transición
 		_in_transition = false
 		return
 
@@ -97,10 +106,9 @@ func go_next() -> void:
 		if ResourceLoader.exists(STAGES[i]):
 			last = i
 
-	# Si estamos en la última, delegar en finalize (ahí se registra split final si es boss)
+	# Si estamos en la última, delegar en finalize (registra split final si es boss)
 	if idx == last and last != -1:
-		finalize_and_return_to_menu()
-		await get_tree().process_frame
+		await finalize_and_return_to_menu()
 		_in_transition = false
 		return
 
@@ -110,12 +118,12 @@ func go_next() -> void:
 	var j: int = idx + 1
 	while j < STAGES.size() and not ResourceLoader.exists(STAGES[j]):
 		j += 1
-	if j < STAGES.size():
-		get_tree().change_scene_to_file(STAGES[j])
-	else:
-		finalize_and_return_to_menu()
 
-	await get_tree().process_frame
+	if j < STAGES.size():
+		await change_scene(STAGES[j])  # con transición
+	else:
+		await finalize_and_return_to_menu()
+
 	_in_transition = false
 
 func finalize_and_return_to_menu() -> void:
@@ -131,10 +139,9 @@ func finalize_and_return_to_menu() -> void:
 		if sm.has_method("update_personal_best_if_better"):
 			improved = bool(sm.call("update_personal_best_if_better", run_ms))
 
-		if improved:
-			if sm.has_method("set_personal_best_splits"):
-				sm.call("set_personal_best_splits", current_splits)
-		# Guardamos siempre el archivo (sea o no PB) para persistir el PB vigente
+		if improved and sm.has_method("set_personal_best_splits"):
+			sm.call("set_personal_best_splits", current_splits)
+
 		if saver and saver.has_method("save_from_speed_manager"):
 			saver.call("save_from_speed_manager")
 
@@ -145,4 +152,14 @@ func finalize_and_return_to_menu() -> void:
 
 	var menu_path: String = _first_existing(MENU_CANDIDATES)
 	if menu_path != "":
-		get_tree().change_scene_to_file(menu_path)
+		await change_scene(menu_path)  # con transición
+
+# ---------- transición centralizada ----------
+# Cambia de escena usando la transición "dissolve" por defecto.
+# Puedes pasar otro nombre de animación si más adelante agregas más (p. ej. "curtain").
+func change_scene(target: String, transition: StringName = &"dissolve") -> void:
+	var transition_node := get_node_or_null(TRANSITION_NODE_PATH)
+	if transition_node and transition_node.has_method("change_scene"):
+		await transition_node.change_scene(target, transition)
+	else:
+		get_tree().change_scene_to_file(target)

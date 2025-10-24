@@ -22,6 +22,7 @@ ComboCounter="*res://autoloads/ComboCounter.gd"
 SpeedManager="*res://autoloads/SpeedManager.gd"
 SaveManager="*res://autoloads/SaveManager.gd"
 StageFlow="*res://autoloads/StageFlow.gd"
+SceneTransition="*res://scenes/UI/SceneTransition.tscn"
 
 [display]
 
