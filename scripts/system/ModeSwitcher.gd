@@ -19,6 +19,7 @@ var atk_box: TextureRect = null
 var def_box: TextureRect = null
 var atk_wand: TextureRect = null
 var def_wand: TextureRect = null
+var _book_cache: AnimatedSprite2D = null
 
 @export var round_time: float = 5.0
 @export var inter_round_delay: float = 0.25
@@ -140,6 +141,9 @@ func _set_attack_mode(is_attack: bool) -> void:
 		_update_mode_visuals()
 		return
 
+	# ← Aquí sabemos que SÍ cambia el modo
+	_book_play(&"previous")
+
 	_is_attack = is_attack
 
 	if typing:
@@ -217,3 +221,28 @@ func _on_next_requested() -> void:
 	else:
 		await get_tree().create_timer(0.1).timeout
 		_forced_attack_lock = false
+
+func _get_book() -> AnimatedSprite2D:
+	if _book_cache and is_instance_valid(_book_cache):
+		return _book_cache
+	var nodes := get_tree().get_nodes_in_group("ui_book")
+	if nodes.size() > 0:
+		_book_cache = nodes[0] as AnimatedSprite2D
+		return _book_cache
+	return null
+
+func _book_play(anim: StringName) -> void:
+	var b := _get_book()
+	if b == null:
+		return
+
+	var anim_name := String(anim)            # ← renombrada; evita sombrear Node.name
+	var frames := b.sprite_frames            # AnimatedSprite2D usa SpriteFrames
+	if frames and frames.has_animation(anim_name):
+		# Evita re-tocar una animación ya en curso (opcional)
+		if String(b.animation) != anim_name or not b.is_playing():
+			b.play(anim_name)
+	else:
+		# Debug opcional para detectar typos
+		# print_debug("[Book] Animación no encontrada: ", anim_name)
+		pass

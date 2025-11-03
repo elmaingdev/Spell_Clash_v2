@@ -24,6 +24,7 @@ var _round_start_msec := 0
 var _awaiting_next := false
 var _next_sent: bool = false                 # evita reentradas al pasar de stage
 var _flow: Node = null                       # ← StageFlow cacheado
+var _book_cache: AnimatedSprite2D = null
 
 func _ready() -> void:
 	_rng.randomize()
@@ -103,6 +104,9 @@ func start_round() -> void:
 	if _input:
 		_input.text = ""
 		if mode_enabled: _input.grab_focus()
+	# ← Añade esta línea para animar el libro cuando cambiamos de spell
+	_book_play(&"next")
+
 	_round_active = mode_enabled
 	_round_start_msec = Time.get_ticks_msec()
 	round_started.emit()
@@ -192,3 +196,28 @@ func _pick_spell() -> String:
 		"terra spina","ventus celer","runas vivas","draco minor","nova runica"
 	]
 	return fb[_rng.randi_range(0, fb.size() - 1)]
+
+func _get_book() -> AnimatedSprite2D:
+	if _book_cache and is_instance_valid(_book_cache):
+		return _book_cache
+	var nodes := get_tree().get_nodes_in_group("ui_book")
+	if nodes.size() > 0:
+		_book_cache = nodes[0] as AnimatedSprite2D
+		return _book_cache
+	return null
+
+func _book_play(anim: StringName) -> void:
+	var b := _get_book()
+	if b == null:
+		return
+
+	var anim_name := String(anim)            # ← renombrada; evita sombrear Node.name
+	var frames := b.sprite_frames            # AnimatedSprite2D usa SpriteFrames
+	if frames and frames.has_animation(anim_name):
+		# Evita re-tocar una animación ya en curso (opcional)
+		if String(b.animation) != anim_name or not b.is_playing():
+			b.play(anim_name)
+	else:
+		# Debug opcional para detectar typos
+		# print_debug("[Book] Animación no encontrada: ", anim_name)
+		pass

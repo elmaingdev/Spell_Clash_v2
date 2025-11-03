@@ -1,16 +1,17 @@
 res://assets/backgrounds
+res://scripts/system
+res://assets/lore
+res://autoloads
+res://scripts/UI
 res://themes
 res://scenes/UI
-res://scripts/system
 res://scenes/stages
-res://scripts/UI
 res://assets/UI
 res://assets/flying_demon
 res://assets/medusa
 res://scenes/chars
 res://assets/poison_skull
 res://assets/imp
-res://autoloads
 res://assets/demon_eye
 res://assets/mage2
 res://assets/tilesets
@@ -19,5 +20,4 @@ res://assets/the_witch
 res://assets/skeleton_mage
 res://scenes
 res://scripts
-res://
 C:/Users/Main/Documents/spell_clash_v2/data

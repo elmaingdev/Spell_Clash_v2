@@ -139,9 +139,11 @@ offset_right = 520.0
 offset_bottom = 339.0
 theme = SubResource("Theme_jfcp0")
 
-[node name="Book" type="AnimatedSprite2D" parent="."]
+[node name="Book" type="AnimatedSprite2D" parent="." groups=["ui_book"]]
 unique_name_in_owner = true
 position = Vector2(320, 319)
 scale = Vector2(0.1, 0.1)
 sprite_frames = ExtResource("13_uw5bg")
-animation = &"next"
+animation = &"previous"
+frame = 7
+frame_progress = 1.0

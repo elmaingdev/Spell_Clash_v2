@@ -1,0 +1,117 @@
+[gd_scene load_steps=11 format=3 uid="uid://bewl5j21caiqu"]
+
+[ext_resource type="Texture2D" uid="uid://cn67n5wunq525" path="res://assets/lore/lore_1.png" id="1_cjtkb"]
+[ext_resource type="Script" uid="uid://lrstrnex70us" path="res://scripts/system/IntroCinematic.gd" id="1_dae05"]
+[ext_resource type="Texture2D" uid="uid://cns3ec1q17jjb" path="res://assets/lore/lore_2.png" id="2_c1ae1"]
+[ext_resource type="Texture2D" uid="uid://cb7yj5d2kuu0o" path="res://assets/backgrounds/bg_dark.png" id="2_kf02u"]
+[ext_resource type="Texture2D" uid="uid://bjkk551la2y1r" path="res://assets/lore/lore_3.png" id="3_xhvke"]
+[ext_resource type="Texture2D" uid="uid://caruu5xwpkgo7" path="res://assets/lore/lore_4.png" id="4_xhvke"]
+[ext_resource type="FontFile" uid="uid://gedy68241spt" path="res://assets/fonts/PixelOperator8.ttf" id="5_xhvke"]
+[ext_resource type="Texture2D" uid="uid://dodq55oxjx186" path="res://assets/lore/Icon_next.png" id="6_j8xit"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j8xit"]
+content_margin_left = 9.0
+content_margin_top = 9.0
+content_margin_right = 9.0
+content_margin_bottom = 9.0
+bg_color = Color(0.07058824, 0.08235294, 0.23137255, 0.8)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.18780172, 0.21477807, 0.40283024, 1)
+corner_detail = 5
+
+[sub_resource type="LabelSettings" id="LabelSettings_dae05"]
+font = ExtResource("5_xhvke")
+font_size = 12
+outline_size = 2
+outline_color = Color(0, 0, 0, 1)
+
+[node name="IntroCinematic" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_dae05")
+
+[node name="Lore" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="BG" type="TextureRect" parent="Lore"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_kf02u")
+
+[node name="scene_1" type="Sprite2D" parent="Lore"]
+position = Vector2(320.00003, 145.00002)
+scale = Vector2(0.42, 0.42)
+texture = ExtResource("1_cjtkb")
+
+[node name="scene_2" type="Sprite2D" parent="Lore"]
+visible = false
+position = Vector2(320.00003, 153)
+scale = Vector2(0.42, 0.42)
+texture = ExtResource("2_c1ae1")
+
+[node name="scene_3" type="Sprite2D" parent="Lore"]
+visible = false
+position = Vector2(320.00003, 153)
+scale = Vector2(0.42, 0.42)
+texture = ExtResource("3_xhvke")
+
+[node name="scene_4" type="Sprite2D" parent="Lore"]
+visible = false
+position = Vector2(320.00003, 153)
+scale = Vector2(0.42, 0.42)
+texture = ExtResource("4_xhvke")
+
+[node name="TextBox" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_top = 243.0
+offset_right = 640.0
+offset_bottom = 358.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_j8xit")
+
+[node name="MarginContainer" type="MarginContainer" parent="TextBox"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TextBox/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="RichTextLabel" type="RichTextLabel" parent="TextBox/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 63)
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 2
+theme_override_fonts/normal_font = ExtResource("5_xhvke")
+theme_override_font_sizes/normal_font_size = 18
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TextBox/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="Label" type="Label" parent="TextBox/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "ENTER"
+label_settings = SubResource("LabelSettings_dae05")
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="TextureRect" type="TextureRect" parent="TextBox/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("6_j8xit")
+stretch_mode = 5

@@ -51,6 +51,7 @@ const HIT_LOCK_MS := 120
 var _hit_lock_until_msec: int = 0
 const INPUT_IGNORE_MS := 90
 var _ignore_input_until_msec: int = 0
+var _book_cache: AnimatedSprite2D = null
 
 @export var danger_stable_ms: int = 40
 
@@ -121,6 +122,10 @@ func start_round() -> void:
 	_typed.clear()
 	_clear_icons()
 	_render_line()
+
+	# ← Dispara animación del Book al tener nueva secuencia
+	_book_play(&"next")
+
 	_active = mode_enabled
 	_round_start_msec = Time.get_ticks_msec()
 
@@ -244,6 +249,10 @@ func _continue_after_result() -> void:
 			_seq_map[front_id] = seq_val
 		_seq = seq_val
 		_render_line()
+
+		# ← Nueva secuencia tras resolver resultado → animación
+		_book_play(&"next")
+
 		_active = mode_enabled
 
 func _make_seq() -> PackedStringArray:
@@ -352,3 +361,28 @@ func _neutralize_projectile(p: Area2D) -> void:
 		(p as Object).call("disable")
 	else:
 		p.queue_free()
+
+func _get_book() -> AnimatedSprite2D:
+	if _book_cache and is_instance_valid(_book_cache):
+		return _book_cache
+	var nodes := get_tree().get_nodes_in_group("ui_book")
+	if nodes.size() > 0:
+		_book_cache = nodes[0] as AnimatedSprite2D
+		return _book_cache
+	return null
+
+func _book_play(anim: StringName) -> void:
+	var b := _get_book()
+	if b == null:
+		return
+
+	var anim_name := String(anim)            # ← renombrada; evita sombrear Node.name
+	var frames := b.sprite_frames            # AnimatedSprite2D usa SpriteFrames
+	if frames and frames.has_animation(anim_name):
+		# Evita re-tocar una animación ya en curso (opcional)
+		if String(b.animation) != anim_name or not b.is_playing():
+			b.play(anim_name)
+	else:
+		# Debug opcional para detectar typos
+		# print_debug("[Book] Animación no encontrada: ", anim_name)
+		pass

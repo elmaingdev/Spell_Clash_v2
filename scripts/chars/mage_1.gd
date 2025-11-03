@@ -1,4 +1,3 @@
-# res://scripts/chars/mage_1.gd
 extends Node2D
 class_name Mage1
 
@@ -9,6 +8,7 @@ signal got_hit
 @onready var body: CharacterBody2D    = $CharacterBody2D
 @onready var sprite: AnimatedSprite2D = $CharacterBody2D/AnimatedSprite2D
 @onready var spoint: Marker2D         = $CharacterBody2D/SPoint
+@onready var dialog_point: Marker2D   = $CharacterBody2D/DialogPoint   # ← NUEVO
 
 # SFX locales
 @onready var sfx_damage: AudioStreamPlayer2D = $Sfx/Damage
@@ -89,6 +89,11 @@ func _ready() -> void:
 	HP = clampi(HP, 0, max_hp)
 	call_deferred("_emit_initial_hp")
 
+func get_dialog_global_pos() -> Vector2:                    # ← NUEVO (opcional)
+	if is_instance_valid(dialog_point):
+		return dialog_point.global_position
+	return global_position + Vector2(0, -32)
+
 func _wire_typing_panel() -> void:
 	if not typing_panel_path.is_empty():
 		var n: Node = get_node_or_null(typing_panel_path)
@@ -108,24 +113,20 @@ func _wire_typing_panel() -> void:
 			typing_panel.round_started.connect(_on_round_started)
 
 func _wire_chargebar() -> void:
-	# 1) Unique Name %Chargebar
 	var n1: Node = get_node_or_null("%Chargebar")
 	if n1 is ChargeBar:
 		charge = n1 as ChargeBar
 
-	# 2) Búsqueda por clase en todo el árbol (UI nueva)
 	if charge == null:
 		var found: Array[Node] = get_tree().root.find_children("", "ChargeBar", true, false)
 		if found.size() > 0 and found[0] is ChargeBar:
 			charge = found[0] as ChargeBar
 
-	# 3) Fallback por nombre
 	if charge == null:
 		var any: Node = get_tree().root.find_child("ChargeBar", true, false)
 		if any is ChargeBar:
 			charge = any as ChargeBar
 
-	# Conexión de señal
 	if charge and not charge.charged.is_connected(_on_charge_full):
 		charge.charged.connect(_on_charge_full)
 	elif charge == null:
@@ -143,9 +144,7 @@ func _wire_defend_panel() -> void:
 		defend_panel.block_success.connect(_on_block_from_defend)
 
 func _on_block_from_defend() -> void:
-	# Sonido inmediato de bloqueo
 	_play_block_sfx()
-	# Pequeño delay para sincronizar con la desaparición del proyectil enemigo
 	await get_tree().create_timer(max(0.0, block_anim_delay)).timeout
 	play_block_anim()
 
@@ -196,7 +195,6 @@ func _final_damage(rating: String, combo_count: int) -> int:
 		mul = COMBO_CAP
 	return int(round(float(base) * mul))
 
-# Se emite apenas terminas de teclear la palabra (antes del spell_success)
 func _on_TypingPanel_score_ready(rating: String) -> void:
 	_last_rating = rating
 	dmg = _base_damage_from_rating(rating)
@@ -205,7 +203,6 @@ func _on_TypingPanel_score_ready(rating: String) -> void:
 		var next_combo: int = _get_combo_current() + 1
 		_pending_shot_damage = _final_damage(rating, next_combo)
 
-# Al finalizar el spell (palabra correcta) se dispara
 func _on_TypingPanel_spell_success(_phrase: String) -> void:
 	var combo_now: int = maxi(1, _get_combo_current())
 	var shot_dmg: int = (_pending_shot_damage if _pending_shot_damage >= 0 else _final_damage(_last_rating, combo_now))
@@ -219,7 +216,6 @@ func _on_TypingPanel_spell_success(_phrase: String) -> void:
 
 	_pending_shot_damage = -1
 
-# TypingPanel avisa que empezó un nuevo spell → si la barra sigue 100% y venía “pending”, arma el triple
 func _on_round_started() -> void:
 	if _burst_pending and charge and charge.is_full():
 		_burst_ready = true
@@ -264,11 +260,9 @@ func _spawn_projectile(damage_override: int = -1) -> void:
 	p.sfx_index = _player_spell_sfx_idx
 	_player_spell_sfx_idx = (_player_spell_sfx_idx + 1) % 3
 
-	# Reactiva estado y SFX (también fija launch_msec y añade al grupo 'player_projectile')
 	if p.has_method("reactivate"):
 		p.reactivate()
 
-	# Notificar a todos los enemigos para el sistema de bloqueos temporizados
 	get_tree().call_group("enemy", "on_player_projectile_spawned", p)
 
 func _shoot_burst(count: int = 3, spacing: float = 0.12, damage_override: int = -1) -> void:
@@ -325,15 +319,12 @@ func _play_damage_sfx() -> void:
 	sfx_damage.play()
 
 func _play_block_sfx() -> void:
-	# Intenta con el nodo dedicado; si falta, crea un one-shot
 	if sfx_block:
 		if sfx_block.stream == null:
 			sfx_block.stream = BLOCK_STREAM
-		# re-dispara aunque estuviera sonando
 		if sfx_block.playing:
 			sfx_block.stop()
 		sfx_block.pitch_scale = 1.0 + randf_range(-0.02, 0.02)
-		# asegura bus/volumen
 		var sfx_bus_idx: int = AudioServer.get_bus_index("SFX")
 		if sfx_bus_idx >= 0:
 			sfx_block.bus = "SFX"

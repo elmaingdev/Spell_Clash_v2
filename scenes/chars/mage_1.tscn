@@ -36,6 +36,10 @@ shape = SubResource("CapsuleShape2D_sfmj8")
 [node name="SPoint" type="Marker2D" parent="CharacterBody2D"]
 position = Vector2(151.51514, -106.0606)
 
+[node name="DialogPoint" type="Marker2D" parent="CharacterBody2D"]
+position = Vector2(178.78787, -124.242424)
+scale = Vector2(0.9999999, 0.9999999)
+
 [node name="Sfx" type="Node" parent="."]
 
 [node name="Damage" type="AudioStreamPlayer2D" parent="Sfx"]
