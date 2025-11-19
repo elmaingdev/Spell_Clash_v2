@@ -1,16 +1,1 @@
 res://default_bus_layout.tres
-res://scenes/cinematics/IntroCinematic.tscn
-res://ComboPanel.tres
-res://themes/animated_book.tres
-res://themes/TileMap.tres
-res://themes/projectile_1.tres
-res://themes/mage_1.tres
-res://themes/mage_2.tres
-res://themes/SkeletonMage.tres
-res://themes/projectile_3.tres
-res://themes/TimerBox.tres
-res://scripts/system/IntroCinematics.gd
-res://scenes/UI/menu.tscn
-res://scripts/system/Menu.gd
-res://scenes/main.tscn
-res://scripts/system/IntroCinematic.gd

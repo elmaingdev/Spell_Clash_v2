@@ -1,3 +1,7 @@
+res://assets/UI
+res://scenes/chars
+res://tutorial
+res://assets/tilesets
 res://assets/backgrounds
 res://scripts/system
 res://assets/lore
@@ -6,18 +10,14 @@ res://scripts/UI
 res://themes
 res://scenes/UI
 res://scenes/stages
-res://assets/UI
 res://assets/flying_demon
 res://assets/medusa
-res://scenes/chars
 res://assets/poison_skull
 res://assets/imp
 res://assets/demon_eye
 res://assets/mage2
-res://assets/tilesets
 res://assets/gray_mage
 res://assets/the_witch
 res://assets/skeleton_mage
 res://scenes
-res://scripts
 C:/Users/Main/Documents/spell_clash_v2/data

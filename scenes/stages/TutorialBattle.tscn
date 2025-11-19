@@ -1,0 +1,45 @@
+[gd_scene load_steps=10 format=3 uid="uid://nrlc5vkl1kt4"]
+
+[ext_resource type="Script" uid="uid://dimk00kx0fxk5" path="res://scripts/Battle.gd" id="1_4egc5"]
+[ext_resource type="PackedScene" uid="uid://bu60ffsuwanpr" path="res://scenes/UI/UI.tscn" id="2_ncu74"]
+[ext_resource type="PackedScene" uid="uid://c6xw45ilhwral" path="res://scenes/chars/mage_1.tscn" id="3_s10ai"]
+[ext_resource type="PackedScene" uid="uid://mpoxjirmnsux" path="res://scenes/chars/TutorialBook.tscn" id="4_4egc5"]
+[ext_resource type="AudioStream" uid="uid://dtderyonblk36" path="res://assets/bgm/march_of_iron.wav" id="5_ri3rq"]
+[ext_resource type="Script" uid="uid://cy4qmcgfo0a4c" path="res://scripts/system/ProjectilePool.gd" id="6_5418q"]
+[ext_resource type="PackedScene" uid="uid://baj4vmtxbrupq" path="res://scenes/chars/projectile_1.tscn" id="7_p81uu"]
+[ext_resource type="PackedScene" uid="uid://cnk20cq1gktqs" path="res://scenes/stages/TutorialStage.tscn" id="8_0cj7m"]
+[ext_resource type="PackedScene" uid="uid://cxwta47m0lft8" path="res://scenes/chars/projectile_2.tscn" id="8_gewl4"]
+
+[node name="Battle" type="Node2D"]
+script = ExtResource("1_4egc5")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="UI" parent="CanvasLayer" instance=ExtResource("2_ncu74")]
+
+[node name="Mage_1" parent="." node_paths=PackedStringArray("projectile_pool") instance=ExtResource("3_s10ai")]
+unique_name_in_owner = true
+position = Vector2(169.00002, 275)
+projectile_pool = NodePath("../PlayerProjectilePool")
+
+[node name="Enemy" parent="." instance=ExtResource("4_4egc5")]
+position = Vector2(473.99997, 268.99997)
+
+[node name="BGM" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("5_ri3rq")
+volume_db = -6.0
+autoplay = true
+bus = &"BGM"
+
+[node name="PlayerProjectilePool" type="Node" parent="."]
+script = ExtResource("6_5418q")
+projectile_scene = ExtResource("7_p81uu")
+metadata/_custom_type_script = "uid://cy4qmcgfo0a4c"
+
+[node name="EnemyProjectilePool" type="Node" parent="."]
+script = ExtResource("6_5418q")
+projectile_scene = ExtResource("8_gewl4")
+metadata/_custom_type_script = "uid://cy4qmcgfo0a4c"
+
+[node name="TutorialStage" parent="." instance=ExtResource("8_0cj7m")]

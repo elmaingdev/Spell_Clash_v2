@@ -1,3 +1,7 @@
+CanvasLayer
+TileMapLayer
+ParallaxBackground
+Sprite2D
 TextureRect
 AnimationPlayer
 HBoxContainer
@@ -7,8 +11,5 @@ RichTextLabel
 MarginContainer
 PanelContainer
 Control
-Sprite2D
 Marker2D
 Timer
-NinePatchRect
-AnimationTree
